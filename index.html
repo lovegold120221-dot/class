@@ -74,12 +74,14 @@
             --shadow-hard: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow: hidden; /* Prevent body scroll, handle in containers */
+            overflow: hidden;
+            /* Prevent body scroll, handle in containers */
         }
 
         body {
@@ -127,7 +129,7 @@
         }
 
         .custom-scrollbar {
-             /* Ensure smooth scrolling on iOS */
+            /* Ensure smooth scrolling on iOS */
             -webkit-overflow-scrolling: touch;
         }
 
@@ -235,11 +237,11 @@
         class="fixed top-4 left-0 right-0 z-50 pointer-events-none flex flex-col items-center gap-2 p-4"></div>
 
     <!-- MAIN APP CONTAINER -->
-    <main id="app"
-        class="relative w-full h-[100dvh] bg-white overflow-hidden">
+    <main id="app" class="relative w-full h-[100dvh] bg-white overflow-hidden">
 
         <!-- ================= VIEW: TEACHER LOBBY (QR) ================= -->
-        <section id="view-lobby" class="view-hidden w-full h-full flex flex-col bg-white text-center p-8 overflow-y-auto custom-scrollbar">
+        <section id="view-lobby"
+            class="view-hidden w-full h-full flex flex-col bg-white text-center p-8 overflow-y-auto custom-scrollbar">
             <div class="flex-1 flex flex-col items-center justify-center space-y-8 animate-slide-up">
                 <h2 class="text-2xl font-bold text-gray-900">Classroom Ready</h2>
 
@@ -395,7 +397,8 @@
                     <button id="notif-btn" onclick="App.toggleModal('notifications')" title="Notifications"
                         class="relative text-gray-400 hover:text-blue-500 transition-colors">
                         <i class="fa-solid fa-bell text-lg"></i>
-                        <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span>
+                        <span id="notif-badge"
+                            class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span>
                     </button>
                 </div>
             </header>
@@ -427,19 +430,24 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
                     <!-- Tab Header -->
                     <div class="px-4 py-2 bg-gray-50/50 border-b border-gray-100 flex items-center gap-4">
-                        <button id="tab-questions-btn" onclick="App.switchTeacherTab('questions')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-700 transition-colors">
+                        <button id="tab-questions-btn" onclick="App.switchTeacherTab('questions')"
+                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-700 transition-colors">
                             <i class="fa-regular fa-comments"></i>
                             Questions
-                            <span id="question-count" class="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                            <span id="question-count"
+                                class="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
                         </button>
-                        <button id="tab-students-btn" onclick="App.switchTeacherTab('students')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-100 transition-colors">
+                        <button id="tab-students-btn" onclick="App.switchTeacherTab('students')"
+                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-gray-500 hover:bg-gray-100 transition-colors">
                             <i class="fa-solid fa-users"></i>
                             Students
-                            <span id="student-count" class="bg-gray-300 text-gray-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+                            <span id="student-count"
+                                class="bg-gray-300 text-gray-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
                         </button>
                     </div>
                     <!-- Questions Tab Content -->
-                    <div id="tab-questions-content" class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 custom-scrollbar">
+                    <div id="tab-questions-content"
+                        class="flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 custom-scrollbar">
                         <!-- Cards injected here -->
                         <div id="teacher-questions"></div>
                         <div id="teacher-empty" class="text-center py-8 opacity-40">
@@ -448,7 +456,8 @@
                         </div>
                     </div>
                     <!-- Students Tab Content -->
-                    <div id="tab-students-content" class="hidden flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 custom-scrollbar">
+                    <div id="tab-students-content"
+                        class="hidden flex-1 p-4 overflow-y-auto space-y-3 bg-gray-50 custom-scrollbar">
                         <div id="students-list"></div>
                         <div id="students-empty" class="text-center py-8 opacity-40">
                             <i class="fa-solid fa-users text-2xl mb-2 text-gray-400"></i>
@@ -564,12 +573,14 @@
             <div class="absolute bottom-0 left-0 right-0 md:top-1/2 md:left-1/2 md:bottom-auto md:w-full md:max-w-sm md:-translate-x-1/2 md:-translate-y-1/2 transition-transform transform translate-y-full"
                 id="notifications-panel">
                 <div class="bg-white rounded-t-3xl md:rounded-3xl shadow-2xl flex flex-col max-h-[60vh]">
-                    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-3xl">
+                    <div
+                        class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-3xl">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-bell text-blue-500"></i>
                             <h3 class="text-lg font-bold text-gray-900">Notifications</h3>
                         </div>
-                        <button onclick="App.clearNotifications()" class="text-xs text-gray-400 hover:text-red-500 font-semibold">Clear All</button>
+                        <button onclick="App.clearNotifications()"
+                            class="text-xs text-gray-400 hover:text-red-500 font-semibold">Clear All</button>
                     </div>
 
                     <div id="notifications-list" class="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
@@ -593,11 +604,11 @@
         // --- CREDENTIALS ---
         const CREDENTIALS = {
             DEEPGRAM: "11ee938d032ce7c36c6fa82338274be5e4ada847",
-            CARTESIA: "sk_car_yWEX9Mp2LwKju8FXyosGhj",
+            CARTESIA: "sk_car_H2XSssatfTozduzns3FMfT",
             CARTESIA_VOICES: {
                 // Multilingual voice (supports 29+ languages automatically)
                 "multilingual": "a0e99841-438c-4a64-b679-ae501e7d6091", // Barbershop Man - Multilingual
-                
+
                 // Language-specific voices (optional overrides)
                 "en": "cbaf8084-f009-4838-a096-07ee2e6612b1", // Cathy
                 "hi": "faf0731e-dfb9-4cfc-8119-259a79b27e12", // Riya
@@ -612,9 +623,9 @@
                 "te": "07bc462a-c644-49f1-baf7-82d5599131be", // Sindhu
                 "nl": "9e8db62d-056f-47f3-b3b6-1b05767f9176", // Dutch
                 "nl-BE": "9e8db62d-056f-47f3-b3b6-1b05767f9176", // Flemish
-                
+
                 // Default to multilingual voice for all other languages
-                "default": "a0e99841-438c-4a64-b679-ae501e7d6091" // Multilingual
+                "default": "eded3658-4f70-4420-b021-1e70e14a8203" // Default fallback
             },
             CARTESIA_PDICT: {
                 "nl-BE": "pdict_TPgLmfbAo9pQoorcetVez8" // Flemish pronunciation
@@ -1403,7 +1414,7 @@
                     // Start Web Speech API
                     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                     if (!SpeechRecognition) throw new Error("Web Speech API not supported");
-                    
+
                     this.student.recognition = new SpeechRecognition();
                     this.student.recognition.continuous = true;
                     this.student.recognition.interimResults = true;
@@ -1676,7 +1687,7 @@
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            "model_id": "sonic-3-latest",
+                            "model_id": "sonic-3",
                             "transcript": transcript,
                             "voice": { "mode": "id", "id": voiceId },
                             "output_format": { "container": "wav", "encoding": "pcm_f32le", "sample_rate": 44100 },
@@ -2325,7 +2336,7 @@
                         emoji: emoji,
                         senderName: this.state.name,
                         timestamp: Date.now()
-                    }).catch(() => {});
+                    }).catch(() => { });
                 }
             }
 

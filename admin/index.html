@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,18 +8,32 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; }
-        .stat-card { transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-2px); }
-        .table-row:hover { background: #f1f5f9; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f8fafc;
+        }
+
+        .stat-card {
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-row:hover {
+            background: #f1f5f9;
+        }
     </style>
 </head>
+
 <body class="min-h-screen">
     <!-- Header -->
     <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
                     <i class="fas fa-shield-halved text-white text-lg"></i>
                 </div>
                 <div>
@@ -30,7 +45,8 @@
                 <span id="connection-status" class="text-sm text-gray-500">
                     <i class="fas fa-circle text-yellow-400 mr-1"></i> Connecting...
                 </span>
-                <button onclick="refreshData()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                <button onclick="refreshData()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                     <i class="fas fa-refresh mr-2"></i>Refresh
                 </button>
             </div>
@@ -68,7 +84,8 @@
                     <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
                         <i class="fas fa-graduation-cap text-purple-600 text-xl"></i>
                     </div>
-                    <span class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Students</span>
+                    <span
+                        class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Students</span>
                 </div>
                 <p class="text-3xl font-bold text-gray-800" id="stat-students">0</p>
                 <p class="text-sm text-gray-500 mt-1">Student Accounts</p>
@@ -111,19 +128,28 @@
 
         <!-- Tabs -->
         <div class="flex gap-2 mb-6 flex-wrap">
-            <button onclick="showTab('users')" id="tab-users" class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-indigo-600 text-white">
+            <button onclick="showTab('users')" id="tab-users"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-indigo-600 text-white">
                 <i class="fas fa-users mr-2"></i>Users
             </button>
-            <button onclick="showTab('roles')" id="tab-roles" class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+            <button onclick="showTab('roles')" id="tab-roles"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
                 <i class="fas fa-user-tag mr-2"></i>Roles
             </button>
-            <button onclick="showTab('rooms')" id="tab-rooms" class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+            <button onclick="showTab('rooms')" id="tab-rooms"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
                 <i class="fas fa-door-open mr-2"></i>Rooms
             </button>
-            <button onclick="showTab('servers')" id="tab-servers" class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+            <button onclick="showTab('servers')" id="tab-servers"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
                 <i class="fas fa-server mr-2"></i>Servers
             </button>
-            <button onclick="showTab('generate')" id="tab-generate" class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+            <button onclick="showTab('history')" id="tab-history"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-history mr-2"></i>Conversation History
+            </button>
+            <button onclick="showTab('generate')" id="tab-generate"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
                 <i class="fas fa-id-card mr-2"></i>Generate ID
             </button>
         </div>
@@ -134,7 +160,8 @@
                 <h2 class="text-lg font-bold text-gray-800">
                     <i class="fas fa-users text-indigo-600 mr-2"></i>User Management
                 </h2>
-                <button onclick="showAddUserModal()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                <button onclick="showAddUserModal()"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                     <i class="fas fa-plus mr-2"></i>Add User
                 </button>
             </div>
@@ -146,7 +173,8 @@
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Email</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Role</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Sessions</th>
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Last Active</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Last Active
+                            </th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
                         </tr>
                     </thead>
@@ -168,7 +196,8 @@
                 <h2 class="text-lg font-bold text-gray-800">
                     <i class="fas fa-user-tag text-indigo-600 mr-2"></i>Role Management
                 </h2>
-                <button onclick="showAddRoleModal()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                <button onclick="showAddRoleModal()"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
                     <i class="fas fa-plus mr-2"></i>Add Role
                 </button>
             </div>
@@ -177,7 +206,8 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Role Name</th>
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Permissions</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Permissions
+                            </th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Users</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
                         </tr>
@@ -203,13 +233,17 @@
                 <div class="flex items-center gap-3 flex-wrap">
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-600">From:</label>
-                        <input type="date" id="room-date-from" onchange="filterRoomsByDateRange()" title="Start date" class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <input type="date" id="room-date-from" onchange="filterRoomsByDateRange()" title="Start date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-600">To:</label>
-                        <input type="date" id="room-date-to" onchange="filterRoomsByDateRange()" title="End date" class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <input type="date" id="room-date-to" onchange="filterRoomsByDateRange()" title="End date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
-                    <button onclick="clearDateFilter()" class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition" title="Clear filter">
+                    <button onclick="clearDateFilter()"
+                        class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                        title="Clear filter">
                         <i class="fas fa-times"></i> Clear
                     </button>
                 </div>
@@ -222,7 +256,8 @@
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Teacher</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Messages</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Questions</th>
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Student Responses</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Student
+                                Responses</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Created</th>
                         </tr>
                     </thead>
@@ -247,19 +282,24 @@
                 <div class="flex items-center gap-4 flex-wrap">
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-600">From:</label>
-                        <input type="date" id="server-date-from" onchange="filterServersByDate()" title="Start date" class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <input type="date" id="server-date-from" onchange="filterServersByDate()" title="Start date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-600">To:</label>
-                        <input type="date" id="server-date-to" onchange="filterServersByDate()" title="End date" class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                        <input type="date" id="server-date-to" onchange="filterServersByDate()" title="End date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
                     </div>
-                    <button onclick="clearServerDateFilter()" class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition" title="Clear filter">
+                    <button onclick="clearServerDateFilter()"
+                        class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                        title="Clear filter">
                         <i class="fas fa-times"></i> Clear
                     </button>
-                    <span class="text-sm text-gray-500">Updated: <span id="server-last-update" class="font-medium text-indigo-600">Just now</span></span>
+                    <span class="text-sm text-gray-500">Updated: <span id="server-last-update"
+                            class="font-medium text-indigo-600">Just now</span></span>
                 </div>
             </div>
-            
+
             <!-- Server Stats Overview -->
             <div class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 border-b border-gray-100">
                 <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
@@ -291,10 +331,13 @@
                         <tr>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Server</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tokens Used</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tokens Used
+                            </th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Latency</th>
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tokens/Word</th>
-                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Trans→Transl</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tokens/Word
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Trans→Transl
+                            </th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Epochs</th>
                             <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Load</th>
                         </tr>
@@ -309,7 +352,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             <!-- Token Usage Chart -->
             <div class="p-6 border-t border-gray-100">
                 <h3 class="text-md font-semibold text-gray-700 mb-4">
@@ -329,31 +372,37 @@
                 </h2>
                 <p class="text-sm text-gray-500 mt-1">Create unique user IDs and save them to the database</p>
             </div>
-            
+
             <!-- ID Generator Form -->
             <div class="p-6">
                 <div class="max-w-2xl mx-auto">
                     <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 mb-6">
                         <div class="text-center mb-6">
-                            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <div
+                                class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-fingerprint text-white text-3xl"></i>
                             </div>
                             <h3 class="text-xl font-bold text-gray-800">User ID Generator</h3>
                             <p class="text-sm text-gray-500 mt-1">Generate and assign unique IDs to users</p>
                         </div>
-                        
+
                         <form id="generate-id-form" onsubmit="generateUserId(event)" class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                <input type="text" id="gen-name" required placeholder="Enter user's full name" title="Full Name" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <input type="text" id="gen-name" required placeholder="Enter user's full name"
+                                    title="Full Name"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                                <input type="email" id="gen-email" required placeholder="Enter user's email" title="Email" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <input type="email" id="gen-email" required placeholder="Enter user's email"
+                                    title="Email"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                                <select id="gen-role" required title="User Role" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <select id="gen-role" required title="User Role"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                                     <option value="student">Student</option>
                                     <option value="teacher">Teacher</option>
                                     <option value="admin">Admin</option>
@@ -361,14 +410,16 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">ID Prefix (Optional)</label>
-                                <input type="text" id="gen-prefix" placeholder="e.g., STU, TCH, ADM" title="ID Prefix" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                <input type="text" id="gen-prefix" placeholder="e.g., STU, TCH, ADM" title="ID Prefix"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                             </div>
-                            <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition font-semibold">
+                            <button type="submit"
+                                class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition font-semibold">
                                 <i class="fas fa-magic mr-2"></i>Generate User ID
                             </button>
                         </form>
                     </div>
-                    
+
                     <!-- Generated ID Display -->
                     <div id="generated-id-result" class="hidden">
                         <div class="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
@@ -379,14 +430,15 @@
                                 <p class="text-2xl font-mono font-bold text-indigo-600" id="display-generated-id">-</p>
                             </div>
                             <p class="text-sm text-gray-500" id="display-generated-info">-</p>
-                            <button onclick="copyGeneratedId()" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                            <button onclick="copyGeneratedId()"
+                                class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                                 <i class="fas fa-copy mr-2"></i>Copy ID
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Recently Generated IDs -->
             <div class="p-6 border-t border-gray-100">
                 <h3 class="text-md font-semibold text-gray-700 mb-4">
@@ -396,11 +448,13 @@
                     <table class="w-full">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">User ID</th>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">User ID
+                                </th>
                                 <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Name</th>
                                 <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Email</th>
                                 <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Role</th>
-                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Created</th>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Created
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="generated-ids-table">
@@ -413,6 +467,83 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </section>
+
+        <!-- Conversation History Tab -->
+        <section id="panel-history" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-history text-indigo-600 mr-2"></i>Conversation History Management
+                </h2>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">User:</label>
+                        <select id="history-user-filter" onchange="filterHistoryByUser()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <option value="">All Users</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">From:</label>
+                        <input type="date" id="history-date-from" onchange="filterHistoryByDate()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">To:</label>
+                        <input type="date" id="history-date-to" onchange="filterHistoryByDate()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <button onclick="clearHistoryFilters()"
+                        class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-gray-100">
+                <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                    <p class="text-2xl font-bold text-indigo-600" id="history-total-conversations">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Total Conversations</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                    <p class="text-2xl font-bold text-green-600" id="history-total-messages">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Total Messages</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                    <p class="text-2xl font-bold text-purple-600" id="history-active-users">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Active Users</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl">
+                    <p class="text-2xl font-bold text-orange-600" id="history-avg-duration">0m</p>
+                    <p class="text-sm text-gray-600 mt-1">Avg Duration</p>
+                </div>
+            </div>
+
+            <!-- Conversations Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Room ID</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Participants
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Messages</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Duration</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Date</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading conversation history...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </section>
     </main>
@@ -430,15 +561,18 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" id="user-name" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <input type="text" id="user-name" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="user-email" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <input type="email" id="user-email" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select id="user-role" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <select id="user-role" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                             <option value="student">Student</option>
                             <option value="teacher">Teacher</option>
                             <option value="admin">Admin</option>
@@ -446,8 +580,11 @@
                     </div>
                 </div>
                 <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeModals()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Add User</button>
+                    <button type="button" onclick="closeModals()"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Add
+                        User</button>
                 </div>
             </form>
         </div>
@@ -466,25 +603,30 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Role Name</label>
-                        <input type="text" id="role-name" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <input type="text" id="role-name" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
                         <div class="space-y-2">
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" name="permissions" value="create_room" class="rounded text-indigo-600">
+                                <input type="checkbox" name="permissions" value="create_room"
+                                    class="rounded text-indigo-600">
                                 <span class="text-sm text-gray-600">Create Room</span>
                             </label>
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" name="permissions" value="broadcast" class="rounded text-indigo-600">
+                                <input type="checkbox" name="permissions" value="broadcast"
+                                    class="rounded text-indigo-600">
                                 <span class="text-sm text-gray-600">Broadcast Messages</span>
                             </label>
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" name="permissions" value="manage_students" class="rounded text-indigo-600">
+                                <input type="checkbox" name="permissions" value="manage_students"
+                                    class="rounded text-indigo-600">
                                 <span class="text-sm text-gray-600">Manage Students</span>
                             </label>
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" name="permissions" value="view_history" class="rounded text-indigo-600">
+                                <input type="checkbox" name="permissions" value="view_history"
+                                    class="rounded text-indigo-600">
                                 <span class="text-sm text-gray-600">View History</span>
                             </label>
                             <label class="flex items-center gap-2">
@@ -495,8 +637,11 @@
                     </div>
                 </div>
                 <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeModals()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Add Role</button>
+                    <button type="button" onclick="closeModals()"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Add
+                        Role</button>
                 </div>
             </form>
         </div>
@@ -516,15 +661,18 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <input type="text" id="edit-user-name" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <input type="text" id="edit-user-name" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="edit-user-email" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <input type="email" id="edit-user-email" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                        <select id="edit-user-role" required class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <select id="edit-user-role" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                             <option value="student">Student</option>
                             <option value="teacher">Teacher</option>
                             <option value="admin">Admin</option>
@@ -532,10 +680,55 @@
                     </div>
                 </div>
                 <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="closeModals()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Update</button>
+                    <button type="button" onclick="closeModals()"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Update</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Conversation Detail Modal -->
+    <div id="conversation-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-comments text-indigo-600 mr-2"></i>Conversation Details
+                </h3>
+                <button onclick="closeConversationModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <div class="mb-6">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Room ID</p>
+                            <p class="font-medium text-gray-800" id="modal-room-id">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Date</p>
+                            <p class="font-medium text-gray-800" id="modal-room-date">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Duration</p>
+                            <p class="font-medium text-gray-800" id="modal-room-duration">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Participants</p>
+                            <p class="font-medium text-gray-800" id="modal-room-participants">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h4 class="font-semibold text-gray-800 mb-4">Conversation Messages</h4>
+                    <div id="conversation-messages" class="space-y-3">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -594,7 +787,8 @@
                 loadRooms(),
                 loadStats(),
                 loadServerStats(),
-                loadGeneratedIds()
+                loadGeneratedIds(),
+                loadConversationHistory()
             ]);
         }
 
@@ -605,11 +799,11 @@
                 const usersSnap = await get(ref(db, 'admin/users'));
                 const users = usersSnap.val() || {};
                 const userList = Object.values(users);
-                
+
                 document.getElementById('stat-total-users').textContent = userList.length;
                 document.getElementById('stat-teachers').textContent = userList.filter(u => u.role === 'teacher').length;
                 document.getElementById('stat-students').textContent = userList.filter(u => u.role === 'student').length;
-                
+
                 // Calculate total sessions
                 const totalSessions = userList.reduce((sum, u) => sum + (u.sessions || 0), 0);
                 document.getElementById('stat-total-sessions').textContent = totalSessions;
@@ -618,26 +812,26 @@
                 const chatsSnap = await get(ref(db, 'chats'));
                 const chats = chatsSnap.val() || {};
                 const roomKeys = Object.keys(chats);
-                
+
                 document.getElementById('stat-total-rooms').textContent = roomKeys.length;
-                
+
                 let totalMessages = 0;
                 let totalTranslations = 0;
-                
+
                 for (const roomKey of roomKeys) {
                     const room = chats[roomKey];
                     if (room.messages) totalMessages += Object.keys(room.messages).length;
                     if (room.questions) totalMessages += Object.keys(room.questions).length;
                     if (room.studentResponses) totalMessages += Object.keys(room.studentResponses).length;
                     if (room.studentChats) totalMessages += Object.keys(room.studentChats).length;
-                    
+
                     // Count translations (each message to a student is a translation)
                     totalTranslations += totalMessages;
                 }
-                
+
                 document.getElementById('stat-total-messages').textContent = totalMessages;
                 document.getElementById('stat-total-translations').textContent = totalTranslations;
-                
+
             } catch (err) {
                 console.error('Error loading stats:', err);
             }
@@ -649,7 +843,7 @@
                 const snap = await get(ref(db, 'admin/users'));
                 const users = snap.val() || {};
                 const tbody = document.getElementById('users-table-body');
-                
+
                 if (Object.keys(users).length === 0) {
                     tbody.innerHTML = `
                         <tr>
@@ -661,7 +855,7 @@
                     `;
                     return;
                 }
-                
+
                 tbody.innerHTML = Object.entries(users).map(([id, user]) => `
                     <tr class="table-row border-b border-gray-50">
                         <td class="px-6 py-4">
@@ -702,7 +896,7 @@
             try {
                 const snap = await get(ref(db, 'admin/roles'));
                 let roles = snap.val();
-                
+
                 // Create default roles if none exist
                 if (!roles) {
                     roles = {
@@ -712,7 +906,7 @@
                     };
                     await set(ref(db, 'admin/roles'), roles);
                 }
-                
+
                 // Count users per role
                 const usersSnap = await get(ref(db, 'admin/users'));
                 const users = usersSnap.val() || {};
@@ -721,7 +915,7 @@
                     const role = u.role || 'student';
                     roleCounts[role] = (roleCounts[role] || 0) + 1;
                 });
-                
+
                 const tbody = document.getElementById('roles-table-body');
                 tbody.innerHTML = Object.entries(roles).map(([id, role]) => `
                     <tr class="table-row border-b border-gray-50">
@@ -778,7 +972,7 @@
         // Render rooms table
         function renderRooms(chats, fromDate = null, toDate = null) {
             const tbody = document.getElementById('rooms-table-body');
-            
+
             // Filter by date range if provided
             let filteredChats = chats;
             if (fromDate || toDate) {
@@ -788,7 +982,7 @@
                     if (createdAt) {
                         const roomDate = new Date(createdAt);
                         roomDate.setHours(0, 0, 0, 0);
-                        
+
                         let include = true;
                         if (fromDate) {
                             const fromDateObj = new Date(fromDate);
@@ -800,14 +994,14 @@
                             toDateObj.setHours(23, 59, 59, 999);
                             if (roomDate > toDateObj) include = false;
                         }
-                        
+
                         if (include) {
                             filteredChats[roomCode] = room;
                         }
                     }
                 }
             }
-            
+
             if (Object.keys(filteredChats).length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -819,20 +1013,20 @@
                 `;
                 return;
             }
-            
+
             // Sort by created date (newest first)
             const sortedChats = Object.entries(filteredChats).sort((a, b) => {
                 const dateA = a[1].meta?.createdAt || 0;
                 const dateB = b[1].meta?.createdAt || 0;
                 return dateB - dateA;
             });
-            
+
             tbody.innerHTML = sortedChats.map(([roomCode, room]) => {
                 const meta = room.meta || {};
                 const msgCount = room.messages ? Object.keys(room.messages).length : 0;
                 const qCount = room.questions ? Object.keys(room.questions).length : 0;
                 const rCount = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
-                
+
                 return `
                     <tr class="table-row border-b border-gray-50">
                         <td class="px-6 py-4">
@@ -870,7 +1064,7 @@
         // =====================
         // SERVER TAB FUNCTIONS
         // =====================
-        
+
         // AMD Versal AI Edge Gen 2 Server configurations
         const AMD_SERVERS = [
             { id: '2VE3858', name: 'AMD Versal 2VE3858', tops: 184, aieTiles: 144, status: 'online', batchSize: 64 },
@@ -888,57 +1082,57 @@
             try {
                 const snap = await get(ref(db, 'chats'));
                 const chats = snap.val() || {};
-                
+
                 // Calculate token consumption based on messages
                 let totalMessages = 0;
                 let totalWords = 0;
                 let roomsByDate = {};
-                
+
                 for (const [roomCode, room] of Object.entries(chats)) {
                     const createdAt = room.meta?.createdAt;
                     const roomDate = createdAt ? new Date(createdAt) : new Date();
                     const dateKey = roomDate.toISOString().split('T')[0];
-                    
+
                     // Filter by date range if specified
                     if (fromDate || toDate) {
                         const roomDateOnly = new Date(dateKey);
                         if (fromDate && roomDateOnly < new Date(fromDate)) continue;
                         if (toDate && roomDateOnly > new Date(toDate)) continue;
                     }
-                    
+
                     // Count messages and estimate words
                     const msgCount = room.messages ? Object.keys(room.messages).length : 0;
                     const qCount = room.questions ? Object.keys(room.questions).length : 0;
                     const rCount = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
                     const chatCount = room.studentChats ? Object.keys(room.studentChats).length : 0;
-                    
+
                     const roomTotal = msgCount + qCount + rCount + chatCount;
                     totalMessages += roomTotal;
-                    
+
                     // Estimate words (avg 15 words per message)
                     totalWords += roomTotal * 15;
-                    
+
                     // Group by date for chart
                     if (!roomsByDate[dateKey]) {
                         roomsByDate[dateKey] = 0;
                     }
                     roomsByDate[dateKey] += roomTotal;
                 }
-                
+
                 // Calculate token metrics (approx 1.3 tokens per word)
                 const tokensPerWord = 1.34;
                 const totalTokens = Math.round(totalWords * tokensPerWord);
-                
+
                 // Distribute across servers based on capacity
                 const serverStats = calculateServerDistribution(totalTokens, totalMessages);
                 serverStatsData = { totalTokens, totalMessages, totalWords, serverStats, roomsByDate };
-                
+
                 renderServerStats(serverStatsData);
                 renderServerTable(serverStats);
                 renderTokenChart(roomsByDate);
-                
+
                 document.getElementById('server-last-update').textContent = new Date().toLocaleTimeString();
-                
+
             } catch (err) {
                 console.error('Error loading server stats:', err);
             }
@@ -947,12 +1141,12 @@
         // Calculate token distribution across servers
         function calculateServerDistribution(totalTokens, totalMessages) {
             const totalCapacity = AMD_SERVERS.reduce((sum, s) => sum + s.tops, 0);
-            
+
             return AMD_SERVERS.map((server, index) => {
                 const capacityRatio = server.tops / totalCapacity;
                 const tokens = Math.round(totalTokens * capacityRatio * (0.8 + Math.random() * 0.4));
                 const messages = Math.round(totalMessages * capacityRatio);
-                
+
                 // Calculate metrics
                 const baseLatency = 15 + (200 - server.tops) / 10;
                 const latency = baseLatency + (Math.random() * 5 - 2.5);
@@ -962,7 +1156,7 @@
                 const tokensPerWordRatio = 1.25 + Math.random() * 0.2;
                 // Transcription to Translation latency: 1.3s to 4s
                 const transcriptionLatency = 1.3 + Math.random() * 2.7;
-                
+
                 return {
                     ...server,
                     tokens,
@@ -984,7 +1178,7 @@
             const avgTokensPerWord = data.serverStats?.reduce((sum, s) => sum + parseFloat(s.tokensPerWord), 0) / (data.serverStats?.length || 1);
             const totalEpochs = data.serverStats?.reduce((sum, s) => sum + s.epochs, 0) || 0;
             const avgTranscriptionLatency = data.serverStats?.reduce((sum, s) => sum + parseFloat(s.transcriptionLatency), 0) / (data.serverStats?.length || 1);
-            
+
             document.getElementById('total-tokens-used').textContent = totalTokens.toLocaleString();
             document.getElementById('avg-latency').textContent = (avgLatency || 0).toFixed(1) + 'ms';
             document.getElementById('transcription-latency').textContent = (avgTranscriptionLatency || 0).toFixed(2) + 's';
@@ -995,7 +1189,7 @@
         // Render server table
         function renderServerTable(servers) {
             const tbody = document.getElementById('servers-table-body');
-            
+
             if (!servers || servers.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -1007,19 +1201,19 @@
                 `;
                 return;
             }
-            
+
             tbody.innerHTML = servers.map(server => {
                 const statusClass = {
                     'online': 'bg-green-100 text-green-700',
                     'busy': 'bg-yellow-100 text-yellow-700',
                     'standby': 'bg-gray-100 text-gray-600'
                 }[server.status] || 'bg-gray-100 text-gray-600';
-                
+
                 const loadColor = server.load > 80 ? 'bg-red-500' : server.load > 60 ? 'bg-yellow-500' : 'bg-green-500';
                 const latencyColor = parseFloat(server.latency) > 30 ? 'text-yellow-600' : 'text-green-600';
                 const tokenPercent = Math.min(100, (server.tokens / 1000000) * 100);
                 const tpwQuality = parseFloat(server.tokensPerWord) <= 1.30 ? 'Optimal' : parseFloat(server.tokensPerWord) <= 1.38 ? 'Good' : 'Fair';
-                
+
                 return `
                     <tr class="table-row border-b border-gray-50">
                         <td class="px-6 py-4">
@@ -1077,7 +1271,7 @@
         function renderTokenChart(roomsByDate) {
             const container = document.getElementById('token-chart-container');
             const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            
+
             // Get last 7 days
             const chartData = [];
             for (let i = 6; i >= 0; i--) {
@@ -1089,15 +1283,15 @@
                 const tokens = Math.round(messages * 15 * 1.34); // words * tokensPerWord
                 chartData.push({ dayName, tokens, dateKey });
             }
-            
+
             const maxTokens = Math.max(...chartData.map(d => d.tokens), 1);
-            
+
             container.innerHTML = chartData.map((day, index) => {
                 const heightPercent = Math.max(5, (day.tokens / maxTokens) * 100);
                 const isToday = index === chartData.length - 1;
                 const bgColor = isToday ? 'bg-indigo-600' : 'bg-indigo-500';
                 const tokenDisplay = day.tokens > 1000 ? Math.round(day.tokens / 1000) + 'K' : day.tokens;
-                
+
                 return `
                     <div class="text-center">
                         <div class="h-32 bg-gray-100 rounded-lg flex flex-col justify-end p-2">
@@ -1127,21 +1321,21 @@
         // =====================
         // GENERATE ID TAB FUNCTIONS
         // =====================
-        
+
         // Generate unique user ID
         async function generateUserId(e) {
             e.preventDefault();
-            
+
             const name = document.getElementById('gen-name').value;
             const email = document.getElementById('gen-email').value;
             const role = document.getElementById('gen-role').value;
             const prefix = document.getElementById('gen-prefix').value || getRolePrefix(role);
-            
+
             // Generate unique ID
             const timestamp = Date.now().toString(36).toUpperCase();
             const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
             const userId = `${prefix}-${timestamp}-${randomPart}`;
-            
+
             try {
                 // Save to Firebase
                 const newUserRef = push(ref(db, 'admin/generatedIds'));
@@ -1152,7 +1346,7 @@
                     role,
                     createdAt: Date.now()
                 });
-                
+
                 // Also add to users if not exists
                 const userRef = push(ref(db, 'admin/users'));
                 await set(userRef, {
@@ -1163,26 +1357,26 @@
                     sessions: 0,
                     createdAt: Date.now()
                 });
-                
+
                 // Show result
                 document.getElementById('generated-id-result').classList.remove('hidden');
                 document.getElementById('display-generated-id').textContent = userId;
                 document.getElementById('display-generated-info').textContent = `${name} • ${email} • ${role}`;
-                
+
                 // Clear form
                 document.getElementById('generate-id-form').reset();
-                
+
                 // Refresh table
                 loadGeneratedIds();
                 loadUsers();
                 loadStats();
-                
+
             } catch (err) {
                 console.error('Error generating ID:', err);
                 alert('Error generating ID. Please try again.');
             }
         }
-        
+
         // Get role prefix
         function getRolePrefix(role) {
             switch (role) {
@@ -1191,7 +1385,7 @@
                 default: return 'STU';
             }
         }
-        
+
         // Copy generated ID to clipboard
         function copyGeneratedId() {
             const id = document.getElementById('display-generated-id').textContent;
@@ -1199,16 +1393,16 @@
                 alert('User ID copied to clipboard!');
             });
         }
-        
+
         // Load recently generated IDs
         async function loadGeneratedIds() {
             try {
                 const snap = await get(ref(db, 'admin/generatedIds'));
                 const ids = snap.val() || {};
                 const tbody = document.getElementById('generated-ids-table');
-                
+
                 const idList = Object.values(ids).sort((a, b) => b.createdAt - a.createdAt).slice(0, 10);
-                
+
                 if (idList.length === 0) {
                     tbody.innerHTML = `
                         <tr>
@@ -1220,7 +1414,7 @@
                     `;
                     return;
                 }
-                
+
                 tbody.innerHTML = idList.map(item => `
                     <tr class="table-row border-b border-gray-50">
                         <td class="px-6 py-3">
@@ -1234,7 +1428,7 @@
                         <td class="px-6 py-3 text-gray-500 text-sm">${formatDate(item.createdAt)}</td>
                     </tr>
                 `).join('');
-                
+
             } catch (err) {
                 console.error('Error loading generated IDs:', err);
             }
@@ -1268,9 +1462,9 @@
         function formatDate(timestamp) {
             if (!timestamp) return 'Never';
             const date = new Date(timestamp);
-            return date.toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric', 
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
                 year: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit'
@@ -1296,7 +1490,7 @@
             const name = document.getElementById('user-name').value;
             const email = document.getElementById('user-email').value;
             const role = document.getElementById('user-role').value;
-            
+
             try {
                 await push(ref(db, 'admin/users'), {
                     name,
@@ -1319,9 +1513,9 @@
             e.preventDefault();
             const name = document.getElementById('role-name').value;
             const permissions = Array.from(document.querySelectorAll('#add-role-form input[name="permissions"]:checked')).map(i => i.value);
-            
+
             const roleId = name.toLowerCase().replace(/\s+/g, '_');
-            
+
             try {
                 await set(ref(db, `admin/roles/${roleId}`), {
                     name,
@@ -1360,11 +1554,11 @@
             const name = document.getElementById('edit-user-name').value;
             const email = document.getElementById('edit-user-email').value;
             const role = document.getElementById('edit-user-role').value;
-            
+
             try {
                 const snap = await get(ref(db, `admin/users/${userId}`));
                 const existing = snap.val() || {};
-                
+
                 await set(ref(db, `admin/users/${userId}`), {
                     ...existing,
                     name,
@@ -1381,7 +1575,7 @@
 
         async function deleteUser(userId) {
             if (!confirm('Are you sure you want to delete this user?')) return;
-            
+
             try {
                 await remove(ref(db, `admin/users/${userId}`));
                 refreshData();
@@ -1397,13 +1591,338 @@
 
         async function deleteRole(roleId) {
             if (!confirm('Are you sure you want to delete this role?')) return;
-            
+
             try {
                 await remove(ref(db, `admin/roles/${roleId}`));
                 refreshData();
             } catch (err) {
                 console.error('Error deleting role:', err);
                 alert('Failed to delete role');
+            }
+        }
+
+        // Conversation History Functions
+        let conversationHistory = [];
+        let filteredHistory = [];
+
+        async function loadConversationHistory() {
+            try {
+                const chatsSnap = await get(ref(db, 'chats'));
+                const chats = chatsSnap.val() || {};
+
+                conversationHistory = [];
+
+                for (const [roomId, room] of Object.entries(chats)) {
+                    const history = {
+                        roomId,
+                        created: room.created || Date.now(),
+                        lastActivity: room.lastActivity || room.created || Date.now(),
+                        participants: [],
+                        messageCount: 0,
+                        duration: 0
+                    };
+
+                    // Count messages and collect participants
+                    const messageTypes = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                    for (const type of messageTypes) {
+                        if (room[type]) {
+                            history.messageCount += Object.keys(room[type]).length;
+                            Object.values(room[type]).forEach(msg => {
+                                if (msg.sender && !history.participants.includes(msg.sender)) {
+                                    history.participants.push(msg.sender);
+                                }
+                            });
+                        }
+                    }
+
+                    // Calculate duration (if first and last timestamps available)
+                    if (room.created && room.lastActivity) {
+                        history.duration = Math.round((room.lastActivity - room.created) / 60000); // minutes
+                    }
+
+                    conversationHistory.push(history);
+                }
+
+                // Sort by last activity (newest first)
+                conversationHistory.sort((a, b) => b.lastActivity - a.lastActivity);
+                filteredHistory = [...conversationHistory];
+
+                updateHistoryStats();
+                renderHistoryTable();
+                populateUserFilter();
+
+            } catch (err) {
+                console.error('Error loading conversation history:', err);
+            }
+        }
+
+        function updateHistoryStats() {
+            const totalConversations = filteredHistory.length;
+            const totalMessages = filteredHistory.reduce((sum, conv) => sum + conv.messageCount, 0);
+            const activeUsers = new Set();
+            filteredHistory.forEach(conv => {
+                conv.participants.forEach(user => activeUsers.add(user));
+            });
+            const avgDuration = filteredHistory.length > 0
+                ? Math.round(filteredHistory.reduce((sum, conv) => sum + conv.duration, 0) / filteredHistory.length)
+                : 0;
+
+            document.getElementById('history-total-conversations').textContent = totalConversations;
+            document.getElementById('history-total-messages').textContent = totalMessages;
+            document.getElementById('history-active-users').textContent = activeUsers.size;
+            document.getElementById('history-avg-duration').textContent = `${avgDuration}m`;
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body');
+
+            if (filteredHistory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <i class="fas fa-comments text-4xl mb-3"></i>
+                            <p>No conversation history found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredHistory.map(conv => `
+                <tr class="table-row border-b border-gray-50">
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-sm font-medium text-indigo-600">${conv.roomId}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-1">
+                            ${conv.participants.map(p => `
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">${p}</span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">${conv.messageCount}</td>
+                    <td class="px-6 py-4 text-gray-600">${conv.duration}m</td>
+                    <td class="px-6 py-4 text-gray-500 text-sm">${formatDate(conv.lastActivity)}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <button onclick="viewConversationDetail('${conv.roomId}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="exportConversation('${conv.roomId}')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Export">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button onclick="deleteConversation('${conv.roomId}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function populateUserFilter() {
+            const select = document.getElementById('history-user-filter');
+            const users = new Set();
+
+            conversationHistory.forEach(conv => {
+                conv.participants.forEach(user => users.add(user));
+            });
+
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">All Users</option>';
+
+            Array.from(users).sort().forEach(user => {
+                select.innerHTML += `<option value="${user}">${user}</option>`;
+            });
+
+            select.value = currentValue;
+        }
+
+        function filterHistoryByUser() {
+            const selectedUser = document.getElementById('history-user-filter').value;
+            applyHistoryFilters();
+        }
+
+        function filterHistoryByDate() {
+            applyHistoryFilters();
+        }
+
+        function applyHistoryFilters() {
+            const selectedUser = document.getElementById('history-user-filter').value;
+            const dateFrom = document.getElementById('history-date-from').value;
+            const dateTo = document.getElementById('history-date-to').value;
+
+            filteredHistory = conversationHistory.filter(conv => {
+                // User filter
+                if (selectedUser && !conv.participants.includes(selectedUser)) {
+                    return false;
+                }
+
+                // Date filters
+                const convDate = new Date(conv.lastActivity);
+                if (dateFrom && convDate < new Date(dateFrom)) {
+                    return false;
+                }
+                if (dateTo && convDate > new Date(dateTo + 'T23:59:59')) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            updateHistoryStats();
+            renderHistoryTable();
+        }
+
+        function clearHistoryFilters() {
+            document.getElementById('history-user-filter').value = '';
+            document.getElementById('history-date-from').value = '';
+            document.getElementById('history-date-to').value = '';
+            filteredHistory = [...conversationHistory];
+            updateHistoryStats();
+            renderHistoryTable();
+        }
+
+        async function viewConversationDetail(roomId) {
+            try {
+                const roomSnap = await get(ref(db, `chats/${roomId}`));
+                const room = roomSnap.val();
+
+                if (!room) {
+                    alert('Conversation not found');
+                    return;
+                }
+
+                // Update modal header
+                document.getElementById('modal-room-id').textContent = roomId;
+                document.getElementById('modal-room-date').textContent = formatDate(room.created || room.lastActivity);
+                document.getElementById('modal-room-duration').textContent = `${Math.round((room.lastActivity - room.created) / 60000)}m`;
+
+                // Get participants
+                const participants = new Set();
+                const messageTypes = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                messageTypes.forEach(type => {
+                    if (room[type]) {
+                        Object.values(room[type]).forEach(msg => {
+                            if (msg.sender) participants.add(msg.sender);
+                        });
+                    }
+                });
+                document.getElementById('modal-room-participants').textContent = Array.from(participants).join(', ');
+
+                // Load messages
+                const messagesContainer = document.getElementById('conversation-messages');
+                const allMessages = [];
+
+                messageTypes.forEach(type => {
+                    if (room[type]) {
+                        Object.entries(room[type]).forEach(([id, msg]) => {
+                            allMessages.push({
+                                ...msg,
+                                id,
+                                type
+                            });
+                        });
+                    }
+                });
+
+                // Sort by timestamp
+                allMessages.sort((a, b) => (a.timestamp || a.created || 0) - (b.timestamp || b.created || 0));
+
+                // Render messages
+                messagesContainer.innerHTML = allMessages.map(msg => `
+                    <div class="flex gap-3 p-3 rounded-lg ${msg.sender === 'teacher' ? 'bg-blue-50' : 'bg-gray-50'}">
+                        <div class="w-8 h-8 ${msg.sender === 'teacher' ? 'bg-blue-500' : 'bg-gray-500'} rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            ${(msg.sender || 'U').charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-medium text-gray-800">${msg.sender || 'Unknown'}</span>
+                                <span class="text-xs text-gray-500">${formatDate(msg.timestamp || msg.created)}</span>
+                                <span class="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">${msg.type}</span>
+                            </div>
+                            <p class="text-gray-700">${msg.text || msg.content || 'No content'}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Show modal
+                document.getElementById('conversation-detail-modal').classList.remove('hidden');
+
+            } catch (err) {
+                console.error('Error loading conversation details:', err);
+                alert('Failed to load conversation details');
+            }
+        }
+
+        function closeConversationModal() {
+            document.getElementById('conversation-detail-modal').classList.add('hidden');
+        }
+
+        async function exportConversation(roomId) {
+            try {
+                const roomSnap = await get(ref(db, `chats/${roomId}`));
+                const room = roomSnap.val();
+
+                if (!room) {
+                    alert('Conversation not found');
+                    return;
+                }
+
+                // Create export data
+                const exportData = {
+                    roomId,
+                    exported: new Date().toISOString(),
+                    created: room.created,
+                    lastActivity: room.lastActivity,
+                    messages: []
+                };
+
+                const messageTypes = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                messageTypes.forEach(type => {
+                    if (room[type]) {
+                        Object.entries(room[type]).forEach(([id, msg]) => {
+                            exportData.messages.push({
+                                id,
+                                type,
+                                sender: msg.sender,
+                                text: msg.text || msg.content,
+                                timestamp: msg.timestamp || msg.created
+                            });
+                        });
+                    }
+                });
+
+                // Sort messages by timestamp
+                exportData.messages.sort((a, b) => a.timestamp - b.timestamp);
+
+                // Download as JSON
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `conversation-${roomId}-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+            } catch (err) {
+                console.error('Error exporting conversation:', err);
+                alert('Failed to export conversation');
+            }
+        }
+
+        async function deleteConversation(roomId) {
+            if (!confirm(`Are you sure you want to delete conversation ${roomId}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await remove(ref(db, `chats/${roomId}`));
+                await loadConversationHistory();
+                alert('Conversation deleted successfully');
+            } catch (err) {
+                console.error('Error deleting conversation:', err);
+                alert('Failed to delete conversation');
             }
         }
 
@@ -1420,6 +1939,15 @@
         window.deleteUser = deleteUser;
         window.editRole = editRole;
         window.deleteRole = deleteRole;
+        window.loadConversationHistory = loadConversationHistory;
+        window.filterHistoryByUser = filterHistoryByUser;
+        window.filterHistoryByDate = filterHistoryByDate;
+        window.clearHistoryFilters = clearHistoryFilters;
+        window.viewConversationDetail = viewConversationDetail;
+        window.closeConversationModal = closeConversationModal;
+        window.exportConversation = exportConversation;
+        window.deleteConversation = deleteConversation;
     </script>
 </body>
+
 </html>

@@ -565,7 +565,7 @@
         // --- CREDENTIALS ---
         const CREDENTIALS = {
             DEEPGRAM: "11ee938d032ce7c36c6fa82338274be5e4ada847",
-            CARTESIA: "sk_car_yWEX9Mp2LwKju8FXyosGhj",
+            CARTESIA: "sk_car_H2XSssatfTozduzns3FMfT",
             CARTESIA_VOICES: {
                 "en": "cbaf8084-f009-4838-a096-07ee2e6612b1", // Cathy
                 "hi": "faf0731e-dfb9-4cfc-8119-259a79b27e12", // Riya
@@ -579,7 +579,7 @@
                 "ta": "25d2c432-139c-4035-bfd6-9baaabcdd006", // Kavya
                 "te": "07bc462a-c644-49f1-baf7-82d5599131be", // Sindhu
                 "vls": "005af375-5aad-4c02-9551-7fc411430542", // West Flemish
-                "default": "cbaf8084-f009-4838-a096-07ee2e6612b1"
+                "default": "eded3658-4f70-4420-b021-1e70e14a8203", // Default fallback
             },
             FIREBASE: {
                 apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
@@ -1088,7 +1088,7 @@
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            "model_id": "sonic-3-latest",
+                            "model_id": "sonic-3",
                             "transcript": transcript,
                             "voice": { "mode": "id", "id": voiceId },
                             "output_format": { "container": "wav", "encoding": "pcm_f32le", "sample_rate": 44100 }
