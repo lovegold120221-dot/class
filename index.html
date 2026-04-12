@@ -605,28 +605,7 @@
         const CREDENTIALS = {
             DEEPGRAM: "11ee938d032ce7c36c6fa82338274be5e4ada847",
             CARTESIA: "sk_car_H2XSssatfTozduzns3FMfT",
-            CARTESIA_VOICES: {
-                // Multilingual voice (supports 29+ languages automatically)
-                "multilingual": "a0e99841-438c-4a64-b679-ae501e7d6091", // Barbershop Man - Multilingual
-
-                // Language-specific voices (optional overrides)
-                "en": "cbaf8084-f009-4838-a096-07ee2e6612b1", // Cathy
-                "hi": "faf0731e-dfb9-4cfc-8119-259a79b27e12", // Riya
-                "es": "5c5ad5e7-1020-476b-8b91-fdcbe9cc313c", // Daniela
-                "de": "38aabb6a-f52b-4fb0-a3d1-988518f4dc06", // Alina
-                "ar": "002622d8-19d0-4567-a16a-f99c7397c062", // Huda
-                "fr": "a8a1eb38-5f15-4c1d-8722-7ac0f329727d", // Calm French Woman
-                "ko": "304fdbd8-65e6-40d6-ab78-f9d18b9efdf9", // Jihyun
-                "ja": "2b568345-1d48-4047-b25f-7baccf842eb0", // Yumiko
-                "pt": "700d1ee3-a641-4018-ba6e-899dcadc9e2b", // Luana
-                "ta": "25d2c432-139c-4035-bfd6-9baaabcdd006", // Kavya
-                "te": "07bc462a-c644-49f1-baf7-82d5599131be", // Sindhu
-                "nl": "9e8db62d-056f-47f3-b3b6-1b05767f9176", // Dutch
-                "nl-BE": "9e8db62d-056f-47f3-b3b6-1b05767f9176", // Flemish
-
-                // Default to multilingual voice for all other languages
-                "default": "eded3658-4f70-4420-b021-1e70e14a8203" // Default fallback
-            },
+            CARTESIA_VOICE: "eded3658-4f70-4420-b021-1e70e14a8203",
             CARTESIA_PDICT: {
                 "nl-BE": "pdict_TPgLmfbAo9pQoorcetVez8" // Flemish pronunciation
             },
@@ -841,6 +820,17 @@
                 this.app = initializeApp(CREDENTIALS.FIREBASE);
                 this.db = getDatabase(this.app);
 
+                this.audioCtx = null;
+                this._dgAttempt = 0;        // teacher Deepgram reconnect counter
+                this.seenKeys = new Set();  // deduplicates Firebase onChildAdded replays
+
+                // Keep AudioContext running when tab goes to background
+                document.addEventListener('visibilitychange', () => {
+                    if (document.visibilityState === 'visible' && this.audioCtx?.state === 'suspended') {
+                        this.audioCtx.resume();
+                    }
+                });
+
                 this.state = {
                     role: null,
                     room: '',
@@ -859,20 +849,24 @@
                 this.mediaRecorder = null;
                 this.wakeLock = null;
 
-                // Audio constraints for voice focus and noise cancellation
+                // Audio constraints for voice focus, noise cancellation, and loopback prevention
                 this.audioConstraints = {
                     audio: {
                         echoCancellation: { ideal: true },
                         noiseSuppression: { ideal: true },
                         autoGainControl: { ideal: true },
+                        // Ask the browser to suppress locally-played audio from the mic feed
+                        // (Chrome 109+ / Edge 109+; safely ignored on unsupported browsers)
+                        suppressLocalAudioPlayback: { ideal: true },
                         // Voice isolation (Chrome 116+)
                         voiceIsolation: { ideal: true },
-                        // Optimize for speech
                         channelCount: { ideal: 1 },
                         sampleRate: { ideal: 16000 },
                         sampleSize: { ideal: 16 }
                     }
                 };
+
+                this.teacherStream = null;
 
                 // Student mic/request flow state
                 this.student = {
@@ -883,12 +877,16 @@
                     chatRequestPending: false,
                     chatApproved: false,
 
+                    dgClient: null,
+                    dgSocket: null,
+                    _dgAttempt: 0,
                     recognition: null,
                     mediaRecorder: null,
                     mediaStream: null,
                     audioChunks: [],
                     finalParts: [],
-                    lastInterim: ''
+                    lastInterim: '',
+                    lastSentiment: null   // tracks latest Deepgram sentiment for submission
                 };
 
                 this.bindAll();
@@ -907,6 +905,7 @@
 
             clearState() {
                 localStorage.removeItem('orbit_session');
+                this.seenKeys.clear();
             }
 
             bindAll() {
@@ -1310,6 +1309,7 @@
                 const aRef = ref(this.db, `chats/${this.state.room}/approvedSpeakers`);
                 onChildAdded(aRef, async (snap) => {
                     if (this.state.role !== 'student') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const a = snap.val();
                     if (!a) return;
 
@@ -1335,6 +1335,7 @@
                 const aRef = ref(this.db, `chats/${this.state.room}/approvedChat`);
                 onChildAdded(aRef, async (snap) => {
                     if (this.state.role !== 'student') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const a = snap.val();
                     if (!a) return;
 
@@ -1376,6 +1377,8 @@
                         textForTeacher = await this.translateText(val, this.state.lang, teacherLang);
                     }
 
+                    const emotion = this.detectEmotion(val, null);
+
                     await push(ref(this.db, `chats/${this.state.room}/studentChats`), {
                         senderName: this.state.name,
                         senderId: this.state.name,
@@ -1383,6 +1386,7 @@
                         text: val,
                         teacherLang: teacherLang || null,
                         textForTeacher: textForTeacher || null,
+                        emotion: emotion || null,
                         timestamp: Date.now()
                     });
 
@@ -1411,60 +1415,77 @@
                         try { this.wakeLock = await navigator.wakeLock.request('screen'); } catch (_) { }
                     }
 
-                    // Start Web Speech API
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    if (!SpeechRecognition) throw new Error("Web Speech API not supported");
+                    // --- Deepgram STT (primary) ---
+                    this.student._dgAttempt = 0;
+                    let deepgramOk = false;
+                    try {
+                        this.student.dgClient = createClient(CREDENTIALS.DEEPGRAM);
+                        await this._studentDgOpen();
+                        deepgramOk = true;
+                    } catch (dgErr) {
+                        console.warn('Student Deepgram unavailable, falling back to Web Speech:', dgErr);
+                        try { this.student.dgSocket?.finish(); } catch (_) { }
+                        this.student.dgSocket = null;
+                    }
 
-                    this.student.recognition = new SpeechRecognition();
-                    this.student.recognition.continuous = true;
-                    this.student.recognition.interimResults = true;
-                    this.student.recognition.lang = this.state.lang || 'en';
-
-                    // MediaRecorder for audio capture
+                    // --- MediaRecorder: captures audio for submission + feeds Deepgram ---
                     const options = {};
                     try { options.mimeType = 'audio/webm'; } catch (_) { }
                     this.student.mediaRecorder = new MediaRecorder(this.student.mediaStream, options);
-
                     this.student.mediaRecorder.ondataavailable = (e) => {
                         if (e.data && e.data.size > 0) {
+                            // Always collect chunks for audio submission to teacher
                             this.student.audioChunks.push(e.data);
-                        }
-                    };
-
-                    this.student.recognition.onresult = (event) => {
-                        let interim = '';
-                        for (let i = event.resultIndex; i < event.results.length; i++) {
-                            const transcript = event.results[i][0].transcript;
-                            if (event.results[i].isFinal) {
-                                // Clean up periods after okey/ok for Dutch, and replace all periods with commas
-                                let cleaned = transcript.replace(/\b(oké|oke|ok|okay)\.\s*/gi, '$1 ').trim();
-                                cleaned = cleaned.replace(/\./g, ',');  // Replace periods with commas
-                                this.student.finalParts.push(cleaned);
-                            } else {
-                                interim = transcript;
+                            // Block STT pipe while TTS is playing — audio chunks during
+                            // playback contain speaker output, not the student's voice
+                            if (!this.state.isAudioPlaying && this.student.dgSocket?.getReadyState() === 1) {
+                                this.student.dgSocket.send(e.data);
                             }
                         }
-                        this.student.lastInterim = interim;
                     };
 
-                    this.student.recognition.onerror = (event) => {
-                        if (event.error !== 'no-speech') {
-                            console.error('Student speech error:', event.error);
-                        }
-                    };
+                    // --- Web Speech fallback (only if Deepgram unavailable) ---
+                    if (!deepgramOk) {
+                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        if (!SpeechRecognition) throw new Error("No STT available");
 
-                    this.student.recognition.onend = () => {
-                        // Restart if still recording (continuous mode workaround)
-                        if (this.student.recording && this.student.recognition) {
-                            try { this.student.recognition.start(); } catch (_) { }
-                        }
-                    };
+                        this.student.recognition = new SpeechRecognition();
+                        this.student.recognition.continuous = true;
+                        this.student.recognition.interimResults = true;
+                        this.student.recognition.lang = this.state.lang || 'en';
+
+                        this.student.recognition.onresult = (event) => {
+                            if (this.state.isAudioPlaying) return;
+                            let interim = '';
+                            for (let i = event.resultIndex; i < event.results.length; i++) {
+                                const transcript = event.results[i][0].transcript;
+                                if (event.results[i].isFinal) {
+                                    let cleaned = transcript.replace(/\b(oké|oke|ok|okay)\.\s*/gi, '$1 ').trim();
+                                    cleaned = cleaned.replace(/\./g, ',');
+                                    this.student.finalParts.push(cleaned);
+                                } else {
+                                    interim = transcript;
+                                }
+                            }
+                            this.student.lastInterim = interim;
+                        };
+
+                        this.student.recognition.onerror = (event) => {
+                            if (event.error !== 'no-speech') console.error('Student speech error:', event.error);
+                        };
+
+                        this.student.recognition.onend = () => {
+                            if (this.student.recording && this.student.recognition) {
+                                try { this.student.recognition.start(); } catch (_) { }
+                            }
+                        };
+
+                        this.student.recognition.start();
+                    }
 
                     this.student.mediaRecorder.start(250);
-                    this.student.recognition.start();
                     this.student.recording = true;
                     this.updateStudentMicButton();
-
                     this.showToast("Recording...", "info");
                 } catch (e) {
                     await this.stopStudentCapture(false);
@@ -1473,7 +1494,13 @@
             }
 
             async stopStudentCapture(submit = true) {
-                // Stop speech recognition
+                // Stop Deepgram socket
+                this.student._dgAttempt = 0;
+                try { if (this.student.dgSocket) this.student.dgSocket.finish(); } catch (_) { }
+                this.student.dgSocket = null;
+                this.student.dgClient = null;
+
+                // Stop Web Speech fallback
                 try { if (this.student.recognition) this.student.recognition.stop(); } catch (_) { }
 
                 // Stop recorder first (to flush last chunk)
@@ -1509,6 +1536,7 @@
                 this.student.audioChunks = [];
                 this.student.finalParts = [];
                 this.student.lastInterim = '';
+                this.student.lastSentiment = null;
 
                 // If submit requested, push to Firebase
                 if (submit) {
@@ -1535,6 +1563,8 @@
                                 audioBase64 = await this.blobToBase64(blob);
                             }
 
+                            const emotion = this.detectEmotion(finalText, this.student.lastSentiment);
+
                             await push(ref(this.db, `chats/${this.state.room}/studentResponses`), {
                                 senderName: this.state.name,
                                 senderId: this.state.name,
@@ -1544,6 +1574,7 @@
                                 textForTeacher: textForTeacher || null,
                                 audioMimeType: mimeType,
                                 audioBase64: audioBase64 || null,
+                                emotion: emotion || null,
                                 timestamp: Date.now()
                             });
 
@@ -1593,6 +1624,7 @@
                 const msgsRef = ref(this.db, `chats/${this.state.room}/messages`);
                 onChildAdded(msgsRef, async (snap) => {
                     if (this.state.role !== 'student') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const msg = snap.val();
                     if (!msg) return;
 
@@ -1604,12 +1636,19 @@
 
                     // TTS Queue - ONLY FOR STUDENTS HEARING TEACHER
                     if (this.state.isTTSActive && msg.senderId !== this.state.name) {
-                        this.queueAudio(translated, msg.gender || 'Female');
+                        this.queueAudio(translated, msg.gender || 'Female', msg.emotion || null);
                     }
                 });
             }
 
             toggleTTS() {
+                // AudioContext must be created/resumed inside a user gesture
+                if (!this.audioCtx) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                } else if (this.audioCtx.state === 'suspended') {
+                    this.audioCtx.resume();
+                }
+
                 this.state.isTTSActive = !this.state.isTTSActive;
 
                 // Update Student UI
@@ -1658,8 +1697,41 @@
                 }
             }
 
-            queueAudio(text, gender) {
-                this.state.audioQueue.push({ text, gender });
+            // Derive Cartesia emotion from Deepgram sentiment + text prosody cues.
+            // dgAlt is data.channel.alternatives[0] from Deepgram (may be null for Web Speech).
+            // Returns a Cartesia emotion string like "positivity:high" or null for neutral.
+            detectEmotion(text, dgAlt) {
+                const sentiment = dgAlt?.sentiment || 'neutral';
+                const score = parseFloat(dgAlt?.sentiment_score ?? 0.5);
+                const t = (text || '').trim();
+                const excl = (t.match(/!/g) || []).length;
+                const hasQuestion = t.endsWith('?');
+                const hasAllCaps = /\b[A-Z]{3,}\b/.test(text || '');
+
+                if (sentiment === 'positive') {
+                    const level = (score > 0.8 || excl > 1) ? 'high' : score > 0.55 ? 'medium' : 'low';
+                    return `positivity:${level}`;
+                }
+
+                if (sentiment === 'negative') {
+                    if (excl > 0 || hasAllCaps) return `anger:${score > 0.75 ? 'high' : 'medium'}`;
+                    return `sadness:${score > 0.7 ? 'medium' : 'low'}`;
+                }
+
+                // Neutral — fall back to text-only prosody cues
+                if (hasQuestion) return 'curiosity:medium';
+                if (excl > 1) return 'surprise:medium';
+                if (excl === 1) return 'positivity:low';
+                if (hasAllCaps) return 'anger:low';
+
+                return null; // pure neutral — no emotion tag
+            }
+
+            queueAudio(text, gender, emotion = null) {
+                // Hard cap: if the queue is already full (e.g. a Firebase reconnect
+                // flood), drop new items rather than letting the backlog grow unbounded.
+                if (this.state.audioQueue.length >= 4) return;
+                this.state.audioQueue.push({ text, gender, emotion });
                 if (this.state.isTTSActive) this.processAudioQueue();
             }
 
@@ -1670,14 +1742,8 @@
                 const item = this.state.audioQueue.shift();
 
                 try {
-                    const lang = this.state.lang;
-                    const baseLang = lang.split('-')[0];
-                    const voiceId = CREDENTIALS.CARTESIA_VOICES[lang] ||
-                        CREDENTIALS.CARTESIA_VOICES[baseLang] ||
-                        CREDENTIALS.CARTESIA_VOICES["default"];
-
-                    // Add emotion tag
-                    const transcript = `<emotion value="neutral" />${item.text}`;
+                    const emotionTag = item.emotion ? `<emotion name="${item.emotion}" />` : '';
+                    const transcript = `${emotionTag}${item.text}`;
 
                     const res = await fetch("https://api.cartesia.ai/tts/bytes", {
                         method: "POST",
@@ -1689,24 +1755,26 @@
                         body: JSON.stringify({
                             "model_id": "sonic-3",
                             "transcript": transcript,
-                            "voice": { "mode": "id", "id": voiceId },
+                            "voice": { "mode": "id", "id": CREDENTIALS.CARTESIA_VOICE },
                             "output_format": { "container": "wav", "encoding": "pcm_f32le", "sample_rate": 44100 },
-                            "language": baseLang,
                             "speed": "normal",
-                            ...(CREDENTIALS.CARTESIA_PDICT[lang] ? { "pronunciation_dict_id": CREDENTIALS.CARTESIA_PDICT[lang] } : {}),
                             "generation_config": { "speed": 1, "volume": 1 }
                         })
                     });
 
                     if (res.ok) {
-                        const blob = await res.blob();
-                        const url = URL.createObjectURL(blob);
-                        const audio = new Audio(url);
-                        audio.onended = () => {
+                        // Use Web Audio API so playback continues in background tabs
+                        const arrayBuffer = await res.arrayBuffer();
+                        if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
+                        const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+                        const source = this.audioCtx.createBufferSource();
+                        source.buffer = audioBuffer;
+                        source.connect(this.audioCtx.destination);
+                        source.onended = () => {
                             this.state.isAudioPlaying = false;
                             this.processAudioQueue();
                         };
-                        audio.play();
+                        source.start(0);
                     } else {
                         this.state.isAudioPlaying = false;
                     }
@@ -1748,6 +1816,7 @@
                 const qRef = ref(this.db, `chats/${this.state.room}/questions`);
                 onChildAdded(qRef, async (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const q = snap.val();
                     if (!q) return;
 
@@ -1763,7 +1832,7 @@
 
                     // TEACHER TTS
                     if (this.state.isTTSActive) {
-                        this.queueAudio(trans, 'Female');
+                        this.queueAudio(trans, 'Female', q.emotion || null);
                     }
                 });
 
@@ -1771,6 +1840,7 @@
                 const rRef = ref(this.db, `chats/${this.state.room}/requests`);
                 onChildAdded(rRef, async (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const req = snap.val();
                     if (!req) return;
 
@@ -1791,6 +1861,7 @@
                 const hRef = ref(this.db, `chats/${this.state.room}/handRaises`);
                 onChildAdded(hRef, async (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const req = snap.val();
                     if (!req) return;
 
@@ -1810,6 +1881,7 @@
                 const sRef = ref(this.db, `chats/${this.state.room}/studentResponses`);
                 onChildAdded(sRef, async (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const resp = snap.val();
                     if (!resp) return;
 
@@ -1828,7 +1900,7 @@
                     this.incrementQuestionCount();
 
                     if (this.state.isTTSActive) {
-                        this.queueAudio(teacherText, 'Female');
+                        this.queueAudio(teacherText, 'Female', resp.emotion || null);
                     }
                 });
 
@@ -1836,6 +1908,7 @@
                 const cRef = ref(this.db, `chats/${this.state.room}/studentChats`);
                 onChildAdded(cRef, async (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const resp = snap.val();
                     if (!resp) return;
 
@@ -1852,7 +1925,7 @@
                     this.incrementQuestionCount();
 
                     if (this.state.isTTSActive) {
-                        this.queueAudio(teacherText, 'Female');
+                        this.queueAudio(teacherText, 'Female', resp.emotion || null);
                     }
                 });
 
@@ -1860,6 +1933,7 @@
                 const studentsRef = ref(this.db, `chats/${this.state.room}/students`);
                 onChildAdded(studentsRef, (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const student = snap.val();
                     if (!student) return;
                     this.renderStudentListItem(student);
@@ -1870,6 +1944,7 @@
                 const reactionsRef = ref(this.db, `chats/${this.state.room}/reactions`);
                 onChildAdded(reactionsRef, (snap) => {
                     if (this.state.role !== 'teacher') return;
+                    if (this.seenKeys.has(snap.key)) return; this.seenKeys.add(snap.key);
                     const reaction = snap.val();
                     if (!reaction) return;
                     this.addNotification(reaction.emoji, reaction.senderName, reaction.timestamp);
@@ -2217,58 +2292,246 @@
             }
 
             async startWebSpeech() {
-                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SpeechRecognition) throw new Error("Web Speech API not supported");
+                const stream = await navigator.mediaDevices.getUserMedia(this.audioConstraints);
+                this.teacherStream = stream;
+                this._dgAttempt = 0;
 
-                // Wake Lock
                 if ('wakeLock' in navigator) {
-                    try { this.wakeLock = await navigator.wakeLock.request('screen'); } catch (e) { }
+                    try { this.wakeLock = await navigator.wakeLock.request('screen'); } catch (_) { }
                 }
 
-                this.recognition = new SpeechRecognition();
-                this.recognition.continuous = true;
-                this.recognition.interimResults = true;
-                this.recognition.lang = this.state.lang || 'en';
+                // --- Deepgram STT (primary) ---
+                let deepgramOk = false;
+                try {
+                    this.dgClient = createClient(CREDENTIALS.DEEPGRAM);
+                    await this._teacherDgOpen(stream);
+                    deepgramOk = true;
+                } catch (dgErr) {
+                    console.warn('Teacher Deepgram unavailable, falling back to Web Speech:', dgErr);
+                    try { this.dgSocket?.finish(); } catch (_) { }
+                    this.dgSocket = null;
+                    try { if (this.mediaRecorder?.state !== 'inactive') this.mediaRecorder?.stop(); } catch (_) { }
+                    this.mediaRecorder = null;
+                }
 
-                this.recognition.onresult = (event) => {
-                    let interim = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        const transcript = event.results[i][0].transcript;
-                        if (event.results[i].isFinal) {
-                            // Clean up periods after okey/ok for Dutch, and replace all periods with commas
-                            let cleaned = transcript.replace(/\b(oké|oke|ok|okay)\.\s*/gi, '$1 ').trim();
-                            cleaned = cleaned.replace(/\./g, ',');  // Replace periods with commas
-                            this.broadcastMessage(cleaned);
-                        } else {
-                            interim = transcript;
+                // --- Web Speech fallback ---
+                if (!deepgramOk) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRecognition) throw new Error("No STT available");
+
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = true;
+                    this.recognition.interimResults = true;
+                    this.recognition.lang = this.state.lang || 'en';
+
+                    this.recognition.onresult = (event) => {
+                        // Discard results while TTS is playing — Web Speech has no hardware
+                        // loopback guard so it will transcribe whatever the speaker outputs
+                        if (this.state.isAudioPlaying) return;
+                        let interim = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            const transcript = event.results[i][0].transcript;
+                            if (event.results[i].isFinal) {
+                                let cleaned = transcript.replace(/\b(oké|oke|ok|okay)\.\s*/gi, '$1 ').trim();
+                                cleaned = cleaned.replace(/\./g, ',');
+                                const emotion = this.detectEmotion(transcript, null);
+                                this.broadcastMessage(cleaned, emotion);
+                            } else {
+                                interim = transcript;
+                            }
                         }
+                        const ui = document.getElementById('teacher-transcript');
+                        if (interim && ui) ui.innerText = interim;
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        if (event.error !== 'no-speech') console.error('Speech error:', event.error);
+                    };
+
+                    this.recognition.onend = () => {
+                        if (this.state.isMicActive && this.recognition) {
+                            try { this.recognition.start(); } catch (_) { }
+                        }
+                    };
+
+                    this.recognition.start();
+                }
+            }
+
+            // Create (or recreate) the teacher Deepgram socket and wire all handlers.
+            // Called on initial connect and on every reconnect attempt.
+            async _teacherDgOpen(stream) {
+                try { if (this.dgSocket) this.dgSocket.finish(); } catch (_) { }
+                try { if (this.mediaRecorder?.state !== 'inactive') this.mediaRecorder?.stop(); } catch (_) { }
+
+                const baseLang = (this.state.lang || 'en').split('-')[0];
+                this.dgSocket = this.dgClient.listen.live({
+                    model: 'nova-3',
+                    language: baseLang,
+                    smart_format: true,
+                    interim_results: true,
+                    punctuate: true,
+                    sentiment: true,
+                });
+
+                await new Promise((resolve, reject) => {
+                    const t = setTimeout(() => reject(new Error('timeout')), 5000);
+                    this.dgSocket.on(LiveTranscriptionEvents.Open, () => { clearTimeout(t); resolve(); });
+                    this.dgSocket.on(LiveTranscriptionEvents.Error, (e) => { clearTimeout(t); reject(e); });
+                });
+
+                this.mediaRecorder = new MediaRecorder(stream);
+                this.mediaRecorder.ondataavailable = (e) => {
+                    // Block mic feed to STT while speaker audio is playing to prevent loopback
+                    if (this.state.isAudioPlaying) return;
+                    if (e.data.size > 0 && this.dgSocket?.getReadyState() === 1) {
+                        this.dgSocket.send(e.data);
                     }
-                    // Live UI Update
+                };
+                this.mediaRecorder.start(250);
+
+                this.dgSocket.on(LiveTranscriptionEvents.Transcript, (data) => {
+                    const alt = data.channel?.alternatives?.[0];
+                    const text = alt?.transcript || '';
                     const ui = document.getElementById('teacher-transcript');
-                    if (interim) ui.innerText = interim;
-                };
-
-                this.recognition.onerror = (event) => {
-                    if (event.error !== 'no-speech') {
-                        console.error('Speech error:', event.error);
+                    if (data.is_final && text.trim()) {
+                        let cleaned = text.replace(/\b(oké|oke|ok|okay)\.\s*/gi, '$1 ').trim();
+                        cleaned = cleaned.replace(/\./g, ',');
+                        const emotion = this.detectEmotion(text, alt);
+                        this.broadcastMessage(cleaned, emotion);
+                        if (ui) ui.innerText = '';
+                    } else if (!data.is_final && text && ui) {
+                        ui.innerText = text;
                     }
-                };
+                });
 
-                this.recognition.onend = () => {
-                    // Restart if still active (continuous mode workaround)
-                    if (this.state.isMicActive && this.recognition) {
-                        try { this.recognition.start(); } catch (_) { }
+                this.dgSocket.on(LiveTranscriptionEvents.Error, (err) => {
+                    console.error('Teacher Deepgram error:', err);
+                });
+
+                // Auto-reconnect on unexpected close
+                this.dgSocket.on(LiveTranscriptionEvents.Close, () => {
+                    if (!this.state.isMicActive || !this.teacherStream) return;
+                    this._teacherDgReconnect(stream);
+                });
+            }
+
+            // Exponential-backoff reconnect for the teacher Deepgram socket.
+            _teacherDgReconnect(stream) {
+                this._dgAttempt++;
+                if (this._dgAttempt > 5) {
+                    this.showToast("Transcription lost — please restart mic", "error");
+                    this.state.isMicActive = false;
+                    this.updateMicUI(false);
+                    return;
+                }
+                const delay = Math.min(500 * Math.pow(2, this._dgAttempt), 16000); // 1s → 2s → 4s → 8s → 16s
+                this.showToast(`Mic reconnecting (${this._dgAttempt}/5)…`, "info");
+                setTimeout(async () => {
+                    if (!this.state.isMicActive || !this.teacherStream) return;
+                    try {
+                        await this._teacherDgOpen(stream);
+                        this._dgAttempt = 0;
+                        this.showToast("Mic reconnected", "success");
+                    } catch (err) {
+                        console.error('Teacher DG reconnect attempt failed:', err);
+                        this._teacherDgReconnect(stream);
                     }
-                };
-
-                this.recognition.start();
+                }, delay);
             }
 
             stopWebSpeech() {
-                try { if (this.recognition) this.recognition.stop(); } catch (_) { }
-                try { if (this.wakeLock) this.wakeLock.release(); } catch (_) { }
+                this._dgAttempt = 0;
 
+                // Stop Deepgram
+                try { if (this.mediaRecorder?.state !== 'inactive') this.mediaRecorder?.stop(); } catch (_) { }
+                try { if (this.dgSocket) this.dgSocket.finish(); } catch (_) { }
+                this.dgSocket = null;
+                this.mediaRecorder = null;
+
+                // Stop teacher mic stream
+                try { if (this.teacherStream) this.teacherStream.getTracks().forEach(t => t.stop()); } catch (_) { }
+                this.teacherStream = null;
+
+                // Stop Web Speech fallback
+                try { if (this.recognition) this.recognition.stop(); } catch (_) { }
                 this.recognition = null;
+
+                // Release wake lock
+                try { if (this.wakeLock) this.wakeLock.release(); } catch (_) { }
+                this.wakeLock = null;
+            }
+
+            // Create (or recreate) the student Deepgram socket and wire all handlers.
+            // The MediaRecorder is already running and feeds chunks via ondataavailable,
+            // so only the socket needs to be replaced on reconnect.
+            async _studentDgOpen() {
+                try { if (this.student.dgSocket) this.student.dgSocket.finish(); } catch (_) { }
+
+                const baseLang = (this.state.lang || 'en').split('-')[0];
+                this.student.dgSocket = this.student.dgClient.listen.live({
+                    model: 'nova-3',
+                    language: baseLang,
+                    smart_format: true,
+                    interim_results: true,
+                    punctuate: true,
+                    sentiment: true,
+                });
+
+                await new Promise((resolve, reject) => {
+                    const t = setTimeout(() => reject(new Error('timeout')), 5000);
+                    this.student.dgSocket.on(LiveTranscriptionEvents.Open, () => { clearTimeout(t); resolve(); });
+                    this.student.dgSocket.on(LiveTranscriptionEvents.Error, (e) => { clearTimeout(t); reject(e); });
+                });
+
+                this.student.dgSocket.on(LiveTranscriptionEvents.Transcript, (data) => {
+                    const alt = data.channel?.alternatives?.[0];
+                    const text = alt?.transcript || '';
+                    if (data.is_final && text.trim()) {
+                        let cleaned = text.replace(/\b(oké|oke|ok|okay)\.\s*/gi, '$1 ').trim();
+                        cleaned = cleaned.replace(/\./g, ',');
+                        this.student.finalParts.push(cleaned);
+                        const score = parseFloat(alt?.sentiment_score ?? 0);
+                        const prev = parseFloat(this.student.lastSentiment?.sentiment_score ?? 0);
+                        if (!this.student.lastSentiment || score > prev) {
+                            this.student.lastSentiment = { sentiment: alt?.sentiment, sentiment_score: score };
+                        }
+                    } else if (!data.is_final) {
+                        this.student.lastInterim = text;
+                    }
+                });
+
+                this.student.dgSocket.on(LiveTranscriptionEvents.Error, (err) => {
+                    console.error('Student Deepgram error:', err);
+                });
+
+                // Auto-reconnect on unexpected close
+                this.student.dgSocket.on(LiveTranscriptionEvents.Close, () => {
+                    if (!this.student.recording) return;
+                    this._studentDgReconnect();
+                });
+            }
+
+            // Exponential-backoff reconnect for the student Deepgram socket.
+            _studentDgReconnect() {
+                this.student._dgAttempt++;
+                if (this.student._dgAttempt > 5) {
+                    // Give up on Deepgram — transcription will continue via Web Speech if available,
+                    // but audio is still being recorded for submission
+                    console.warn('Student Deepgram reconnect limit reached');
+                    return;
+                }
+                const delay = Math.min(500 * Math.pow(2, this.student._dgAttempt), 16000);
+                setTimeout(async () => {
+                    if (!this.student.recording || !this.student.dgClient) return;
+                    try {
+                        await this._studentDgOpen();
+                        this.student._dgAttempt = 0;
+                    } catch (err) {
+                        console.error('Student DG reconnect attempt failed:', err);
+                        this._studentDgReconnect();
+                    }
+                }, delay);
             }
 
             updateMicUI(active) {
@@ -2290,13 +2553,14 @@
                 }
             }
 
-            broadcastMessage(text) {
+            broadcastMessage(text, emotion = null) {
                 push(ref(this.db, `chats/${this.state.room}/messages`), {
                     text: text,
                     lang: this.state.lang,
                     senderName: this.state.name,
-                    senderId: this.state.name, // Simple ID for now
+                    senderId: this.state.name,
                     gender: this.state.gender,
+                    emotion: emotion || null,
                     timestamp: Date.now()
                 });
             }

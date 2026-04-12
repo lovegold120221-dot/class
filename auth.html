@@ -568,25 +568,50 @@
                 }, 500);
             },
 
-            handleTeacherLogin() {
+            async handleTeacherLogin() {
                 const email = document.getElementById('teacher-email').value.trim();
                 const pw = document.getElementById('teacher-pw').value;
                 const lang = document.getElementById('teacher-lang').value;
 
-                // Validate credentials
-                if (email !== "teacher@adahconnect.com" || pw !== "teacher456321") {
+                let authenticated = false;
+                let userName = 'Teacher';
+                let userRole = 'teacher';
+
+                // --- Firebase lookup: find any admin-generated teacher/admin user ---
+                try {
+                    const record = await window._adminUserLookup(email);
+                    if (record && (record.role === 'teacher' || record.role === 'admin')) {
+                        // Generated users: password is their generatedId
+                        if (record.generatedId && pw === record.generatedId) {
+                            authenticated = true;
+                        }
+                        if (authenticated) {
+                            userName = record.name || 'Teacher';
+                            userRole = record.role;
+                            // Increment session count
+                            window._adminUserIncrementSessions(record._key);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Firebase teacher lookup failed, using fallback:', e);
+                }
+
+                // --- Hardcoded fallback credential ---
+                if (!authenticated) {
+                    authenticated = (email === "teacher@adahconnect.com" && pw === "teacher456321");
+                }
+
+                if (!authenticated) {
                     this.showToast("Invalid credentials", "error");
                     return;
                 }
 
-                // Generate room code
+                // Generate room code and save session
                 const roomCode = "RM" + Math.floor(1000 + Math.random() * 9000);
-
-                // Save session and redirect
                 const session = {
-                    role: 'teacher',
+                    role: userRole,
                     room: roomCode,
-                    name: 'Teacher',
+                    name: userName,
                     lang: lang,
                     currentView: 'view-lobby'
                 };
@@ -654,6 +679,49 @@
 
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => Auth.init());
+    </script>
+
+    <!-- Firebase module: exposes admin user lookup helpers to the Auth object above -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const app = initializeApp({
+            apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
+            authDomain: "macx-5feca.firebaseapp.com",
+            databaseURL: "https://macx-5feca-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "macx-5feca",
+            storageBucket: "macx-5feca.appspot.com"
+        });
+        const db = getDatabase(app);
+
+        // Returns the first admin/users record matching the given email,
+        // with the Firebase key attached as _key. Returns null if not found.
+        window._adminUserLookup = async (email) => {
+            const snap = await get(ref(db, 'admin/users'));
+            if (!snap.exists()) return null;
+            let match = null;
+            snap.forEach(child => {
+                const u = child.val();
+                if (u?.email?.toLowerCase() === email.toLowerCase()) {
+                    match = { ...u, _key: child.key };
+                }
+            });
+            return match;
+        };
+
+        // Increments the session counter for a given admin/users key.
+        window._adminUserIncrementSessions = async (key) => {
+            if (!key) return;
+            try {
+                const snap = await get(ref(db, `admin/users/${key}`));
+                if (snap.exists()) {
+                    const u = snap.val();
+                    await set(ref(db, `admin/users/${key}/sessions`), (u.sessions || 0) + 1);
+                    await set(ref(db, `admin/users/${key}/lastActive`), Date.now());
+                }
+            } catch (_) { }
+        };
     </script>
 
 </body>
