@@ -651,6 +651,7 @@
             { code: 'alu', name: 'Alur', flag: '🇨🇬' },
             { code: 'am', name: 'Amharic', flag: '🇪🇹' },
             { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
+            { code: 'ar-MA', name: 'Moroccan Arabic', flag: '🇲🇦' },
             { code: 'hy', name: 'Armenian', flag: '🇦🇲' },
             { code: 'as', name: 'Assamese', flag: '🇮🇳' },
             { code: 'av', name: 'Avar', flag: '🇷🇺' },
@@ -855,6 +856,8 @@
                     role: null,
                     room: '',
                     name: '',
+                    email: '',
+                    teacherId: '',
                     gender: 'Male',
                     lang: 'en',
                     isMicActive: false,      // teacher mic
@@ -918,6 +921,8 @@
                     role: this.state.role,
                     room: this.state.room,
                     name: this.state.name,
+                    email: this.state.email,
+                    teacherId: this.state.teacherId,
                     lang: this.state.lang,
                     currentView: this.state.currentView
                 }));
@@ -1901,6 +1906,8 @@
                     await set(ref(this.db, `chats/${this.state.room}/meta`), {
                         teacherLang: this.state.lang,
                         teacherName: this.state.name,
+                        teacherEmail: this.state.email || '',
+                        teacherId: this.state.teacherId || '',
                         updatedAt: Date.now()
                     });
                 } catch (_) { }
