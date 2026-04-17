@@ -71,106 +71,11 @@
                     <i class="fas fa-exclamation-circle mr-1"></i> Invalid credentials
                 </div>
                 <button type="submit" id="login-btn"
-                    class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition shadow-lg">
+                    class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition shadow-lg mt-4">
                     <i class="fas fa-sign-in-alt mr-2"></i>Sign In
-                </button>
-                <div class="relative my-4">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-200"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">or</span>
-                    </div>
-                </div>
-                <button type="button" onclick="openSignupModal()"
-                    class="w-full py-3 border-2 border-indigo-500 text-indigo-600 rounded-xl font-semibold hover:bg-indigo-50 transition">
-                    <i class="fas fa-user-plus mr-2"></i>Create Account
                 </button>
             </form>
             <p class="text-center text-xs text-gray-400 mt-6">Powered by <span class="font-semibold text-indigo-600">Success Class</span> &amp; <span class="font-semibold text-indigo-600">Eburon AI</span></p>
-        </div>
-    </div>
-
-    <!-- Signup Modal -->
-    <div id="signup-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[110] hidden">
-        <div class="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-            <button onclick="closeSignupModal()" class="absolute top-4 right-4 w-10 h-10 bg-gray-100 rounded-xl hover:bg-gray-200 flex items-center justify-center transition">
-                <i class="fas fa-times text-gray-500"></i>
-            </button>
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <i class="fas fa-user-plus text-white text-2xl"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
-                <p class="text-sm text-gray-500 mt-1">Join Success Class Dashboard</p>
-            </div>
-            <form id="signup-form" onsubmit="window.handleSignup(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
-                    <div class="relative">
-                        <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="signup-name" required placeholder="Enter full name"
-                            class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                    <div class="relative">
-                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="email" id="signup-email" required placeholder="your@email.com"
-                            class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Password *</label>
-                    <div class="relative">
-                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="password" id="signup-password" required placeholder="Min 6 characters" minlength="6"
-                            class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Select Role *</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-                            <input type="radio" name="signup-role" value="user" checked class="w-5 h-5 text-green-600 focus:ring-green-500">
-                            <i class="fas fa-user text-gray-400"></i>
-                            <div>
-                                <span class="font-medium text-gray-700">User</span>
-                                <p class="text-xs text-gray-400">Basic access</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-                            <input type="radio" name="signup-role" value="teacher" class="w-5 h-5 text-green-600 focus:ring-green-500">
-                            <i class="fas fa-chalkboard-teacher text-indigo-500"></i>
-                            <div>
-                                <span class="font-medium text-gray-700">Teacher</span>
-                                <p class="text-xs text-gray-400">Teaching access</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-                            <input type="radio" name="signup-role" value="admin" class="w-5 h-5 text-green-600 focus:ring-green-500">
-                            <i class="fas fa-user-shield text-red-500"></i>
-                            <div>
-                                <span class="font-medium text-gray-700">Admin</span>
-                                <p class="text-xs text-gray-400">Admin access</p>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                <div id="signup-error" class="hidden text-red-500 text-sm text-center py-2 bg-red-50 rounded-lg"></div>
-                <div id="signup-success" class="hidden text-green-600 text-sm text-center py-2 bg-green-50 rounded-lg">
-                    <i class="fas fa-check-circle mr-1"></i> Account created successfully!
-                </div>
-                <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="closeSignupModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
-                        Cancel
-                    </button>
-                    <button type="submit" id="signup-btn" class="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl hover:from-green-600 hover:to-emerald-600 transition shadow-md font-semibold">
-                        <i class="fas fa-user-plus mr-2"></i>Create Account
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -796,23 +701,6 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Roles *</label>
-                        <div class="space-y-2 pl-2">
-                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-                                <input type="checkbox" id="role-admin" value="admin" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
-                                <i class="fas fa-user-shield text-red-500"></i>
-                                <span class="text-gray-700">Admin</span>
-                            </label>
-                            <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl hover:bg-gray-50 cursor-pointer transition">
-                                <input type="checkbox" id="role-teacher" value="teacher" class="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-500">
-                                <i class="fas fa-chalkboard-teacher text-indigo-500"></i>
-                                <span class="text-gray-700">Teacher</span>
-                            </label>
-                        </div>
-                        <p class="text-xs text-gray-400 mt-2 ml-2">Select one or more roles</p>
-                    </div>
-
                     <div id="create-teacher-error" class="hidden text-red-500 text-sm text-center py-2 bg-red-50 rounded-lg"></div>
                     <div id="create-teacher-success" class="hidden text-green-600 text-sm text-center py-2 bg-green-50 rounded-lg">
                         <i class="fas fa-check-circle mr-1"></i> User saved successfully!
@@ -823,7 +711,7 @@
                             Cancel
                         </button>
                         <button type="submit" id="create-teacher-btn" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md font-semibold">
-                            <i class="fas fa-user-plus mr-2"></i>Create
+                            <i class="fas fa-user-plus mr-2"></i>Create Teacher
                         </button>
                     </div>
                 </form>
@@ -831,34 +719,41 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK & Initialization -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, get, set, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
-            authDomain: "macx-5feca.firebaseapp.com",
-            databaseURL: "https://macx-5feca-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "macx-5feca",
-            storageBucket: "macx-5feca.appspot.com"
-        };
+        async function initialize() {
+            try {
+                // Fetch credentials from the separate api.json file
+                const response = await fetch('api.json');
+                const FIREBASE_CONFIG = await response.json();
 
-        const app = initializeApp(FIREBASE_CONFIG);
-        const db = getDatabase(app);
+                const app = initializeApp(FIREBASE_CONFIG);
+                const db = getDatabase(app);
 
-        window.db = db;
-        window.ref = ref;
-        window.get = get;
-        window.set = set;
-        window.push = push;
-        window.remove = remove;
+                window.db = db;
+                window.ref = ref;
+                window.get = get;
+                window.set = set;
+                window.push = push;
+                // Use custom name to avoid native Element.remove() collision which breaks UI features
+                window.firebaseRemove = remove; 
 
-        document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
+                document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
+                
+                // Now safely boot the app
+                if (window.checkAuth) {
+                    window.checkAuth();
+                }
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-red-500 mr-1"></i> Config Error';
+            }
+        }
 
-        updateDateTime();
-        setInterval(updateDateTime, 1000);
-        refreshAll();
+        initialize();
     </script>
 
     <script>
@@ -866,7 +761,7 @@
         const BASE_RATE = 10;
 
         let allTeachers = {};
-        let allConversations =[];
+        let allConversations = [];
         let allInvoices =[];
 
         function updateDateTime() {
@@ -874,6 +769,9 @@
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
+        
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
 
         function showTab(tabName) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
@@ -888,10 +786,12 @@
         }
 
         async function refreshAll() {
+            if (!window.db) return; // Guard until DB finishes load
             await Promise.all([
                 loadTeachers(),
                 loadConversations(),
-                loadInvoices()
+                loadInvoices(),
+                loadTeacherAccounts() // Included from original override
             ]);
             updateStats();
         }
@@ -903,7 +803,7 @@
 
                 const teachersMap = {};
 
-                for (const [roomCode, room] of Object.entries(chats)) {
+                for (const[roomCode, room] of Object.entries(chats)) {
                     const teacherName = room.meta?.teacherName || room.meta?.teacher || 'Unknown';
                     const teacherEmail = room.meta?.teacherEmail || '';
                     const meta = room.meta || {};
@@ -919,7 +819,7 @@
                             students: new Set(),
                             lastActive: 0,
                             roomCodes:[],
-                            rawData: { sessions: 0, messages: 0, students: [] }
+                            rawData: { sessions: 0, messages: 0, students:[] }
                         };
                     }
 
@@ -946,7 +846,7 @@
                     }
                     if (room.questions) {
                         Object.entries(room.questions).forEach(([qId, q]) => {
-                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
+                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages ||[];
                             teachersMap[teacherKey].rawData.messages.push({ id: qId, ...q, type: 'question' });
                         });
                     }
@@ -966,10 +866,6 @@
             } catch (err) {
                 console.error('Error loading teachers:', err);
             }
-        }
-
-        function filterTeachers() {
-            // Not used for card view
         }
 
         async function loadConversations() {
@@ -1470,9 +1366,6 @@
         window.handleLogin = handleLogin;
         window.togglePassword = togglePassword;
         window.logout = logout;
-        window.openSignupModal = openSignupModal;
-        window.closeSignupModal = closeSignupModal;
-        window.handleSignup = handleSignup;
 
         const ADMIN_EMAIL = 'admin@eburon.ai';
         const ADMIN_PASSWORD = 'JoLernout26';
@@ -1517,7 +1410,7 @@
                 try {
                     const snap = await get(ref(db, 'admin/teachers'));
                     const teachers = snap.val() || {};
-                    for (const [id, teacher] of Object.entries(teachers)) {
+                    for (const[id, teacher] of Object.entries(teachers)) {
                         const roles = teacher.roles || (teacher.role ? [teacher.role] :[]);
                         if (roles.includes('admin') && teacher.email === email && teacher.password === password && teacher.active !== false) {
                             isValidUser = true;
@@ -1550,93 +1443,6 @@
             }
         }
 
-        function openSignupModal() {
-            document.getElementById('signup-form').reset();
-            document.getElementById('signup-error').classList.add('hidden');
-            document.getElementById('signup-success').classList.add('hidden');
-            document.getElementById('signup-modal').classList.remove('hidden');
-        }
-
-        function closeSignupModal() {
-            document.getElementById('signup-modal').classList.add('hidden');
-        }
-
-        async function handleSignup(e) {
-            e.preventDefault();
-
-            const name = document.getElementById('signup-name').value.trim();
-            const email = document.getElementById('signup-email').value.trim();
-            const password = document.getElementById('signup-password').value;
-            const role = document.querySelector('input[name="signup-role"]:checked').value;
-
-            const errorDiv = document.getElementById('signup-error');
-            const successDiv = document.getElementById('signup-success');
-            const btn = document.getElementById('signup-btn');
-
-            errorDiv.classList.add('hidden');
-            successDiv.classList.add('hidden');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creating...';
-
-            if (!name || !email || !password) {
-                errorDiv.textContent = 'Please fill in all required fields';
-                errorDiv.classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
-                return;
-            }
-
-            if (password.length < 6) {
-                errorDiv.textContent = 'Password must be at least 6 characters';
-                errorDiv.classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
-                return;
-            }
-
-            try {
-                const snap = await get(ref(db, 'admin/teachers'));
-                const teachers = snap.val() || {};
-                const exists = Object.values(teachers).some(t => t.email === email);
-
-                if (exists) {
-                    errorDiv.textContent = 'An account with this email already exists';
-                    errorDiv.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
-                    return;
-                }
-
-                const roles =[role];
-                const newRef = push(ref(db, 'admin/teachers'));
-                await set(newRef, {
-                    name,
-                    email,
-                    password,
-                    roles,
-                    active: true,
-                    createdAt: Date.now(),
-                    createdBy: 'self_signup'
-                });
-
-                successDiv.classList.remove('hidden');
-                btn.innerHTML = '<i class="fas fa-check mr-2"></i>Created!';
-
-                setTimeout(() => {
-                    closeSignupModal();
-                    successDiv.classList.add('hidden');
-                }, 2000);
-
-            } catch (err) {
-                console.error('Signup error:', err);
-                errorDiv.textContent = 'Failed to create account. Please try again.';
-                errorDiv.classList.remove('hidden');
-            }
-
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Account';
-        }
-
         function logout() {
             if (!confirm('Are you sure you want to logout?')) return;
             sessionStorage.removeItem('dashboard_auth');
@@ -1665,8 +1471,7 @@
                 refreshAll();
             }
         }
-
-        document.addEventListener('DOMContentLoaded', checkAuth);
+        window.checkAuth = checkAuth; // Export for module callback
 
         // Teacher Account Management
         let allTeacherAccounts =[];
@@ -1740,7 +1545,9 @@
                 const snap = await get(ref(db, 'admin/teachers'));
                 const teachers = snap.val() || {};
                 allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
-                renderTeacherAccounts();
+                
+                // Triggers generation for both Card and List views
+                filterUsers();
             } catch (err) {
                 console.error('Error loading teacher accounts:', err);
             }
@@ -2006,158 +1813,15 @@
         }
 
         function getRolesBadges(roles) {
-            if (!roles || roles.length === 0) return getRoleBadge('user');
+            if (!roles || roles.length === 0) return getRoleBadge('teacher');
             return roles.map(role => getRoleBadge(role)).join(' ');
         }
 
         function getHeaderColor(roles) {
-            if (!roles || roles.length === 0) return 'from-gray-500 to-gray-600';
+            if (!roles || roles.length === 0) return 'from-indigo-500 to-purple-500';
             if (roles.includes('admin')) return 'from-red-500 to-rose-600';
             if (roles.includes('teacher')) return 'from-indigo-500 to-purple-500';
             return 'from-gray-500 to-gray-600';
-        }
-
-        function renderTeacherAccounts() {
-            const container = document.getElementById('teachers-cards-container');
-
-            if (allTeacherAccounts.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-20 text-gray-400">
-                        <i class="fas fa-users text-6xl mb-4 opacity-30"></i>
-                        <p class="text-xl mb-2">No users yet</p>
-                        <p class="text-sm">Click "Create User Account" to add one</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = allTeacherAccounts.map(t => {
-                const roles = t.roles || (t.role ? [t.role] :[]);
-                const headerColor = getHeaderColor(roles);
-                const rolesBadges = getRolesBadges(roles);
-
-                return `
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden">
-                    <!-- Header -->
-                    <div class="bg-gradient-to-r ${headerColor} p-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-white font-bold text-2xl">
-                                    ${(t.name || 'U').charAt(0).toUpperCase()}
-                                </div>
-                                <div class="text-white">
-                                    <p class="font-bold text-lg">${t.name || 'Unknown'}</p>
-                                    <p class="text-white/80 text-sm">${t.email || 'No email'}</div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col items-end gap-2">
-                                <div class="flex flex-wrap justify-end gap-1">
-                                    ${rolesBadges}
-                                </div>
-                                <span class="px-3 py-1 bg-white/20 rounded-full text-white text-xs font-semibold">
-                                    ${t.active ? '<i class="fas fa-circle text-green-400 mr-1"></i>Active' : '<i class="fas fa-circle text-gray-400 mr-1"></i>Inactive'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Details -->
-                    <div class="p-4 space-y-2 text-sm">
-                        ${t.company ? `<p class="flex items-center gap-2 text-gray-600"><i class="fas fa-building w-5 text-indigo-400"></i>${t.company}</p>` : ''}
-                        ${t.phone ? `<p class="flex items-center gap-2 text-gray-600"><i class="fas fa-phone w-5 text-indigo-400"></i>${t.phone}</p>` : ''}
-                        ${t.vat ? `<p class="flex items-center gap-2 text-gray-600"><i class="fas fa-file-invoice w-5 text-indigo-400"></i>${t.vat}</p>` : ''}
-                        ${t.address ? `<p class="flex items-center gap-2 text-gray-600"><i class="fas fa-map-marker-alt w-5 text-indigo-400"></i>${t.address}</p>` : ''}
-                        <p class="flex items-center gap-2 text-gray-400 pt-2 border-t"><i class="fas fa-calendar w-5"></i>Created: ${t.createdAt ? formatDate(t.createdAt) : 'Unknown'}</p>
-                    </div>
-                    
-                    <!-- Actions -->
-                    <div class="border-t border-gray-100 p-4 flex gap-2">
-                        <button onclick="viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" 
-                            class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition font-medium text-sm">
-                            <i class="fas fa-history mr-1"></i>History
-                        </button>
-                        <button onclick="editTeacherAccount('${t.id}')" 
-                            class="flex-1 px-3 py-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition font-medium text-sm">
-                            <i class="fas fa-edit mr-1"></i>Edit
-                        </button>
-                        <button onclick="showDeleteConfirm('${t.id}', '${(t.name || 'Unknown').replace(/'/g, "\\'")}')" 
-                            class="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition font-medium text-sm">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `}).join('');
-        }
-
-        function renderTeachersList() {
-            const tbody = document.getElementById('teachers-table-body');
-
-            if (allTeacherAccounts.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-gray-400">
-                            <i class="fas fa-users text-4xl mb-3"></i>
-                            <p class="text-lg">No users yet</p>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = allTeacherAccounts.map(t => {
-                const roles = t.roles || (t.role ? [t.role] :[]);
-                const rolesBadges = getRolesBadges(roles);
-                const displayName = t.name || 'Unknown';
-
-                return `
-                <tr class="border-b border-gray-50 hover:bg-gray-50">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
-                                ${displayName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                                <div class="font-medium text-gray-800">${displayName}</div>
-                                <div class="text-xs text-gray-400">${t.email || 'No email'}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex flex-wrap gap-1">
-                            ${rolesBadges}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-gray-600">
-                        ${t.company || '-'}
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="px-3 py-1 ${t.active !== false ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'} rounded-full text-xs font-medium">
-                            ${t.active !== false ? '<i class="fas fa-circle text-green-400 mr-1" style="font-size:6px;"></i>Active' : '<i class="fas fa-circle text-gray-400 mr-1" style="font-size:6px;"></i>Inactive'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-gray-500 text-sm">
-                        ${t.createdAt ? formatDate(t.createdAt) : '-'}
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex gap-2">
-                            <button onclick="viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="History">
-                                <i class="fas fa-history"></i>
-                            </button>
-                            <button onclick="editTeacherAccount('${t.id}')" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button onclick="showDeleteConfirm('${t.id}', '${displayName.replace(/'/g, "\\'")}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            `}).join('');
-        }
-
-        function renderTeachersCards() {
-            filterUsers();
-            setUserView(currentUserView);
         }
 
         async function createTeacher(e) {
@@ -2170,12 +1834,6 @@
             const phone = document.getElementById('teacher-phone').value.trim();
             const vat = document.getElementById('teacher-vat').value.trim();
             const address = document.getElementById('teacher-address').value.trim();
-
-            const adminChecked = document.getElementById('role-admin').checked;
-            const teacherChecked = document.getElementById('role-teacher').checked;
-            const roles =[];
-            if (adminChecked) roles.push('admin');
-            if (teacherChecked) roles.push('teacher');
 
             const errorDiv = document.getElementById('create-teacher-error');
             const successDiv = document.getElementById('create-teacher-success');
@@ -2196,16 +1854,13 @@
                 return;
             }
 
-            if (roles.length === 0) {
-                errorDiv.textContent = 'Please select at least one role (Admin or Teacher)';
-                errorDiv.classList.remove('hidden');
-                return;
-            }
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
 
             try {
+                // New user is 'teacher' by default, if editing preserve existing roles
+                let userRoles = ['teacher'];
+
                 const teacherData = {
                     name,
                     email,
@@ -2214,7 +1869,6 @@
                     phone,
                     vat,
                     address,
-                    roles,
                     active: true,
                     updatedAt: Date.now()
                 };
@@ -2222,6 +1876,12 @@
                 if (editingTeacherId) {
                     const snap = await get(ref(db, `admin/teachers/${editingTeacherId}`));
                     const existing = snap.val() || {};
+                    
+                    // Preserve existing roles when editing
+                    if (existing.roles && existing.roles.length > 0) {
+                        userRoles = existing.roles;
+                    }
+                    teacherData.roles = userRoles;
                     teacherData.createdAt = existing.createdAt || Date.now();
                     teacherData.createdBy = existing.createdBy || 'admin';
 
@@ -2236,21 +1896,22 @@
                         errorDiv.textContent = 'A user with this email already exists';
                         errorDiv.classList.remove('hidden');
                         btn.disabled = false;
-                        btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create';
+                        btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
                         return;
                     }
 
+                    teacherData.roles = userRoles; // Always ['teacher']
                     teacherData.createdAt = Date.now();
                     teacherData.createdBy = sessionStorage.getItem('dashboard_user') || 'admin';
 
                     const newRef = push(ref(db, 'admin/teachers'));
                     await set(newRef, teacherData);
-                    successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> User created successfully!';
+                    successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Teacher created successfully!';
                 }
 
                 successDiv.classList.remove('hidden');
                 btn.disabled = false;
-                btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create';
+                btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
 
                 await loadTeacherAccounts();
 
@@ -2264,7 +1925,7 @@
                 errorDiv.textContent = 'Failed to save user account. Please try again.';
                 errorDiv.classList.remove('hidden');
                 btn.disabled = false;
-                btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create';
+                btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
             }
         }
 
@@ -2312,14 +1973,16 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
 
             try {
-                await remove(ref(db, `admin/teachers/${pendingDeleteId}`));
-                await loadTeacherAccounts();
+                // Using safely aliased firebaseRemove instead of globally clashing window.remove
+                await window.firebaseRemove(ref(db, `admin/teachers/${pendingDeleteId}`));
+                await loadTeacherAccounts(); // Properly renders list and grid views!
                 closeDeleteModal();
                 showToast('Teacher account deleted');
             } catch (err) {
                 console.error('Error deleting teacher:', err);
                 errorDiv.textContent = 'Failed to delete teacher account';
                 errorDiv.classList.remove('hidden');
+            } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-trash mr-2"></i>Delete';
             }
@@ -2355,10 +2018,6 @@
             document.getElementById('teacher-vat').value = teacher.vat || '';
             document.getElementById('teacher-address').value = teacher.address || '';
 
-            const teacherRoles = teacher.roles || (teacher.role ? [teacher.role] :[]);
-            document.getElementById('role-admin').checked = teacherRoles.includes('admin');
-            document.getElementById('role-teacher').checked = teacherRoles.includes('teacher');
-
             document.getElementById('create-teacher-form').querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Update';
             document.getElementById('create-teacher-modal').classList.remove('hidden');
         }
@@ -2372,20 +2031,11 @@
             document.getElementById('teacher-phone').value = '';
             document.getElementById('teacher-vat').value = '';
             document.getElementById('teacher-address').value = '';
-            document.getElementById('role-admin').checked = false;
-            document.getElementById('role-teacher').checked = false;
             document.getElementById('create-teacher-error').classList.add('hidden');
             document.getElementById('create-teacher-success').classList.add('hidden');
             const btn = document.getElementById('create-teacher-form').querySelector('button[type="submit"]');
-            if (btn) btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create';
+            if (btn) btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
         }
-
-        // Override refreshAll to include teacher accounts
-        const originalRefreshAll = refreshAll;
-        refreshAll = async function() {
-            await originalRefreshAll();
-            await loadTeacherAccounts();
-        };
 
         window.createTeacher = createTeacher;
         window.resetTeacherForm = resetTeacherForm;
