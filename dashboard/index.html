@@ -619,7 +619,7 @@
         </div>
     </div>
 
-    <!-- Create Teacher Modal -->
+    <!-- Create Teacher Modal (No role checkboxes, default sets to Teacher) -->
     <div id="create-teacher-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bill-modal bg-white rounded-3xl w-full max-w-lg mx-4 max-h-[90vh] overflow-hidden">
             <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-5 text-white flex items-center justify-between">
@@ -728,6 +728,11 @@
             try {
                 // Fetch credentials from the separate api.json file
                 const response = await fetch('api.json');
+                
+                if (!response.ok) {
+                    throw new Error("api.json not found or network error. Are you running a local server?");
+                }
+
                 const FIREBASE_CONFIG = await response.json();
 
                 const app = initializeApp(FIREBASE_CONFIG);
@@ -750,6 +755,7 @@
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
                 document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-red-500 mr-1"></i> Config Error';
+                alert("Database Initialization Failed.\nMake sure api.json exists and you are running the file over localhost (http://), not directly (file://).");
             }
         }
 
@@ -761,7 +767,7 @@
         const BASE_RATE = 10;
 
         let allTeachers = {};
-        let allConversations = [];
+        let allConversations =[];
         let allInvoices =[];
 
         function updateDateTime() {
@@ -791,14 +797,14 @@
                 loadTeachers(),
                 loadConversations(),
                 loadInvoices(),
-                loadTeacherAccounts() // Included from original override
+                loadTeacherAccounts()
             ]);
             updateStats();
         }
 
         async function loadTeachers() {
             try {
-                const snap = await get(ref(db, 'chats'));
+                const snap = await window.get(window.ref(window.db, 'chats'));
                 const chats = snap.val() || {};
 
                 const teachersMap = {};
@@ -870,7 +876,7 @@
 
         async function loadConversations() {
             try {
-                const snap = await get(ref(db, 'chats'));
+                const snap = await window.get(window.ref(window.db, 'chats'));
                 const chats = snap.val() || {};
 
                 allConversations = Object.entries(chats).map(([roomCode, room]) => {
@@ -1032,7 +1038,7 @@
 
         async function viewConversationDetail(roomCode) {
             try {
-                const snap = await get(ref(db, `chats/${roomCode}`));
+                const snap = await window.get(window.ref(window.db, `chats/${roomCode}`));
                 const room = snap.val();
 
                 if (!room) return;
@@ -1160,8 +1166,8 @@
             };
 
             try {
-                const newRef = push(ref(db, 'admin/billing/invoices'));
-                await set(newRef, invoice);
+                const newRef = window.push(window.ref(window.db, 'admin/billing/invoices'));
+                await window.set(newRef, invoice);
                 closeBillModal();
                 await loadInvoices();
                 showToast('Invoice saved successfully!');
@@ -1173,7 +1179,7 @@
 
         async function loadInvoices() {
             try {
-                const snap = await get(ref(db, 'admin/billing/invoices'));
+                const snap = await window.get(window.ref(window.db, 'admin/billing/invoices'));
                 allInvoices = snap.val() ? Object.values(snap.val()).sort((a, b) => b.createdAt - a.createdAt) :[];
                 renderInvoices();
                 renderBillingSummary();
@@ -1363,8 +1369,6 @@
         window.resetBilling = resetBilling;
         window.generateInvoice = generateInvoice;
         window.exportAllInvoices = exportAllInvoices;
-        window.handleLogin = handleLogin;
-        window.togglePassword = togglePassword;
         window.logout = logout;
 
         const ADMIN_EMAIL = 'admin@eburon.ai';
@@ -1383,6 +1387,7 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
+        window.togglePassword = togglePassword;
 
         async function handleLogin(e) {
             e.preventDefault();
@@ -1396,20 +1401,24 @@
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
 
-            await new Promise(r => setTimeout(r, 300));
-
             let isValidUser = false;
             let displayName = email;
             isSuperuser = false;
 
-            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                isValidUser = true;
-                isSuperuser = true;
-                displayName = 'Superuser';
-            } else {
-                try {
-                    const snap = await get(ref(db, 'admin/teachers'));
+            try {
+                // If it's not the local master admin, require Firebase DB
+                if (email !== ADMIN_EMAIL) {
+                    if (!window.db || !window.get || !window.ref) {
+                        throw new Error("Database disconnected. Ensure api.json loads properly over a web server.");
+                    }
+                    
+                    // Implement Promise.race to strictly timeout after 8 seconds preventing eternal hang
+                    const fetchPromise = window.get(window.ref(window.db, 'admin/teachers'));
+                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Connection to database timed out.")), 8000));
+                    
+                    const snap = await Promise.race([fetchPromise, timeoutPromise]);
                     const teachers = snap.val() || {};
+                    
                     for (const[id, teacher] of Object.entries(teachers)) {
                         const roles = teacher.roles || (teacher.role ? [teacher.role] :[]);
                         if (roles.includes('admin') && teacher.email === email && teacher.password === password && teacher.active !== false) {
@@ -1419,29 +1428,47 @@
                             break;
                         }
                     }
-                } catch (err) {
-                    console.error('Login error:', err);
+                } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                    // Fast track local override super admin
+                    isValidUser = true;
+                    isSuperuser = true;
+                    displayName = 'Superuser';
                 }
-            }
 
-            if (isValidUser) {
-                isLoggedIn = true;
-                sessionStorage.setItem('dashboard_auth', 'true');
-                sessionStorage.setItem('dashboard_is_superuser', isSuperuser ? 'true' : 'false');
-                sessionStorage.setItem('dashboard_user', email);
-                sessionStorage.setItem('dashboard_display_name', displayName);
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard-content').classList.remove('hidden');
-                const userBadge = isSuperuser ? ' <span class="ml-1 text-xs bg-yellow-400 text-yellow-800 px-2 py-0.5 rounded-full">Superuser</span>' : '';
-                document.getElementById('logged-in-user').innerHTML = displayName + userBadge;
-                refreshAll();
-            } else {
+                if (isValidUser) {
+                    isLoggedIn = true;
+                    sessionStorage.setItem('dashboard_auth', 'true');
+                    sessionStorage.setItem('dashboard_is_superuser', isSuperuser ? 'true' : 'false');
+                    sessionStorage.setItem('dashboard_user', email);
+                    sessionStorage.setItem('dashboard_display_name', displayName);
+                    
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard-content').classList.remove('hidden');
+                    
+                    const userBadge = isSuperuser ? ' <span class="ml-1 text-xs bg-yellow-400 text-yellow-800 px-2 py-0.5 rounded-full">Superuser</span>' : '';
+                    document.getElementById('logged-in-user').innerHTML = displayName + userBadge;
+                    
+                    // Reset the button immediately for clean state on logout
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
+                    
+                    refreshAll();
+                } else {
+                    errorDiv.classList.remove('hidden');
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Invalid email or password';
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
+                }
+
+            } catch (err) {
+                console.error('Login error:', err);
                 errorDiv.classList.remove('hidden');
-                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Invalid email or password';
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> Error: ${err.message}`;
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
             }
         }
+        window.handleLogin = handleLogin;
 
         function logout() {
             if (!confirm('Are you sure you want to logout?')) return;
@@ -1490,17 +1517,17 @@
 
         async function ensureSuperuserInFirebase() {
             try {
-                const snap = await get(ref(db, 'admin/teachers'));
+                const snap = await window.get(window.ref(window.db, 'admin/teachers'));
                 const teachers = snap.val() || {};
 
                 // Check if superuser exists
                 let superuserExists = false;
-                for (const [id, teacher] of Object.entries(teachers)) {
+                for (const[id, teacher] of Object.entries(teachers)) {
                     if (teacher.email === ADMIN_EMAIL) {
                         superuserExists = true;
                         // Update if needed
                         if (!teacher.isSuperuser || !teacher.roles?.includes('admin')) {
-                            await set(ref(db, `admin/teachers/${id}`), {
+                            await window.set(window.ref(window.db, `admin/teachers/${id}`), {
                                 ...teacher,
                                 name: 'Superuser',
                                 email: ADMIN_EMAIL,
@@ -1517,8 +1544,8 @@
 
                 // Create superuser if not exists
                 if (!superuserExists) {
-                    const newRef = push(ref(db, 'admin/teachers'));
-                    await set(newRef, {
+                    const newRef = window.push(window.ref(window.db, 'admin/teachers'));
+                    await window.set(newRef, {
                         name: 'Superuser',
                         email: ADMIN_EMAIL,
                         password: ADMIN_PASSWORD,
@@ -1536,13 +1563,14 @@
 
         async function loadTeacherAccounts() {
             try {
+                if (!window.db) return;
                 // Ensure superuser exists in Firebase
                 await ensureSuperuserInFirebase();
 
                 // First, migrate existing users from admin/users if needed
                 await migrateExistingUsers();
 
-                const snap = await get(ref(db, 'admin/teachers'));
+                const snap = await window.get(window.ref(window.db, 'admin/teachers'));
                 const teachers = snap.val() || {};
                 allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
                 
@@ -1555,22 +1583,22 @@
 
         async function migrateExistingUsers() {
             try {
-                const usersSnap = await get(ref(db, 'admin/users'));
+                const usersSnap = await window.get(window.ref(window.db, 'admin/users'));
                 const users = usersSnap.val() || {};
 
                 for (const [key, user] of Object.entries(users)) {
                     if (!user.role) {
-                        await set(ref(db, `admin/users/${key}/role`), 'teacher');
+                        await window.set(window.ref(window.db, `admin/users/${key}/role`), 'teacher');
                     }
 
                     if (user.role === 'teacher' || !user.role) {
-                        const teachersSnap = await get(ref(db, 'admin/teachers'));
+                        const teachersSnap = await window.get(window.ref(window.db, 'admin/teachers'));
                         const teachers = teachersSnap.val() || {};
                         const emailExists = Object.values(teachers).some(t => t.email === user.email);
 
                         if (!emailExists && user.email) {
-                            const newRef = push(ref(db, 'admin/teachers'));
-                            await set(newRef, {
+                            const newRef = window.push(window.ref(window.db, 'admin/teachers'));
+                            await window.set(newRef, {
                                 name: user.name || user.email,
                                 email: user.email,
                                 password: user.generatedId || '',
@@ -1789,8 +1817,8 @@
                 if (!user) return;
 
                 const newStatus = user.active === false ? true : false;
-                await set(ref(db, `admin/teachers/${userId}/active`), newStatus);
-                await set(ref(db, `admin/teachers/${userId}/updatedAt`), Date.now());
+                await window.set(window.ref(window.db, `admin/teachers/${userId}/active`), newStatus);
+                await window.set(window.ref(window.db, `admin/teachers/${userId}/updatedAt`), Date.now());
 
                 showToast(`User ${newStatus ? 'activated' : 'deactivated'}`);
                 await loadTeacherAccounts();
@@ -1874,7 +1902,7 @@
                 };
 
                 if (editingTeacherId) {
-                    const snap = await get(ref(db, `admin/teachers/${editingTeacherId}`));
+                    const snap = await window.get(window.ref(window.db, `admin/teachers/${editingTeacherId}`));
                     const existing = snap.val() || {};
                     
                     // Preserve existing roles when editing
@@ -1885,10 +1913,10 @@
                     teacherData.createdAt = existing.createdAt || Date.now();
                     teacherData.createdBy = existing.createdBy || 'admin';
 
-                    await set(ref(db, `admin/teachers/${editingTeacherId}`), teacherData);
+                    await window.set(window.ref(window.db, `admin/teachers/${editingTeacherId}`), teacherData);
                     successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> User updated successfully!';
                 } else {
-                    const snap = await get(ref(db, 'admin/teachers'));
+                    const snap = await window.get(window.ref(window.db, 'admin/teachers'));
                     const teachers = snap.val() || {};
                     const exists = Object.values(teachers).some(t => t.email === email);
 
@@ -1904,8 +1932,8 @@
                     teacherData.createdAt = Date.now();
                     teacherData.createdBy = sessionStorage.getItem('dashboard_user') || 'admin';
 
-                    const newRef = push(ref(db, 'admin/teachers'));
-                    await set(newRef, teacherData);
+                    const newRef = window.push(window.ref(window.db, 'admin/teachers'));
+                    await window.set(newRef, teacherData);
                     successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Teacher created successfully!';
                 }
 
@@ -1974,7 +2002,7 @@
 
             try {
                 // Using safely aliased firebaseRemove instead of globally clashing window.remove
-                await window.firebaseRemove(ref(db, `admin/teachers/${pendingDeleteId}`));
+                await window.firebaseRemove(window.ref(window.db, `admin/teachers/${pendingDeleteId}`));
                 await loadTeacherAccounts(); // Properly renders list and grid views!
                 closeDeleteModal();
                 showToast('Teacher account deleted');
