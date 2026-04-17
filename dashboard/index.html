@@ -1,14 +1,3 @@
-
-
-
-
-Here is the full, corrected HTML code. 
-
-The issue preventing the account creation and other functions from working was a **Syntax Error** (an extra `}` stray closing brace) near the `checkAuth()` function. This broke the entire script, meaning none of the login or signup functions were successfully registered by the browser.
-
-I have fixed the syntax error and ensured that the signup form correctly communicates with Firebase to save the created account into the `admin/teachers` Realtime Database directory.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 
