@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -62,7 +63,7 @@
                         <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         <input type="password" id="login-password" required placeholder="Enter password"
                             class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <button type="button" onclick="window.togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                             <i class="fas fa-eye" id="password-toggle-icon"></i>
                         </button>
                     </div>
@@ -107,10 +108,10 @@
                     </div>
                     <span class="text-sm font-medium text-gray-700 hidden sm:inline" id="logged-in-user">admin@eburon.ai</span>
                 </div>
-                <button onclick="refreshAll()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
+                <button onclick="window.refreshAll()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
                     <i class="fas fa-sync-alt mr-2"></i>Refresh
                 </button>
-                <button onclick="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md" title="Logout">
+                <button onclick="window.logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md" title="Logout">
                     <i class="fas fa-sign-out-alt"></i>
                 </button>
             </div>
@@ -168,15 +169,15 @@
 
         <!-- Tabs -->
         <div class="flex gap-2 mb-6 flex-wrap">
-            <button onclick="showTab('teachers')" id="tab-teachers"
+            <button onclick="window.showTab('teachers')" id="tab-teachers"
                 class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md">
                 <i class="fas fa-chalkboard-teacher mr-2"></i>Teachers
             </button>
-            <button onclick="showTab('conversations')" id="tab-conversations"
+            <button onclick="window.showTab('conversations')" id="tab-conversations"
                 class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-white text-gray-600 hover:bg-gray-50 border border-gray-200">
                 <i class="fas fa-history mr-2"></i>Conversations
             </button>
-            <button onclick="showTab('billing')" id="tab-billing"
+            <button onclick="window.showTab('billing')" id="tab-billing"
                 class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-white text-gray-600 hover:bg-gray-50 border border-gray-200">
                 <i class="fas fa-file-invoice-dollar mr-2"></i>Billing
             </button>
@@ -189,7 +190,7 @@
                 <h2 class="text-2xl font-bold text-gray-800">
                     <i class="fas fa-chalkboard-teacher text-indigo-600 mr-3"></i>Teachers
                 </h2>
-                <button onclick="openCreateTeacherModal()" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-lg font-semibold">
+                <button onclick="window.openCreateTeacherModal()" class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-lg font-semibold">
                     <i class="fas fa-user-plus mr-2"></i>Create User Account
                 </button>
             </div>
@@ -197,10 +198,10 @@
             <!-- Teachers View Toggle & Search -->
             <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
                 <div class="flex items-center gap-2">
-                    <button onclick="setUserView('cards')" id="view-cards-btn" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg transition font-medium">
+                    <button onclick="window.setUserView('cards')" id="view-cards-btn" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg transition font-medium">
                         <i class="fas fa-th-large mr-1"></i> Cards
                     </button>
-                    <button onclick="setUserView('list')" id="view-list-btn" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg transition font-medium hover:bg-gray-200">
+                    <button onclick="window.setUserView('list')" id="view-list-btn" class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg transition font-medium hover:bg-gray-200">
                         <i class="fas fa-list mr-1"></i> List
                     </button>
                 </div>
@@ -208,17 +209,17 @@
                     <div class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                         <input type="text" id="user-search" placeholder="Search users..." 
-                            oninput="filterUsers()"
+                            oninput="window.filterUsers()"
                             class="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm w-64">
                     </div>
-                    <select id="user-role-filter" onchange="filterUsers()"
+                    <select id="user-role-filter" onchange="window.filterUsers()"
                         class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                         <option value="">All Roles</option>
                         <option value="admin">Admin</option>
                         <option value="teacher">Teacher</option>
                         <option value="superuser">Superuser</option>
                     </select>
-                    <select id="user-status-filter" onchange="filterUsers()"
+                    <select id="user-status-filter" onchange="window.filterUsers()"
                         class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                         <option value="">All Status</option>
                         <option value="active">Active</option>
@@ -270,15 +271,15 @@
                         <i class="fas fa-history text-indigo-600 mr-2"></i>Conversation History
                     </h2>
                     <div class="flex items-center gap-3 flex-wrap">
-                        <select id="conv-teacher-filter" onchange="filterConversations()"
+                        <select id="conv-teacher-filter" onchange="window.filterConversations()"
                             class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
                             <option value="">All Teachers</option>
                         </select>
-                        <input type="date" id="conv-date-from" onchange="filterConversations()"
+                        <input type="date" id="conv-date-from" onchange="window.filterConversations()"
                             class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
-                        <input type="date" id="conv-date-to" onchange="filterConversations()"
+                        <input type="date" id="conv-date-to" onchange="window.filterConversations()"
                             class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
-                        <button onclick="clearConversationFilters()"
+                        <button onclick="window.clearConversationFilters()"
                             class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition text-sm">
                             <i class="fas fa-times mr-1"></i> Clear
                         </button>
@@ -337,7 +338,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Token Usage (Characters)</label>
                             <input type="number" id="billing-tokens" placeholder="Enter token/character count" min="0"
                                 class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                oninput="calculateBilling()">
+                                oninput="window.calculateBilling()">
                             <p class="text-xs text-gray-400 mt-1">Number of characters processed by Eburon AI services</p>
                         </div>
 
@@ -365,10 +366,10 @@
                         </div>
 
                         <div class="flex gap-3 mt-6">
-                            <button onclick="resetBilling()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                            <button onclick="window.resetBilling()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                                 <i class="fas fa-redo mr-2"></i>Reset
                             </button>
-                            <button onclick="generateInvoice()" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
+                            <button onclick="window.generateInvoice()" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
                                 <i class="fas fa-file-invoice mr-2"></i>Generate Invoice
                             </button>
                         </div>
@@ -381,7 +382,7 @@
                         <h2 class="text-lg font-bold text-gray-800">
                             <i class="fas fa-file-invoice-dollar text-indigo-600 mr-2"></i>Recent Invoices
                         </h2>
-                        <button onclick="exportAllInvoices()" class="px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                        <button onclick="window.exportAllInvoices()" class="px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
                             <i class="fas fa-download mr-1"></i> Export All
                         </button>
                     </div>
@@ -441,7 +442,7 @@
                             <p class="text-white/80 text-sm">Powered by Eburon AI</p>
                         </div>
                     </div>
-                    <button onclick="closeBillModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
+                    <button onclick="window.closeBillModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -457,7 +458,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Token Usage</label>
                         <input type="number" id="bill-token-usage" placeholder="Enter characters processed" min="0"
                             class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500"
-                            oninput="updateBillPreview()">
+                            oninput="window.updateBillPreview()">
                     </div>
                     <div class="p-4 bg-gray-50 rounded-xl space-y-2">
                         <div class="flex justify-between text-sm">
@@ -475,10 +476,10 @@
                     </div>
                 </div>
                 <div class="flex gap-3 mt-6">
-                    <button onclick="closeBillModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <button onclick="window.closeBillModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                         Cancel
                     </button>
-                    <button onclick="saveInvoice()" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
+                    <button onclick="window.saveInvoice()" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
                         <i class="fas fa-save mr-2"></i>Save Invoice
                     </button>
                 </div>
@@ -499,10 +500,10 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="printCurrentInvoice()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
+                    <button onclick="window.printCurrentInvoice()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
                         <i class="fas fa-print mr-2"></i>Print
                     </button>
-                    <button onclick="closePrintModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
+                    <button onclick="window.closePrintModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -523,7 +524,7 @@
                     </h3>
                     <p class="text-sm text-gray-500" id="modal-room-info"></p>
                 </div>
-                <button onclick="closeConversationModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
+                <button onclick="window.closeConversationModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -548,7 +549,7 @@
                         <p class="text-sm text-gray-500">Teacher Profile</p>
                     </div>
                 </div>
-                <button onclick="closeTeacherModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
+                <button onclick="window.closeTeacherModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -599,8 +600,8 @@
                     <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                     <input type="password" id="delete-confirm-password" placeholder="Enter admin password"
                         class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                        onkeydown="if(event.key==='Enter')confirmDeleteTeacher()">
-                    <button type="button" onclick="toggleDeletePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        onkeydown="if(event.key==='Enter') window.confirmDeleteTeacher()">
+                    <button type="button" onclick="window.toggleDeletePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         <i class="fas fa-eye" id="delete-password-toggle"></i>
                     </button>
                 </div>
@@ -608,10 +609,10 @@
                     <i class="fas fa-exclamation-circle mr-1"></i> Incorrect password
                 </div>
                 <div class="flex gap-3">
-                    <button onclick="closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                    <button onclick="window.closeDeleteModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                         Cancel
                     </button>
-                    <button onclick="confirmDeleteTeacher()" id="confirm-delete-btn" class="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 transition shadow-md">
+                    <button onclick="window.confirmDeleteTeacher()" id="confirm-delete-btn" class="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 transition shadow-md">
                         <i class="fas fa-trash mr-2"></i>Delete
                     </button>
                 </div>
@@ -631,7 +632,7 @@
                         <h3 class="text-xl font-bold">Create User Account</h3>
                     </div>
                 </div>
-                <button onclick="closeCreateTeacherModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
+                <button onclick="window.closeCreateTeacherModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -707,7 +708,7 @@
                     </div>
 
                     <div class="flex gap-3 pt-4">
-                        <button type="button" onclick="closeCreateTeacherModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                        <button type="button" onclick="window.closeCreateTeacherModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                             Cancel
                         </button>
                         <button type="submit" id="create-teacher-btn" class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md font-semibold">
@@ -738,24 +739,24 @@
                 const app = initializeApp(FIREBASE_CONFIG);
                 const db = getDatabase(app);
 
-                window.db = db;
-                window.ref = ref;
-                window.get = get;
-                window.set = set;
-                window.push = push;
-                // Use custom name to avoid native Element.remove() collision which breaks UI features
-                window.firebaseRemove = remove; 
+                // Use robust custom names to prevent collisions with standard window objects!
+                window.fbDb = db;
+                window.fbRef = ref;
+                window.fbGet = get;
+                window.fbSet = set;
+                window.fbPush = push;
+                window.fbRemove = remove; 
 
                 document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
                 
-                // Now safely boot the app
+                // Now safely boot the app checks
                 if (window.checkAuth) {
                     window.checkAuth();
                 }
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
                 document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-red-500 mr-1"></i> Config Error';
-                alert("Database Initialization Failed.\nMake sure api.json exists and you are running the file over localhost (http://), not directly (file://).");
+                alert("Database Initialization Failed.\nMake sure api.json exists and you are running the file over a local web server (http://localhost:...), not directly (file://).");
             }
         }
 
@@ -767,7 +768,7 @@
         const BASE_RATE = 10;
 
         let allTeachers = {};
-        let allConversations =[];
+        let allConversations = [];
         let allInvoices =[];
 
         function updateDateTime() {
@@ -792,7 +793,7 @@
         }
 
         async function refreshAll() {
-            if (!window.db) return; // Guard until DB finishes load
+            if (!window.fbDb) return; // Guard until DB finishes load
             await Promise.all([
                 loadTeachers(),
                 loadConversations(),
@@ -804,12 +805,12 @@
 
         async function loadTeachers() {
             try {
-                const snap = await window.get(window.ref(window.db, 'chats'));
+                const snap = await window.fbGet(window.fbRef(window.fbDb, 'chats'));
                 const chats = snap.val() || {};
 
                 const teachersMap = {};
 
-                for (const[roomCode, room] of Object.entries(chats)) {
+                for (const [roomCode, room] of Object.entries(chats)) {
                     const teacherName = room.meta?.teacherName || room.meta?.teacher || 'Unknown';
                     const teacherEmail = room.meta?.teacherEmail || '';
                     const meta = room.meta || {};
@@ -824,7 +825,7 @@
                             messages: 0,
                             students: new Set(),
                             lastActive: 0,
-                            roomCodes:[],
+                            roomCodes: [],
                             rawData: { sessions: 0, messages: 0, students:[] }
                         };
                     }
@@ -852,7 +853,7 @@
                     }
                     if (room.questions) {
                         Object.entries(room.questions).forEach(([qId, q]) => {
-                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages ||[];
+                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
                             teachersMap[teacherKey].rawData.messages.push({ id: qId, ...q, type: 'question' });
                         });
                     }
@@ -876,7 +877,7 @@
 
         async function loadConversations() {
             try {
-                const snap = await window.get(window.ref(window.db, 'chats'));
+                const snap = await window.fbGet(window.fbRef(window.fbDb, 'chats'));
                 const chats = snap.val() || {};
 
                 allConversations = Object.entries(chats).map(([roomCode, room]) => {
@@ -989,7 +990,7 @@
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex gap-2">
-                            <button onclick="viewConversationDetail('${conv.roomCode}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View Details">
+                            <button onclick="window.viewConversationDetail('${conv.roomCode}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View Details">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
@@ -1038,7 +1039,7 @@
 
         async function viewConversationDetail(roomCode) {
             try {
-                const snap = await window.get(window.ref(window.db, `chats/${roomCode}`));
+                const snap = await window.fbGet(window.fbRef(window.fbDb, `chats/${roomCode}`));
                 const room = snap.val();
 
                 if (!room) return;
@@ -1046,7 +1047,7 @@
                 document.getElementById('modal-room-info').textContent = `Room: ${roomCode} | Teacher: ${room.meta?.teacherName || 'Unknown'}`;
 
                 const allMessages = [];
-                const types =['messages', 'questions', 'studentResponses', 'studentChats'];
+                const types = ['messages', 'questions', 'studentResponses', 'studentChats'];
                 types.forEach(type => {
                     if (room[type]) {
                         Object.entries(room[type]).forEach(([id, msg]) => {
@@ -1166,8 +1167,8 @@
             };
 
             try {
-                const newRef = window.push(window.ref(window.db, 'admin/billing/invoices'));
-                await window.set(newRef, invoice);
+                const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/billing/invoices'));
+                await window.fbSet(newRef, invoice);
                 closeBillModal();
                 await loadInvoices();
                 showToast('Invoice saved successfully!');
@@ -1179,7 +1180,7 @@
 
         async function loadInvoices() {
             try {
-                const snap = await window.get(window.ref(window.db, 'admin/billing/invoices'));
+                const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/billing/invoices'));
                 allInvoices = snap.val() ? Object.values(snap.val()).sort((a, b) => b.createdAt - a.createdAt) :[];
                 renderInvoices();
                 renderBillingSummary();
@@ -1216,7 +1217,7 @@
                         <span>Token Cost: €${inv.tokenCost.toFixed(4)}</span>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="printInvoice(${idx})" class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-xs">
+                        <button onclick="window.printInvoice(${idx})" class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-xs">
                             <i class="fas fa-print mr-1"></i>Print
                         </button>
                     </div>
@@ -1265,7 +1266,7 @@
                         <td class="px-6 py-4 text-gray-600">€${tokenCost.toFixed(2)}</td>
                         <td class="px-6 py-4 font-bold text-indigo-600">€${total.toFixed(2)}</td>
                         <td class="px-6 py-4">
-                            <button onclick="openBillForTeacher('${teacherKey.replace(/'/g, "\\'")}')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Generate Bill">
+                            <button onclick="window.openBillForTeacher('${teacherKey.replace(/'/g, "\\'")}')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Generate Bill">
                                 <i class="fas fa-file-invoice-dollar"></i>
                             </button>
                         </td>
@@ -1369,7 +1370,6 @@
         window.resetBilling = resetBilling;
         window.generateInvoice = generateInvoice;
         window.exportAllInvoices = exportAllInvoices;
-        window.logout = logout;
 
         const ADMIN_EMAIL = 'admin@eburon.ai';
         const ADMIN_PASSWORD = 'JoLernout26';
@@ -1392,8 +1392,9 @@
         async function handleLogin(e) {
             e.preventDefault();
 
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
+            // .toLowerCase() added to prevent case sensitivity issues.
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value.trim();
             const errorDiv = document.getElementById('login-error');
             const loginBtn = document.getElementById('login-btn');
 
@@ -1401,38 +1402,38 @@
             loginBtn.disabled = true;
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
 
-            let isValidUser = false;
-            let displayName = email;
-            isSuperuser = false;
-
             try {
-                // If it's not the local master admin, require Firebase DB
-                if (email !== ADMIN_EMAIL) {
-                    if (!window.db || !window.get || !window.ref) {
-                        throw new Error("Database disconnected. Ensure api.json loads properly over a web server.");
+                // Ensure a small delay for UI to paint
+                await new Promise(r => setTimeout(r, 400));
+
+                let isValidUser = false;
+                let displayName = email;
+                isSuperuser = false;
+
+                if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                    isValidUser = true;
+                    isSuperuser = true;
+                    displayName = 'Superuser';
+                } else {
+                    if (!window.fbDb || !window.fbGet || !window.fbRef) {
+                        throw new Error("Database disconnected. Ensure api.json is loaded correctly.");
                     }
                     
-                    // Implement Promise.race to strictly timeout after 8 seconds preventing eternal hang
-                    const fetchPromise = window.get(window.ref(window.db, 'admin/teachers'));
-                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Connection to database timed out.")), 8000));
+                    const fetchPromise = window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
+                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out.")), 8000));
                     
                     const snap = await Promise.race([fetchPromise, timeoutPromise]);
                     const teachers = snap.val() || {};
                     
-                    for (const[id, teacher] of Object.entries(teachers)) {
+                    for (const [id, teacher] of Object.entries(teachers)) {
                         const roles = teacher.roles || (teacher.role ? [teacher.role] :[]);
-                        if (roles.includes('admin') && teacher.email === email && teacher.password === password && teacher.active !== false) {
+                        if (roles.includes('admin') && teacher.email && teacher.email.toLowerCase() === email && teacher.password === password && teacher.active !== false) {
                             isValidUser = true;
                             displayName = teacher.name || email;
                             isSuperuser = teacher.isSuperuser === true;
                             break;
                         }
                     }
-                } else if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                    // Fast track local override super admin
-                    isValidUser = true;
-                    isSuperuser = true;
-                    displayName = 'Superuser';
                 }
 
                 if (isValidUser) {
@@ -1448,22 +1449,17 @@
                     const userBadge = isSuperuser ? ' <span class="ml-1 text-xs bg-yellow-400 text-yellow-800 px-2 py-0.5 rounded-full">Superuser</span>' : '';
                     document.getElementById('logged-in-user').innerHTML = displayName + userBadge;
                     
-                    // Reset the button immediately for clean state on logout
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
-                    
                     refreshAll();
                 } else {
                     errorDiv.classList.remove('hidden');
                     errorDiv.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Invalid email or password';
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
                 }
-
             } catch (err) {
                 console.error('Login error:', err);
                 errorDiv.classList.remove('hidden');
                 errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> Error: ${err.message}`;
+            } finally {
+                // ALWAYS reset button
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
             }
@@ -1483,6 +1479,7 @@
             document.getElementById('login-email').value = '';
             document.getElementById('login-password').value = '';
         }
+        window.logout = logout;
 
         function checkAuth() {
             const auth = sessionStorage.getItem('dashboard_auth');
@@ -1517,17 +1514,17 @@
 
         async function ensureSuperuserInFirebase() {
             try {
-                const snap = await window.get(window.ref(window.db, 'admin/teachers'));
+                const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                 const teachers = snap.val() || {};
 
                 // Check if superuser exists
                 let superuserExists = false;
-                for (const[id, teacher] of Object.entries(teachers)) {
-                    if (teacher.email === ADMIN_EMAIL) {
+                for (const [id, teacher] of Object.entries(teachers)) {
+                    if (teacher.email && teacher.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                         superuserExists = true;
                         // Update if needed
                         if (!teacher.isSuperuser || !teacher.roles?.includes('admin')) {
-                            await window.set(window.ref(window.db, `admin/teachers/${id}`), {
+                            await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${id}`), {
                                 ...teacher,
                                 name: 'Superuser',
                                 email: ADMIN_EMAIL,
@@ -1544,8 +1541,8 @@
 
                 // Create superuser if not exists
                 if (!superuserExists) {
-                    const newRef = window.push(window.ref(window.db, 'admin/teachers'));
-                    await window.set(newRef, {
+                    const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
+                    await window.fbSet(newRef, {
                         name: 'Superuser',
                         email: ADMIN_EMAIL,
                         password: ADMIN_PASSWORD,
@@ -1563,14 +1560,12 @@
 
         async function loadTeacherAccounts() {
             try {
-                if (!window.db) return;
-                // Ensure superuser exists in Firebase
+                if (!window.fbDb) return;
+                
                 await ensureSuperuserInFirebase();
-
-                // First, migrate existing users from admin/users if needed
                 await migrateExistingUsers();
 
-                const snap = await window.get(window.ref(window.db, 'admin/teachers'));
+                const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                 const teachers = snap.val() || {};
                 allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
                 
@@ -1583,22 +1578,22 @@
 
         async function migrateExistingUsers() {
             try {
-                const usersSnap = await window.get(window.ref(window.db, 'admin/users'));
+                const usersSnap = await window.fbGet(window.fbRef(window.fbDb, 'admin/users'));
                 const users = usersSnap.val() || {};
 
                 for (const [key, user] of Object.entries(users)) {
                     if (!user.role) {
-                        await window.set(window.ref(window.db, `admin/users/${key}/role`), 'teacher');
+                        await window.fbSet(window.fbRef(window.fbDb, `admin/users/${key}/role`), 'teacher');
                     }
 
                     if (user.role === 'teacher' || !user.role) {
-                        const teachersSnap = await window.get(window.ref(window.db, 'admin/teachers'));
+                        const teachersSnap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                         const teachers = teachersSnap.val() || {};
                         const emailExists = Object.values(teachers).some(t => t.email === user.email);
 
                         if (!emailExists && user.email) {
-                            const newRef = window.push(window.ref(window.db, 'admin/teachers'));
-                            await window.set(newRef, {
+                            const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
+                            await window.fbSet(newRef, {
                                 name: user.name || user.email,
                                 email: user.email,
                                 password: user.generatedId || '',
@@ -1714,7 +1709,7 @@
         }
 
         function renderUserCard(t) {
-            const roles = t.roles || (t.role ?[t.role] :[]);
+            const roles = t.roles || (t.role ? [t.role] :[]);
             const headerColor = getHeaderColor(roles);
             const rolesBadges = getRolesBadges(roles);
 
@@ -1748,15 +1743,15 @@
                     <p class="flex items-center gap-2 text-gray-400 pt-2 border-t"><i class="fas fa-calendar w-5"></i>Created: ${t.createdAt ? formatDate(t.createdAt) : 'Unknown'}</p>
                 </div>
                 <div class="border-t border-gray-100 p-4 flex gap-2">
-                    <button onclick="viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" 
+                    <button onclick="window.viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" 
                         class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition font-medium text-sm">
                         <i class="fas fa-history mr-1"></i>History
                     </button>
-                    <button onclick="editTeacherAccount('${t.id}')" 
+                    <button onclick="window.editTeacherAccount('${t.id}')" 
                         class="flex-1 px-3 py-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition font-medium text-sm">
                         <i class="fas fa-edit mr-1"></i>Edit
                     </button>
-                    <button onclick="showDeleteConfirm('${t.id}', '${(t.name || 'Unknown').replace(/'/g, "\\'")}')" 
+                    <button onclick="window.showDeleteConfirm('${t.id}', '${(t.name || 'Unknown').replace(/'/g, "\\'")}')" 
                         class="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition font-medium text-sm">
                         <i class="fas fa-trash"></i>
                     </button>
@@ -1790,20 +1785,20 @@
                 </td>
                 <td class="px-6 py-4 text-gray-600">${t.company || '-'}</td>
                 <td class="px-6 py-4">
-                    <button onclick="toggleUserStatus('${t.id}')" class="px-3 py-1 ${t.active !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'} rounded-full text-xs font-medium cursor-pointer transition">
+                    <button onclick="window.toggleUserStatus('${t.id}')" class="px-3 py-1 ${t.active !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'} rounded-full text-xs font-medium cursor-pointer transition">
                         ${t.active !== false ? '<i class="fas fa-toggle-on mr-1"></i>Active' : '<i class="fas fa-toggle-off mr-1"></i>Inactive'}
                     </button>
                 </td>
                 <td class="px-6 py-4 text-gray-500 text-sm">${t.createdAt ? formatDate(t.createdAt) : '-'}</td>
                 <td class="px-6 py-4">
                     <div class="flex gap-2">
-                        <button onclick="viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="History">
+                        <button onclick="window.viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="History">
                             <i class="fas fa-history"></i>
                         </button>
-                        <button onclick="editTeacherAccount('${t.id}')" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
+                        <button onclick="window.editTeacherAccount('${t.id}')" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="showDeleteConfirm('${t.id}', '${displayName.replace(/'/g, "\\'")}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                        <button onclick="window.showDeleteConfirm('${t.id}', '${displayName.replace(/'/g, "\\'")}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -1817,8 +1812,8 @@
                 if (!user) return;
 
                 const newStatus = user.active === false ? true : false;
-                await window.set(window.ref(window.db, `admin/teachers/${userId}/active`), newStatus);
-                await window.set(window.ref(window.db, `admin/teachers/${userId}/updatedAt`), Date.now());
+                await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${userId}/active`), newStatus);
+                await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${userId}/updatedAt`), Date.now());
 
                 showToast(`User ${newStatus ? 'activated' : 'deactivated'}`);
                 await loadTeacherAccounts();
@@ -1886,7 +1881,7 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
 
             try {
-                // New user is 'teacher' by default, if editing preserve existing roles
+                // New user is 'teacher' by default
                 let userRoles = ['teacher'];
 
                 const teacherData = {
@@ -1902,7 +1897,7 @@
                 };
 
                 if (editingTeacherId) {
-                    const snap = await window.get(window.ref(window.db, `admin/teachers/${editingTeacherId}`));
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, `admin/teachers/${editingTeacherId}`));
                     const existing = snap.val() || {};
                     
                     // Preserve existing roles when editing
@@ -1913,12 +1908,12 @@
                     teacherData.createdAt = existing.createdAt || Date.now();
                     teacherData.createdBy = existing.createdBy || 'admin';
 
-                    await window.set(window.ref(window.db, `admin/teachers/${editingTeacherId}`), teacherData);
+                    await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${editingTeacherId}`), teacherData);
                     successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> User updated successfully!';
                 } else {
-                    const snap = await window.get(window.ref(window.db, 'admin/teachers'));
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                     const teachers = snap.val() || {};
-                    const exists = Object.values(teachers).some(t => t.email === email);
+                    const exists = Object.values(teachers).some(t => t.email.toLowerCase() === email.toLowerCase());
 
                     if (exists) {
                         errorDiv.textContent = 'A user with this email already exists';
@@ -1928,19 +1923,17 @@
                         return;
                     }
 
-                    teacherData.roles = userRoles; // Always ['teacher']
+                    teacherData.roles = userRoles; // Always['teacher'] for new
                     teacherData.createdAt = Date.now();
                     teacherData.createdBy = sessionStorage.getItem('dashboard_user') || 'admin';
 
-                    const newRef = window.push(window.ref(window.db, 'admin/teachers'));
-                    await window.set(newRef, teacherData);
+                    const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
+                    await window.fbSet(newRef, teacherData);
                     successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Teacher created successfully!';
                 }
 
                 successDiv.classList.remove('hidden');
-                btn.disabled = false;
-                btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
-
+                
                 await loadTeacherAccounts();
 
                 setTimeout(() => {
@@ -1952,10 +1945,12 @@
                 console.error('Error saving user:', err);
                 errorDiv.textContent = 'Failed to save user account. Please try again.';
                 errorDiv.classList.remove('hidden');
+            } finally {
                 btn.disabled = false;
                 btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
             }
         }
+        window.createTeacher = createTeacher;
 
         let pendingDeleteId = null;
 
@@ -1967,11 +1962,13 @@
             document.getElementById('delete-confirm-modal').classList.remove('hidden');
             document.getElementById('delete-confirm-password').focus();
         }
+        window.showDeleteConfirm = showDeleteConfirm;
 
         function closeDeleteModal() {
             document.getElementById('delete-confirm-modal').classList.add('hidden');
             pendingDeleteId = null;
         }
+        window.closeDeleteModal = closeDeleteModal;
 
         function toggleDeletePassword() {
             const input = document.getElementById('delete-confirm-password');
@@ -1984,6 +1981,7 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
+        window.toggleDeletePassword = toggleDeletePassword;
 
         async function confirmDeleteTeacher() {
             const password = document.getElementById('delete-confirm-password').value;
@@ -2001,9 +1999,9 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
 
             try {
-                // Using safely aliased firebaseRemove instead of globally clashing window.remove
-                await window.firebaseRemove(window.ref(window.db, `admin/teachers/${pendingDeleteId}`));
-                await loadTeacherAccounts(); // Properly renders list and grid views!
+                // Safely renamed global Firebase remove
+                await window.fbRemove(window.fbRef(window.fbDb, `admin/teachers/${pendingDeleteId}`));
+                await loadTeacherAccounts();
                 closeDeleteModal();
                 showToast('Teacher account deleted');
             } catch (err) {
@@ -2015,21 +2013,20 @@
                 btn.innerHTML = '<i class="fas fa-trash mr-2"></i>Delete';
             }
         }
-
-        async function deleteTeacherAccount(id) {
-            showDeleteConfirm(id, 'this teacher');
-        }
+        window.confirmDeleteTeacher = confirmDeleteTeacher;
 
         function openCreateTeacherModal() {
             resetTeacherForm();
             document.getElementById('create-teacher-form').reset();
             document.getElementById('create-teacher-modal').classList.remove('hidden');
         }
+        window.openCreateTeacherModal = openCreateTeacherModal;
 
         function closeCreateTeacherModal() {
             document.getElementById('create-teacher-modal').classList.add('hidden');
             resetTeacherForm();
         }
+        window.closeCreateTeacherModal = closeCreateTeacherModal;
 
         let editingTeacherId = null;
 
@@ -2049,6 +2046,7 @@
             document.getElementById('create-teacher-form').querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Update';
             document.getElementById('create-teacher-modal').classList.remove('hidden');
         }
+        window.editTeacherAccount = editTeacherAccount;
 
         function resetTeacherForm() {
             editingTeacherId = null;
@@ -2064,20 +2062,7 @@
             const btn = document.getElementById('create-teacher-form').querySelector('button[type="submit"]');
             if (btn) btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
         }
-
-        window.createTeacher = createTeacher;
         window.resetTeacherForm = resetTeacherForm;
-        window.toggleTeacherPassword = toggleTeacherPassword;
-        window.deleteTeacherAccount = deleteTeacherAccount;
-        window.loadTeacherAccounts = loadTeacherAccounts;
-        window.printInvoice = printInvoice;
-        window.showDeleteConfirm = showDeleteConfirm;
-        window.closeDeleteModal = closeDeleteModal;
-        window.toggleDeletePassword = toggleDeletePassword;
-        window.confirmDeleteTeacher = confirmDeleteTeacher;
-        window.openCreateTeacherModal = openCreateTeacherModal;
-        window.closeCreateTeacherModal = closeCreateTeacherModal;
-        window.editTeacherAccount = editTeacherAccount;
         window.toggleUserStatus = toggleUserStatus;
         window.filterUsers = filterUsers;
         window.setUserView = setUserView;
@@ -2089,10 +2074,12 @@
             generatePrintableInvoice(currentPrintInvoice);
             document.getElementById('print-modal').classList.remove('hidden');
         }
+        window.printInvoice = printInvoice;
 
         function closePrintModal() {
             document.getElementById('print-modal').classList.add('hidden');
         }
+        window.closePrintModal = closePrintModal;
 
         function generatePrintableInvoice(inv) {
             const invoiceNum = 'INV-' + inv.createdAt.toString().slice(-8);
@@ -2209,6 +2196,7 @@
         function printCurrentInvoice() {
             window.print();
         }
+        window.printCurrentInvoice = printCurrentInvoice;
     </script>
 </body>
 
