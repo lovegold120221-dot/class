@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -720,14 +719,34 @@
         </div>
     </div>
 
-    <!-- Firebase SDK & Initialization -->
+    <!-- 1. SCRIPT FOR GLOBAL VARIABLES (Solves "Cannot access before initialization") -->
+    <script>
+        const TOKEN_RATE = 0.0001;
+        const BASE_RATE = 10;
+        const ADMIN_EMAIL = 'admin@eburon.ai';
+        const ADMIN_PASSWORD = 'JoLernout26';
+
+        let allTeachers = {};
+        let allConversations = [];
+        let allInvoices = [];
+        let allTeacherAccounts =[];
+
+        let isLoggedIn = false;
+        let isSuperuser = false;
+        let currentUserView = localStorage.getItem('userView') || 'cards';
+        
+        let editingTeacherId = null;
+        let pendingDeleteId = null;
+        let currentPrintInvoice = null;
+    </script>
+
+    <!-- 2. SCRIPT FOR FIREBASE INITIALIZATION -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, get, set, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         async function initialize() {
             try {
-                // Fetch credentials from the separate api.json file
                 const response = await fetch('api.json');
                 
                 if (!response.ok) {
@@ -739,7 +758,6 @@
                 const app = initializeApp(FIREBASE_CONFIG);
                 const db = getDatabase(app);
 
-                // Use robust custom names to prevent collisions with standard window objects!
                 window.fbDb = db;
                 window.fbRef = ref;
                 window.fbGet = get;
@@ -749,7 +767,6 @@
 
                 document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
                 
-                // Now safely boot the app checks
                 if (window.checkAuth) {
                     window.checkAuth();
                 }
@@ -763,14 +780,8 @@
         initialize();
     </script>
 
+    <!-- 3. SCRIPT FOR ALL LOGIC -->
     <script>
-        const TOKEN_RATE = 0.0001;
-        const BASE_RATE = 10;
-
-        let allTeachers = {};
-        let allConversations = [];
-        let allInvoices =[];
-
         function updateDateTime() {
             const now = new Date();
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
@@ -791,9 +802,10 @@
             btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
             btn.classList.add('bg-gradient-to-r', 'from-indigo-500', 'to-purple-500', 'text-white', 'shadow-md');
         }
+        window.showTab = showTab;
 
         async function refreshAll() {
-            if (!window.fbDb) return; // Guard until DB finishes load
+            if (!window.fbDb) return; 
             await Promise.all([
                 loadTeachers(),
                 loadConversations(),
@@ -802,6 +814,7 @@
             ]);
             updateStats();
         }
+        window.refreshAll = refreshAll;
 
         async function loadTeachers() {
             try {
@@ -825,7 +838,7 @@
                             messages: 0,
                             students: new Set(),
                             lastActive: 0,
-                            roomCodes: [],
+                            roomCodes:[],
                             rawData: { sessions: 0, messages: 0, students:[] }
                         };
                     }
@@ -853,7 +866,7 @@
                     }
                     if (room.questions) {
                         Object.entries(room.questions).forEach(([qId, q]) => {
-                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
+                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages ||[];
                             teachersMap[teacherKey].rawData.messages.push({ id: qId, ...q, type: 'question' });
                         });
                     }
@@ -1029,6 +1042,7 @@
 
             renderConversationsTable(filtered);
         }
+        window.filterConversations = filterConversations;
 
         function clearConversationFilters() {
             document.getElementById('conv-teacher-filter').value = '';
@@ -1036,6 +1050,7 @@
             document.getElementById('conv-date-to').value = '';
             renderConversationsTable(allConversations);
         }
+        window.clearConversationFilters = clearConversationFilters;
 
         async function viewConversationDetail(roomCode) {
             try {
@@ -1047,7 +1062,7 @@
                 document.getElementById('modal-room-info').textContent = `Room: ${roomCode} | Teacher: ${room.meta?.teacherName || 'Unknown'}`;
 
                 const allMessages = [];
-                const types = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                const types =['messages', 'questions', 'studentResponses', 'studentChats'];
                 types.forEach(type => {
                     if (room[type]) {
                         Object.entries(room[type]).forEach(([id, msg]) => {
@@ -1079,10 +1094,12 @@
                 console.error('Error loading conversation:', err);
             }
         }
+        window.viewConversationDetail = viewConversationDetail;
 
         function closeConversationModal() {
             document.getElementById('conversation-modal').classList.add('hidden');
         }
+        window.closeConversationModal = closeConversationModal;
 
         function viewTeacherDetail(teacherKey) {
             const teacher = allTeachers[teacherKey];
@@ -1113,10 +1130,12 @@
 
             document.getElementById('teacher-detail-modal').classList.remove('hidden');
         }
+        window.viewTeacherDetail = viewTeacherDetail;
 
         function closeTeacherModal() {
             document.getElementById('teacher-detail-modal').classList.add('hidden');
         }
+        window.closeTeacherModal = closeTeacherModal;
 
         function viewTeacherConversations(teacherKey) {
             const teacher = allTeachers[teacherKey];
@@ -1125,6 +1144,7 @@
             showTab('conversations');
             filterConversations();
         }
+        window.viewTeacherConversations = viewTeacherConversations;
 
         function openBillForTeacher(teacherKey) {
             const teacher = allTeachers[teacherKey];
@@ -1136,10 +1156,12 @@
             updateBillPreview();
             document.getElementById('bill-modal').classList.remove('hidden');
         }
+        window.openBillForTeacher = openBillForTeacher;
 
         function closeBillModal() {
             document.getElementById('bill-modal').classList.add('hidden');
         }
+        window.closeBillModal = closeBillModal;
 
         function updateBillPreview() {
             const tokens = parseInt(document.getElementById('bill-token-usage').value) || 0;
@@ -1149,6 +1171,7 @@
             document.getElementById('bill-token-cost').textContent = `€${tokenCost.toFixed(2)}`;
             document.getElementById('bill-total-cost').textContent = `€${total.toFixed(2)}`;
         }
+        window.updateBillPreview = updateBillPreview;
 
         async function saveInvoice() {
             const teacherName = document.getElementById('bill-teacher-name').value;
@@ -1177,6 +1200,7 @@
                 alert('Failed to save invoice');
             }
         }
+        window.saveInvoice = saveInvoice;
 
         async function loadInvoices() {
             try {
@@ -1283,12 +1307,14 @@
             document.getElementById('token-cost').textContent = `€${tokenCost.toFixed(2)}`;
             document.getElementById('total-billing').textContent = total.toFixed(2);
         }
+        window.calculateBilling = calculateBilling;
 
         function resetBilling() {
             document.getElementById('billing-tokens').value = '';
             document.getElementById('token-cost').textContent = '€0.00';
             document.getElementById('total-billing').textContent = '10.00';
         }
+        window.resetBilling = resetBilling;
 
         function generateInvoice() {
             const teacherName = prompt('Enter teacher name for invoice:');
@@ -1299,6 +1325,7 @@
             updateBillPreview();
             document.getElementById('bill-modal').classList.remove('hidden');
         }
+        window.generateInvoice = generateInvoice;
 
         async function exportAllInvoices() {
             if (allInvoices.length === 0) {
@@ -1319,6 +1346,7 @@
             a.click();
             URL.revokeObjectURL(url);
         }
+        window.exportAllInvoices = exportAllInvoices;
 
         function updateStats() {
             const teachers = Object.values(allTeachers);
@@ -1352,30 +1380,6 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        window.showTab = showTab;
-        window.refreshAll = refreshAll;
-        window.filterTeachers = filterTeachers;
-        window.filterConversations = filterConversations;
-        window.clearConversationFilters = clearConversationFilters;
-        window.viewConversationDetail = viewConversationDetail;
-        window.closeConversationModal = closeConversationModal;
-        window.viewTeacherDetail = viewTeacherDetail;
-        window.closeTeacherModal = closeTeacherModal;
-        window.viewTeacherConversations = viewTeacherConversations;
-        window.openBillForTeacher = openBillForTeacher;
-        window.closeBillModal = closeBillModal;
-        window.updateBillPreview = updateBillPreview;
-        window.saveInvoice = saveInvoice;
-        window.calculateBilling = calculateBilling;
-        window.resetBilling = resetBilling;
-        window.generateInvoice = generateInvoice;
-        window.exportAllInvoices = exportAllInvoices;
-
-        const ADMIN_EMAIL = 'admin@eburon.ai';
-        const ADMIN_PASSWORD = 'JoLernout26';
-        let isLoggedIn = false;
-        let isSuperuser = false;
-
         function togglePassword() {
             const input = document.getElementById('login-password');
             const icon = document.getElementById('password-toggle-icon');
@@ -1392,7 +1396,6 @@
         async function handleLogin(e) {
             e.preventDefault();
 
-            // .toLowerCase() added to prevent case sensitivity issues.
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value.trim();
             const errorDiv = document.getElementById('login-error');
@@ -1403,7 +1406,6 @@
             loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
 
             try {
-                // Ensure a small delay for UI to paint
                 await new Promise(r => setTimeout(r, 400));
 
                 let isValidUser = false;
@@ -1459,7 +1461,6 @@
                 errorDiv.classList.remove('hidden');
                 errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> Error: ${err.message}`;
             } finally {
-                // ALWAYS reset button
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
             }
@@ -1495,10 +1496,7 @@
                 refreshAll();
             }
         }
-        window.checkAuth = checkAuth; // Export for module callback
-
-        // Teacher Account Management
-        let allTeacherAccounts =[];
+        window.checkAuth = checkAuth;
 
         function toggleTeacherPassword() {
             const input = document.getElementById('teacher-password');
@@ -1511,18 +1509,17 @@
                 icon.classList.replace('fa-eye-slash', 'fa-eye');
             }
         }
+        window.toggleTeacherPassword = toggleTeacherPassword;
 
         async function ensureSuperuserInFirebase() {
             try {
                 const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                 const teachers = snap.val() || {};
 
-                // Check if superuser exists
                 let superuserExists = false;
                 for (const [id, teacher] of Object.entries(teachers)) {
                     if (teacher.email && teacher.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                         superuserExists = true;
-                        // Update if needed
                         if (!teacher.isSuperuser || !teacher.roles?.includes('admin')) {
                             await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${id}`), {
                                 ...teacher,
@@ -1539,7 +1536,6 @@
                     }
                 }
 
-                // Create superuser if not exists
                 if (!superuserExists) {
                     const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
                     await window.fbSet(newRef, {
@@ -1569,12 +1565,12 @@
                 const teachers = snap.val() || {};
                 allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
                 
-                // Triggers generation for both Card and List views
                 filterUsers();
             } catch (err) {
                 console.error('Error loading teacher accounts:', err);
             }
         }
+        window.loadTeacherAccounts = loadTeacherAccounts;
 
         async function migrateExistingUsers() {
             try {
@@ -1614,8 +1610,6 @@
             }
         }
 
-        let currentUserView = localStorage.getItem('userView') || 'cards';
-
         function setUserView(view) {
             currentUserView = view;
             localStorage.setItem('userView', view);
@@ -1637,6 +1631,7 @@
                 cardsContainer.classList.add('hidden');
             }
         }
+        window.setUserView = setUserView;
 
         function filterUsers() {
             const searchTerm = (document.getElementById('user-search')?.value || '').toLowerCase();
@@ -1649,13 +1644,13 @@
                     (t.email && t.email.toLowerCase().includes(searchTerm)) ||
                     (t.company && t.company.toLowerCase().includes(searchTerm));
 
-                const roles = t.roles || (t.role ? [t.role] :[]);
-                const isSuperuser = t.isSuperuser === true;
+                const roles = t.roles || (t.role ?[t.role] :[]);
+                const isUserSuper = t.isSuperuser === true;
                 let matchesRole = true;
 
                 if (roleFilter) {
                     if (roleFilter === 'superuser') {
-                        matchesRole = isSuperuser;
+                        matchesRole = isUserSuper;
                     } else {
                         matchesRole = roles.includes(roleFilter);
                     }
@@ -1671,6 +1666,7 @@
 
             renderFilteredUsers(filteredCards);
         }
+        window.filterUsers = filterUsers;
 
         function renderFilteredUsers(filteredUsers) {
             renderTeacherAccountsFiltered(filteredUsers, 'cards');
@@ -1822,6 +1818,7 @@
                 showToast('Failed to update user status');
             }
         }
+        window.toggleUserStatus = toggleUserStatus;
 
         function getRoleBadge(role) {
             const roleColors = {
@@ -1881,7 +1878,6 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
 
             try {
-                // New user is 'teacher' by default
                 let userRoles = ['teacher'];
 
                 const teacherData = {
@@ -1900,7 +1896,6 @@
                     const snap = await window.fbGet(window.fbRef(window.fbDb, `admin/teachers/${editingTeacherId}`));
                     const existing = snap.val() || {};
                     
-                    // Preserve existing roles when editing
                     if (existing.roles && existing.roles.length > 0) {
                         userRoles = existing.roles;
                     }
@@ -1918,12 +1913,10 @@
                     if (exists) {
                         errorDiv.textContent = 'A user with this email already exists';
                         errorDiv.classList.remove('hidden');
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
                         return;
                     }
 
-                    teacherData.roles = userRoles; // Always['teacher'] for new
+                    teacherData.roles = userRoles; 
                     teacherData.createdAt = Date.now();
                     teacherData.createdBy = sessionStorage.getItem('dashboard_user') || 'admin';
 
@@ -1933,7 +1926,6 @@
                 }
 
                 successDiv.classList.remove('hidden');
-                
                 await loadTeacherAccounts();
 
                 setTimeout(() => {
@@ -1951,8 +1943,6 @@
             }
         }
         window.createTeacher = createTeacher;
-
-        let pendingDeleteId = null;
 
         function showDeleteConfirm(id, name) {
             pendingDeleteId = id;
@@ -1999,7 +1989,6 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
 
             try {
-                // Safely renamed global Firebase remove
                 await window.fbRemove(window.fbRef(window.fbDb, `admin/teachers/${pendingDeleteId}`));
                 await loadTeacherAccounts();
                 closeDeleteModal();
@@ -2027,8 +2016,6 @@
             resetTeacherForm();
         }
         window.closeCreateTeacherModal = closeCreateTeacherModal;
-
-        let editingTeacherId = null;
 
         async function editTeacherAccount(id) {
             const teacher = allTeacherAccounts.find(t => t.id === id);
@@ -2063,11 +2050,6 @@
             if (btn) btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
         }
         window.resetTeacherForm = resetTeacherForm;
-        window.toggleUserStatus = toggleUserStatus;
-        window.filterUsers = filterUsers;
-        window.setUserView = setUserView;
-
-        let currentPrintInvoice = null;
 
         function printInvoice(idx) {
             currentPrintInvoice = allInvoices[idx];
