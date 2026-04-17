@@ -1,3 +1,14 @@
+
+
+
+
+Here is the full, corrected HTML code. 
+
+The issue preventing the account creation and other functions from working was a **Syntax Error** (an extra `}` stray closing brace) near the `checkAuth()` function. This broke the entire script, meaning none of the login or signup functions were successfully registered by the browser.
+
+I have fixed the syntax error and ensured that the signup form correctly communicates with Firebase to save the created account into the `admin/teachers` Realtime Database directory.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -104,7 +115,7 @@
                 <h2 class="text-2xl font-bold text-gray-800">Create Account</h2>
                 <p class="text-sm text-gray-500 mt-1">Join Success Class Dashboard</p>
             </div>
-            <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4">
+            <form id="signup-form" onsubmit="window.handleSignup(event)" class="space-y-4">
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
                     <div class="relative">
@@ -414,7 +425,7 @@
                     <h2 class="text-lg font-bold text-gray-800 mb-6">
                         <i class="fas fa-calculator text-indigo-600 mr-2"></i>Usage Billing Calculator
                     </h2>
-                    
+
                     <div class="space-y-4">
                         <div class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
                             <div class="flex items-center gap-3 mb-2">
@@ -480,7 +491,7 @@
                             <i class="fas fa-download mr-1"></i> Export All
                         </button>
                     </div>
-                    
+
                     <div id="invoices-list" class="space-y-3 max-h-[500px] overflow-y-auto">
                         <div class="text-center py-12 text-gray-400">
                             <i class="fas fa-file-invoice-dollar text-4xl mb-3 opacity-30"></i>
@@ -662,7 +673,7 @@
                         <p class="text-xs text-gray-600 mt-1">Students</p>
                     </div>
                 </div>
-                
+
                 <h4 class="font-semibold text-gray-800 mb-3">
                     <i class="fas fa-history text-indigo-600 mr-2"></i>Recent Conversations
                 </h4>
@@ -731,7 +742,7 @@
                 </button>
             </div>
             <div class="p-6 overflow-y-auto max-h-[70vh]">
-                <form id="create-teacher-form" onsubmit="createTeacher(event)" class="space-y-4">
+                <form id="create-teacher-form" onsubmit="window.createTeacher(event)" class="space-y-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
                         <div class="relative">
@@ -740,7 +751,7 @@
                                 class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
                         <div class="relative">
@@ -749,7 +760,7 @@
                                 class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Password *</label>
                         <div class="relative">
@@ -758,7 +769,7 @@
                                 class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Company</label>
                         <div class="relative">
@@ -767,7 +778,7 @@
                                 class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
@@ -786,7 +797,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
                         <div class="relative">
@@ -795,7 +806,7 @@
                                 class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
                         </div>
                     </div>
-                    
+
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Roles *</label>
                         <div class="space-y-2 pl-2">
@@ -812,12 +823,12 @@
                         </div>
                         <p class="text-xs text-gray-400 mt-2 ml-2">Select one or more roles</p>
                     </div>
-                    
+
                     <div id="create-teacher-error" class="hidden text-red-500 text-sm text-center py-2 bg-red-50 rounded-lg"></div>
                     <div id="create-teacher-success" class="hidden text-green-600 text-sm text-center py-2 bg-green-50 rounded-lg">
                         <i class="fas fa-check-circle mr-1"></i> User saved successfully!
                     </div>
-                    
+
                     <div class="flex gap-3 pt-4">
                         <button type="button" onclick="closeCreateTeacherModal()" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
                             Cancel
@@ -866,8 +877,8 @@
         const BASE_RATE = 10;
 
         let allTeachers = {};
-        let allConversations = [];
-        let allInvoices = [];
+        let allConversations =[];
+        let allInvoices =[];
 
         function updateDateTime() {
             const now = new Date();
@@ -900,16 +911,16 @@
             try {
                 const snap = await get(ref(db, 'chats'));
                 const chats = snap.val() || {};
-                
+
                 const teachersMap = {};
-                
+
                 for (const [roomCode, room] of Object.entries(chats)) {
                     const teacherName = room.meta?.teacherName || room.meta?.teacher || 'Unknown';
                     const teacherEmail = room.meta?.teacherEmail || '';
                     const meta = room.meta || {};
-                    
+
                     const teacherKey = teacherEmail || teacherName;
-                    
+
                     if (!teachersMap[teacherKey]) {
                         teachersMap[teacherKey] = {
                             name: teacherName,
@@ -918,11 +929,11 @@
                             messages: 0,
                             students: new Set(),
                             lastActive: 0,
-                            roomCodes: [],
+                            roomCodes:[],
                             rawData: { sessions: 0, messages: 0, students: [] }
                         };
                     }
-                    
+
                     teachersMap[teacherKey].sessions++;
                     teachersMap[teacherKey].lastActive = Math.max(
                         teachersMap[teacherKey].lastActive,
@@ -930,14 +941,14 @@
                         room.lastActivity || 0
                     );
                     teachersMap[teacherKey].roomCodes.push(roomCode);
-                    
+
                     const msgCount = room.messages ? Object.keys(room.messages).length : 0;
                     const qCount = room.questions ? Object.keys(room.questions).length : 0;
                     const rCount = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
                     const cCount = room.studentChats ? Object.keys(room.studentChats).length : 0;
                     const totalMsgs = msgCount + qCount + rCount + cCount;
                     teachersMap[teacherKey].messages += totalMsgs;
-                    
+
                     if (room.messages) {
                         Object.entries(room.messages).forEach(([msgId, msg]) => {
                             teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
@@ -950,7 +961,7 @@
                             teachersMap[teacherKey].rawData.messages.push({ id: qId, ...q, type: 'question' });
                         });
                     }
-                    
+
                     if (room.students) {
                         Object.keys(room.students).forEach(s => {
                             teachersMap[teacherKey].students.add(s);
@@ -960,7 +971,7 @@
                         });
                     }
                 }
-                
+
                 allTeachers = teachersMap;
                 updateTeacherFilter();
             } catch (err) {
@@ -976,21 +987,21 @@
             try {
                 const snap = await get(ref(db, 'chats'));
                 const chats = snap.val() || {};
-                
+
                 allConversations = Object.entries(chats).map(([roomCode, room]) => {
                     const createdAt = room.meta?.createdAt || room.created || Date.now();
                     const lastActivity = room.lastActivity || createdAt;
                     const durationMs = lastActivity - createdAt;
                     const durationMinutes = Math.round(durationMs / 60000);
-                    
+
                     const teacherMsgs = room.messages ? Object.keys(room.messages).length : 0;
                     const questions = room.questions ? Object.keys(room.questions).length : 0;
                     const studentResponses = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
                     const studentChats = room.studentChats ? Object.keys(room.studentChats).length : 0;
                     const totalMessages = teacherMsgs + questions + studentResponses + studentChats;
-                    
+
                     const students = room.students ? Object.keys(room.students).length : 0;
-                    
+
                     return {
                         roomCode,
                         teacher: room.meta?.teacherName || room.meta?.teacher || 'Unknown',
@@ -1007,13 +1018,13 @@
                         students
                     };
                 }).sort((a, b) => b.lastActivity - a.lastActivity);
-                
+
                 renderConversationsTable(allConversations);
             } catch (err) {
                 console.error('Error loading conversations:', err);
             }
         }
-        
+
         function formatDuration(minutes) {
             if (minutes < 1) return '<1m';
             if (minutes < 60) return `${minutes}m`;
@@ -1021,13 +1032,13 @@
             const mins = minutes % 60;
             return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
         }
-        
+
         function formatConversationDate(timestamp) {
             const date = new Date(timestamp);
             const now = new Date();
             const isToday = date.toDateString() === now.toDateString();
             const isYesterday = new Date(now - 86400000).toDateString() === date.toDateString();
-            
+
             if (isToday) {
                 return `Today ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
             }
@@ -1040,7 +1051,7 @@
 
         function renderConversationsTable(conversations) {
             const tbody = document.getElementById('conversations-table-body');
-            
+
             if (conversations.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -1052,7 +1063,7 @@
                 `;
                 return;
             }
-            
+
             tbody.innerHTML = conversations.map(conv => `
                 <tr class="table-row border-b border-gray-50 hover:bg-gray-50">
                     <td class="px-6 py-4">
@@ -1107,9 +1118,9 @@
             const teacher = document.getElementById('conv-teacher-filter').value;
             const dateFrom = document.getElementById('conv-date-from').value;
             const dateTo = document.getElementById('conv-date-to').value;
-            
+
             let filtered = [...allConversations];
-            
+
             if (teacher) {
                 filtered = filtered.filter(c => 
                     c.teacherEmail === teacher || 
@@ -1123,7 +1134,7 @@
             if (dateTo) {
                 filtered = filtered.filter(c => new Date(c.lastActivity) <= new Date(dateTo + 'T23:59:59'));
             }
-            
+
             renderConversationsTable(filtered);
         }
 
@@ -1138,13 +1149,13 @@
             try {
                 const snap = await get(ref(db, `chats/${roomCode}`));
                 const room = snap.val();
-                
+
                 if (!room) return;
-                
+
                 document.getElementById('modal-room-info').textContent = `Room: ${roomCode} | Teacher: ${room.meta?.teacherName || 'Unknown'}`;
-                
+
                 const allMessages = [];
-                const types = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                const types =['messages', 'questions', 'studentResponses', 'studentChats'];
                 types.forEach(type => {
                     if (room[type]) {
                         Object.entries(room[type]).forEach(([id, msg]) => {
@@ -1152,9 +1163,9 @@
                         });
                     }
                 });
-                
+
                 allMessages.sort((a, b) => (a.timestamp || a.created || 0) - (b.timestamp || b.created || 0));
-                
+
                 document.getElementById('conversation-messages').innerHTML = allMessages.map(msg => `
                     <div class="flex gap-3 p-4 rounded-xl ${msg.sender === 'teacher' ? 'bg-blue-50' : 'bg-gray-50'}">
                         <div class="w-10 h-10 ${msg.sender === 'teacher' ? 'bg-blue-500' : 'bg-purple-500'} rounded-xl flex items-center justify-center text-white font-bold">
@@ -1170,7 +1181,7 @@
                         </div>
                     </div>
                 `).join('');
-                
+
                 document.getElementById('conversation-modal').classList.remove('hidden');
             } catch (err) {
                 console.error('Error loading conversation:', err);
@@ -1184,13 +1195,13 @@
         function viewTeacherDetail(teacherKey) {
             const teacher = allTeachers[teacherKey];
             if (!teacher) return;
-            
+
             document.getElementById('teacher-avatar').textContent = teacher.name.charAt(0).toUpperCase();
             document.getElementById('teacher-detail-name').textContent = teacher.name + (teacher.email ? ` (${teacher.email})` : '');
             document.getElementById('teacher-detail-sessions').textContent = teacher.sessions;
             document.getElementById('teacher-detail-messages').textContent = teacher.messages;
             document.getElementById('teacher-detail-students').textContent = teacher.students.size;
-            
+
             const filterValue = teacher.email || teacher.name;
             const teacherConvs = allConversations.filter(c => 
                 c.teacherEmail === filterValue || 
@@ -1207,7 +1218,7 @@
                     </div>
                 `).join('')
                 : '<p class="text-center text-gray-400 py-4">No conversations</p>';
-            
+
             document.getElementById('teacher-detail-modal').classList.remove('hidden');
         }
 
@@ -1226,7 +1237,7 @@
         function openBillForTeacher(teacherKey) {
             const teacher = allTeachers[teacherKey];
             if (!teacher) return;
-            
+
             document.getElementById('bill-teacher-name').value = teacher.name;
             const estimatedChars = teacher.messages * 20;
             document.getElementById('bill-token-usage').value = estimatedChars;
@@ -1242,7 +1253,7 @@
             const tokens = parseInt(document.getElementById('bill-token-usage').value) || 0;
             const tokenCost = tokens * TOKEN_RATE;
             const total = BASE_RATE + tokenCost;
-            
+
             document.getElementById('bill-token-cost').textContent = `€${tokenCost.toFixed(2)}`;
             document.getElementById('bill-total-cost').textContent = `€${total.toFixed(2)}`;
         }
@@ -1252,7 +1263,7 @@
             const tokenUsage = parseInt(document.getElementById('bill-token-usage').value) || 0;
             const tokenCost = tokenUsage * TOKEN_RATE;
             const total = BASE_RATE + tokenCost;
-            
+
             const invoice = {
                 teacherName,
                 tokenUsage,
@@ -1262,7 +1273,7 @@
                 createdAt: Date.now(),
                 provider: 'Success Class by Eburon AI'
             };
-            
+
             try {
                 const newRef = push(ref(db, 'admin/billing/invoices'));
                 await set(newRef, invoice);
@@ -1278,7 +1289,7 @@
         async function loadInvoices() {
             try {
                 const snap = await get(ref(db, 'admin/billing/invoices'));
-                allInvoices = snap.val() ? Object.values(snap.val()).sort((a, b) => b.createdAt - a.createdAt) : [];
+                allInvoices = snap.val() ? Object.values(snap.val()).sort((a, b) => b.createdAt - a.createdAt) :[];
                 renderInvoices();
                 renderBillingSummary();
             } catch (err) {
@@ -1288,7 +1299,7 @@
 
         function renderInvoices() {
             const container = document.getElementById('invoices-list');
-            
+
             if (allInvoices.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-12 text-gray-400">
@@ -1298,7 +1309,7 @@
                 `;
                 return;
             }
-            
+
             container.innerHTML = allInvoices.slice(0, 10).map((inv, idx) => `
                 <div class="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 transition">
                     <div class="flex justify-between items-start mb-2">
@@ -1325,7 +1336,7 @@
         function renderBillingSummary() {
             const tbody = document.getElementById('billing-summary-body');
             const teachers = Object.values(allTeachers);
-            
+
             if (teachers.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -1336,14 +1347,14 @@
                 `;
                 return;
             }
-            
+
             tbody.innerHTML = teachers.map(t => {
                 const estimatedChars = t.messages * 20;
                 const baseCost = t.sessions * BASE_RATE;
                 const tokenCost = estimatedChars * TOKEN_RATE;
                 const total = baseCost + tokenCost;
                 const teacherKey = t.email || t.name;
-                
+
                 return `
                     <tr class="table-row border-b border-gray-50">
                         <td class="px-6 py-4">
@@ -1376,7 +1387,7 @@
             const tokens = parseInt(document.getElementById('billing-tokens').value) || 0;
             const tokenCost = tokens * TOKEN_RATE;
             const total = BASE_RATE + tokenCost;
-            
+
             document.getElementById('token-cost').textContent = `€${tokenCost.toFixed(2)}`;
             document.getElementById('total-billing').textContent = total.toFixed(2);
         }
@@ -1390,7 +1401,7 @@
         function generateInvoice() {
             const teacherName = prompt('Enter teacher name for invoice:');
             if (!teacherName) return;
-            
+
             document.getElementById('bill-teacher-name').value = teacherName;
             document.getElementById('bill-token-usage').value = document.getElementById('billing-tokens').value || 0;
             updateBillPreview();
@@ -1402,12 +1413,12 @@
                 alert('No invoices to export');
                 return;
             }
-            
+
             const data = allInvoices.map(inv => ({
                 ...inv,
                 exportedAt: new Date().toISOString()
             }));
-            
+
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1423,7 +1434,7 @@
             const totalSessions = teachers.reduce((sum, t) => sum + t.sessions, 0);
             const totalMessages = teachers.reduce((sum, t) => sum + t.messages, 0);
             const totalRevenue = allInvoices.reduce((sum, inv) => sum + inv.total, 0);
-            
+
             document.getElementById('stat-total-teachers').textContent = totalTeachers;
             document.getElementById('stat-total-sessions').textContent = totalSessions;
             document.getElementById('stat-total-messages').textContent = totalMessages.toLocaleString();
@@ -1493,7 +1504,7 @@
 
         async function handleLogin(e) {
             e.preventDefault();
-            
+
             const email = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
@@ -1518,7 +1529,7 @@
                     const snap = await get(ref(db, 'admin/teachers'));
                     const teachers = snap.val() || {};
                     for (const [id, teacher] of Object.entries(teachers)) {
-                        const roles = teacher.roles || (teacher.role ? [teacher.role] : []);
+                        const roles = teacher.roles || (teacher.role ? [teacher.role] :[]);
                         if (roles.includes('admin') && teacher.email === email && teacher.password === password && teacher.active !== false) {
                             isValidUser = true;
                             displayName = teacher.name || email;
@@ -1563,12 +1574,12 @@
 
         async function handleSignup(e) {
             e.preventDefault();
-            
+
             const name = document.getElementById('signup-name').value.trim();
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
             const role = document.querySelector('input[name="signup-role"]:checked').value;
-            
+
             const errorDiv = document.getElementById('signup-error');
             const successDiv = document.getElementById('signup-success');
             const btn = document.getElementById('signup-btn');
@@ -1598,7 +1609,7 @@
                 const snap = await get(ref(db, 'admin/teachers'));
                 const teachers = snap.val() || {};
                 const exists = Object.values(teachers).some(t => t.email === email);
-                
+
                 if (exists) {
                     errorDiv.textContent = 'An account with this email already exists';
                     errorDiv.classList.remove('hidden');
@@ -1607,7 +1618,7 @@
                     return;
                 }
 
-                const roles = [role];
+                const roles =[role];
                 const newRef = push(ref(db, 'admin/teachers'));
                 await set(newRef, {
                     name,
@@ -1621,7 +1632,7 @@
 
                 successDiv.classList.remove('hidden');
                 btn.innerHTML = '<i class="fas fa-check mr-2"></i>Created!';
-                
+
                 setTimeout(() => {
                     closeSignupModal();
                     successDiv.classList.add('hidden');
@@ -1665,12 +1676,11 @@
                 refreshAll();
             }
         }
-        }
 
         document.addEventListener('DOMContentLoaded', checkAuth);
 
         // Teacher Account Management
-        let allTeacherAccounts = [];
+        let allTeacherAccounts =[];
 
         function toggleTeacherPassword() {
             const input = document.getElementById('teacher-password');
@@ -1688,7 +1698,7 @@
             try {
                 const snap = await get(ref(db, 'admin/teachers'));
                 const teachers = snap.val() || {};
-                
+
                 // Check if superuser exists
                 let superuserExists = false;
                 for (const [id, teacher] of Object.entries(teachers)) {
@@ -1710,7 +1720,7 @@
                         break;
                     }
                 }
-                
+
                 // Create superuser if not exists
                 if (!superuserExists) {
                     const newRef = push(ref(db, 'admin/teachers'));
@@ -1734,10 +1744,10 @@
             try {
                 // Ensure superuser exists in Firebase
                 await ensureSuperuserInFirebase();
-                
+
                 // First, migrate existing users from admin/users if needed
                 await migrateExistingUsers();
-                
+
                 const snap = await get(ref(db, 'admin/teachers'));
                 const teachers = snap.val() || {};
                 allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
@@ -1751,17 +1761,17 @@
             try {
                 const usersSnap = await get(ref(db, 'admin/users'));
                 const users = usersSnap.val() || {};
-                
+
                 for (const [key, user] of Object.entries(users)) {
                     if (!user.role) {
                         await set(ref(db, `admin/users/${key}/role`), 'teacher');
                     }
-                    
+
                     if (user.role === 'teacher' || !user.role) {
                         const teachersSnap = await get(ref(db, 'admin/teachers'));
                         const teachers = teachersSnap.val() || {};
                         const emailExists = Object.values(teachers).some(t => t.email === user.email);
-                        
+
                         if (!emailExists && user.email) {
                             const newRef = push(ref(db, 'admin/teachers'));
                             await set(newRef, {
@@ -1790,12 +1800,12 @@
         function setUserView(view) {
             currentUserView = view;
             localStorage.setItem('userView', view);
-            
+
             const cardsBtn = document.getElementById('view-cards-btn');
             const listBtn = document.getElementById('view-list-btn');
             const cardsContainer = document.getElementById('teachers-cards-container');
             const listContainer = document.getElementById('teachers-list-container');
-            
+
             if (view === 'cards') {
                 cardsBtn.className = 'px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg transition font-medium';
                 listBtn.className = 'px-4 py-2 bg-gray-100 text-gray-600 rounded-lg transition font-medium hover:bg-gray-200';
@@ -1813,17 +1823,17 @@
             const searchTerm = (document.getElementById('user-search')?.value || '').toLowerCase();
             const roleFilter = document.getElementById('user-role-filter')?.value || '';
             const statusFilter = document.getElementById('user-status-filter')?.value || '';
-            
+
             const filteredCards = allTeacherAccounts.filter(t => {
                 const matchesSearch = !searchTerm || 
                     (t.name && t.name.toLowerCase().includes(searchTerm)) ||
                     (t.email && t.email.toLowerCase().includes(searchTerm)) ||
                     (t.company && t.company.toLowerCase().includes(searchTerm));
-                
-                const roles = t.roles || (t.role ? [t.role] : []);
+
+                const roles = t.roles || (t.role ? [t.role] :[]);
                 const isSuperuser = t.isSuperuser === true;
                 let matchesRole = true;
-                
+
                 if (roleFilter) {
                     if (roleFilter === 'superuser') {
                         matchesRole = isSuperuser;
@@ -1831,15 +1841,15 @@
                         matchesRole = roles.includes(roleFilter);
                     }
                 }
-                
+
                 const isActive = t.active !== false;
                 let matchesStatus = true;
                 if (statusFilter === 'active') matchesStatus = isActive;
                 if (statusFilter === 'inactive') matchesStatus = !isActive;
-                
+
                 return matchesSearch && matchesRole && matchesStatus;
             });
-            
+
             renderFilteredUsers(filteredCards);
         }
 
@@ -1880,10 +1890,10 @@
         }
 
         function renderUserCard(t) {
-            const roles = t.roles || (t.role ? [t.role] : []);
+            const roles = t.roles || (t.role ?[t.role] :[]);
             const headerColor = getHeaderColor(roles);
             const rolesBadges = getRolesBadges(roles);
-            
+
             return `
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden">
                 <div class="bg-gradient-to-r ${headerColor} p-4">
@@ -1931,10 +1941,10 @@
         }
 
         function renderUserRow(t) {
-            const roles = t.roles || (t.role ? [t.role] : []);
+            const roles = t.roles || (t.role ? [t.role] :[]);
             const rolesBadges = getRolesBadges(roles);
             const displayName = t.name || 'Unknown';
-            
+
             return `
             <tr class="border-b border-gray-50 hover:bg-gray-50">
                 <td class="px-6 py-4">
@@ -1981,11 +1991,11 @@
             try {
                 const user = allTeacherAccounts.find(t => t.id === userId);
                 if (!user) return;
-                
+
                 const newStatus = user.active === false ? true : false;
                 await set(ref(db, `admin/teachers/${userId}/active`), newStatus);
                 await set(ref(db, `admin/teachers/${userId}/updatedAt`), Date.now());
-                
+
                 showToast(`User ${newStatus ? 'activated' : 'deactivated'}`);
                 await loadTeacherAccounts();
             } catch (err) {
@@ -2005,22 +2015,22 @@
                 <i class="fas ${colors.icon} mr-1"></i>${role}
             </span>`;
         }
-        
+
         function getRolesBadges(roles) {
             if (!roles || roles.length === 0) return getRoleBadge('user');
             return roles.map(role => getRoleBadge(role)).join(' ');
         }
-        
+
         function getHeaderColor(roles) {
             if (!roles || roles.length === 0) return 'from-gray-500 to-gray-600';
             if (roles.includes('admin')) return 'from-red-500 to-rose-600';
             if (roles.includes('teacher')) return 'from-indigo-500 to-purple-500';
             return 'from-gray-500 to-gray-600';
         }
-        
+
         function renderTeacherAccounts() {
             const container = document.getElementById('teachers-cards-container');
-            
+
             if (allTeacherAccounts.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-full text-center py-20 text-gray-400">
@@ -2031,12 +2041,12 @@
                 `;
                 return;
             }
-            
+
             container.innerHTML = allTeacherAccounts.map(t => {
-                const roles = t.roles || (t.role ? [t.role] : []);
+                const roles = t.roles || (t.role ? [t.role] :[]);
                 const headerColor = getHeaderColor(roles);
                 const rolesBadges = getRolesBadges(roles);
-                
+
                 return `
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden">
                     <!-- Header -->
@@ -2048,7 +2058,7 @@
                                 </div>
                                 <div class="text-white">
                                     <p class="font-bold text-lg">${t.name || 'Unknown'}</p>
-                                    <p class="text-white/80 text-sm">${t.email || 'No email'}</p>
+                                    <p class="text-white/80 text-sm">${t.email || 'No email'}</div>
                                 </div>
                             </div>
                             <div class="flex flex-col items-end gap-2">
@@ -2092,7 +2102,7 @@
 
         function renderTeachersList() {
             const tbody = document.getElementById('teachers-table-body');
-            
+
             if (allTeacherAccounts.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -2104,12 +2114,12 @@
                 `;
                 return;
             }
-            
+
             tbody.innerHTML = allTeacherAccounts.map(t => {
-                const roles = t.roles || (t.role ? [t.role] : []);
+                const roles = t.roles || (t.role ? [t.role] :[]);
                 const rolesBadges = getRolesBadges(roles);
                 const displayName = t.name || 'Unknown';
-                
+
                 return `
                 <tr class="border-b border-gray-50 hover:bg-gray-50">
                     <td class="px-6 py-4">
@@ -2163,7 +2173,7 @@
 
         async function createTeacher(e) {
             e.preventDefault();
-            
+
             const name = document.getElementById('teacher-name').value.trim();
             const email = document.getElementById('teacher-email').value.trim();
             const password = document.getElementById('teacher-password').value;
@@ -2171,41 +2181,41 @@
             const phone = document.getElementById('teacher-phone').value.trim();
             const vat = document.getElementById('teacher-vat').value.trim();
             const address = document.getElementById('teacher-address').value.trim();
-            
+
             const adminChecked = document.getElementById('role-admin').checked;
             const teacherChecked = document.getElementById('role-teacher').checked;
-            const roles = [];
+            const roles =[];
             if (adminChecked) roles.push('admin');
             if (teacherChecked) roles.push('teacher');
-            
+
             const errorDiv = document.getElementById('create-teacher-error');
             const successDiv = document.getElementById('create-teacher-success');
             const btn = document.getElementById('create-teacher-btn');
-            
+
             errorDiv.classList.add('hidden');
             successDiv.classList.add('hidden');
-            
+
             if (!name || !email || !password) {
                 errorDiv.textContent = 'Please fill in Name, Email, and Password';
                 errorDiv.classList.remove('hidden');
                 return;
             }
-            
+
             if (password.length < 6) {
                 errorDiv.textContent = 'Password must be at least 6 characters';
                 errorDiv.classList.remove('hidden');
                 return;
             }
-            
+
             if (roles.length === 0) {
                 errorDiv.textContent = 'Please select at least one role (Admin or Teacher)';
                 errorDiv.classList.remove('hidden');
                 return;
             }
-            
+
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
-            
+
             try {
                 const teacherData = {
                     name,
@@ -2219,20 +2229,20 @@
                     active: true,
                     updatedAt: Date.now()
                 };
-                
+
                 if (editingTeacherId) {
                     const snap = await get(ref(db, `admin/teachers/${editingTeacherId}`));
                     const existing = snap.val() || {};
                     teacherData.createdAt = existing.createdAt || Date.now();
                     teacherData.createdBy = existing.createdBy || 'admin';
-                    
+
                     await set(ref(db, `admin/teachers/${editingTeacherId}`), teacherData);
                     successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> User updated successfully!';
                 } else {
                     const snap = await get(ref(db, 'admin/teachers'));
                     const teachers = snap.val() || {};
                     const exists = Object.values(teachers).some(t => t.email === email);
-                    
+
                     if (exists) {
                         errorDiv.textContent = 'A user with this email already exists';
                         errorDiv.classList.remove('hidden');
@@ -2240,26 +2250,26 @@
                         btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create';
                         return;
                     }
-                    
+
                     teacherData.createdAt = Date.now();
                     teacherData.createdBy = sessionStorage.getItem('dashboard_user') || 'admin';
-                    
+
                     const newRef = push(ref(db, 'admin/teachers'));
                     await set(newRef, teacherData);
                     successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> User created successfully!';
                 }
-                
+
                 successDiv.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create';
-                
+
                 await loadTeacherAccounts();
-                
+
                 setTimeout(() => {
                     closeCreateTeacherModal();
                     successDiv.classList.add('hidden');
                 }, 1500);
-                
+
             } catch (err) {
                 console.error('Error saving user:', err);
                 errorDiv.textContent = 'Failed to save user account. Please try again.';
@@ -2346,7 +2356,7 @@
         async function editTeacherAccount(id) {
             const teacher = allTeacherAccounts.find(t => t.id === id);
             if (!teacher) return;
-            
+
             editingTeacherId = id;
             document.getElementById('teacher-name').value = teacher.name || '';
             document.getElementById('teacher-email').value = teacher.email || '';
@@ -2355,11 +2365,11 @@
             document.getElementById('teacher-phone').value = teacher.phone || '';
             document.getElementById('teacher-vat').value = teacher.vat || '';
             document.getElementById('teacher-address').value = teacher.address || '';
-            
-            const teacherRoles = teacher.roles || (teacher.role ? [teacher.role] : []);
+
+            const teacherRoles = teacher.roles || (teacher.role ? [teacher.role] :[]);
             document.getElementById('role-admin').checked = teacherRoles.includes('admin');
             document.getElementById('role-teacher').checked = teacherRoles.includes('teacher');
-            
+
             document.getElementById('create-teacher-form').querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Update';
             document.getElementById('create-teacher-modal').classList.remove('hidden');
         }
@@ -2420,7 +2430,7 @@
         function generatePrintableInvoice(inv) {
             const invoiceNum = 'INV-' + inv.createdAt.toString().slice(-8);
             const date = new Date(inv.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-            
+
             const html = `
                 <div class="invoice-document" style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 800px; margin: 0 auto;">
                     <!-- Header -->
@@ -2525,7 +2535,7 @@
                     }
                 </style>
             `;
-            
+
             document.getElementById('invoice-print-content').innerHTML = html;
         }
 
