@@ -32,12 +32,22 @@
         .badge-green { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #166534; }
         .badge-blue { background: linear-gradient(135deg, #dbeafe, #bfdbfe); color: #1e40af; }
         .badge-purple { background: linear-gradient(135deg, #f3e8ff, #e9d5ff); color: #6b21a8; }
+        
+        @media print {
+            body > :not(#print-container) { display: none !important; }
+            #print-container { display: block !important; }
+            #print-container * { visibility: visible; }
+            @page { size: auto; margin: 15mm; }
+        }
     </style>
 </head>
 
-<body class="min-h-screen">
+<body class="min-h-screen relative">
+    <!-- Print Container (Only visible when printing) -->
+    <div id="print-container" class="hidden print:block absolute inset-0 bg-white z-[9999] p-8 w-full min-h-screen text-black"></div>
+
     <!-- Login Screen -->
-    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-[100]">
+    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-[100] print:hidden">
         <div class="absolute inset-0 bg-black/20"></div>
         <div class="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md mx-4">
             <div class="text-center mb-8">
@@ -52,7 +62,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
                     <div class="relative">
                         <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input type="email" id="login-email" required placeholder="admin@eburon.ai"
+                        <input type="email" id="login-email" required placeholder="user@example.com"
                             class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
                     </div>
                 </div>
@@ -80,7 +90,7 @@
     </div>
 
     <!-- Main Dashboard (hidden until logged in) -->
-    <div id="dashboard-content" class="hidden">
+    <div id="dashboard-content" class="hidden print:hidden">
     <!-- Header -->
     <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -105,7 +115,7 @@
                     <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
                         <i class="fas fa-user-shield text-white text-sm"></i>
                     </div>
-                    <span class="text-sm font-medium text-gray-700 hidden sm:inline" id="logged-in-user">admin@eburon.ai</span>
+                    <span class="text-sm font-medium text-gray-700 hidden sm:inline" id="logged-in-user">admin</span>
                 </div>
                 <button onclick="window.refreshAll()" class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
                     <i class="fas fa-sync-alt mr-2"></i>Refresh
@@ -338,13 +348,13 @@
                             <input type="number" id="billing-tokens" placeholder="Enter token/character count" min="0"
                                 class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                 oninput="window.calculateBilling()">
-                            <p class="text-xs text-gray-400 mt-1">Number of characters processed by Eburon AI services</p>
+                            <p class="text-xs text-gray-400 mt-1">Number of characters processed by Eburon AI services. <em>(1 token = 1 character, charged at €0.0001 per character)</em></p>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Base Rate per Usage</label>
                             <div class="flex items-center gap-2">
-                                <span class="px-4 py-3 bg-gray-100 rounded-xl text-gray-600 font-medium">€10.00</span>
+                                <span class="px-4 py-3 bg-gray-100 rounded-xl text-gray-600 font-medium">€100.00</span>
                                 <span class="text-sm text-gray-500">per session</span>
                             </div>
                         </div>
@@ -352,7 +362,7 @@
                         <div class="pt-4 border-t border-gray-100">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Base Billing:</span>
-                                <span class="font-medium">€10.00</span>
+                                <span class="font-medium">€100.00</span>
                             </div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Token Cost (<span id="token-rate">€0.0001</span>/char):</span>
@@ -360,7 +370,7 @@
                             </div>
                             <div class="flex justify-between items-center pt-3 border-t border-gray-200">
                                 <span class="text-lg font-bold text-gray-800">Total Billing:</span>
-                                <span class="text-2xl font-bold text-indigo-600">€<span id="total-billing">10.00</span></span>
+                                <span class="text-2xl font-bold text-indigo-600">€<span id="total-billing">100.00</span></span>
                             </div>
                         </div>
 
@@ -426,9 +436,10 @@
             </div>
         </section>
     </main>
+    </div>
 
     <!-- Bill Modal -->
-    <div id="bill-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div id="bill-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden print:hidden">
         <div class="bill-modal bg-white rounded-3xl w-full max-w-lg mx-4 overflow-hidden">
             <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-white">
                 <div class="flex items-center justify-between">
@@ -462,7 +473,7 @@
                     <div class="p-4 bg-gray-50 rounded-xl space-y-2">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Base Rate:</span>
-                            <span class="font-medium">€10.00</span>
+                            <span class="font-medium">€100.00</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Token Cost:</span>
@@ -470,7 +481,7 @@
                         </div>
                         <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                             <span>Total:</span>
-                            <span class="text-indigo-600" id="bill-total-cost">€10.00</span>
+                            <span class="text-indigo-600" id="bill-total-cost">€100.00</span>
                         </div>
                     </div>
                 </div>
@@ -486,48 +497,29 @@
         </div>
     </div>
 
-    <!-- Print Invoice Modal -->
-    <div id="print-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-        <div class="bill-modal bg-white rounded-3xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4 text-white flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-print text-xl"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold">Print Invoice</h3>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="window.printCurrentInvoice()" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
-                        <i class="fas fa-print mr-2"></i>Print
-                    </button>
-                    <button onclick="window.closePrintModal()" class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="p-6 overflow-y-auto max-h-[75vh]" id="invoice-print-content">
-                <!-- Invoice content generated by JS -->
-            </div>
-        </div>
-    </div>
+    <!-- Print Invoice Modal (Hidden view to hold logic, refactored to use generic print function) -->
+    <div id="invoice-print-content" class="hidden"></div>
 
     <!-- Conversation Detail Modal -->
-    <div id="conversation-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-        <div class="bill-modal bg-white rounded-3xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50">
+    <div id="conversation-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden print:hidden">
+        <div class="bill-modal bg-white rounded-3xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50 shrink-0">
                 <div>
                     <h3 class="text-lg font-bold text-gray-800">
                         <i class="fas fa-comments text-indigo-600 mr-2"></i>Conversation Details
                     </h3>
                     <p class="text-sm text-gray-500" id="modal-room-info"></p>
                 </div>
-                <button onclick="window.closeConversationModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
-                    <i class="fas fa-times"></i>
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="window.printConversation()" class="px-4 py-2 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm text-indigo-600 font-medium text-sm border border-indigo-100">
+                        <i class="fas fa-file-pdf mr-2"></i>Export
+                    </button>
+                    <button onclick="window.closeConversationModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm border border-gray-200">
+                        <i class="fas fa-times text-gray-600"></i>
+                    </button>
+                </div>
             </div>
-            <div class="p-6 overflow-y-auto max-h-[70vh]">
+            <div class="p-6 overflow-y-auto flex-1">
                 <div id="conversation-messages" class="space-y-3">
                     <!-- Messages loaded here -->
                 </div>
@@ -536,7 +528,7 @@
     </div>
 
     <!-- Teacher Detail Modal -->
-    <div id="teacher-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div id="teacher-detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden print:hidden">
         <div class="bill-modal bg-white rounded-3xl w-full max-w-2xl mx-4 overflow-hidden">
             <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50">
                 <div class="flex items-center gap-4">
@@ -548,8 +540,8 @@
                         <p class="text-sm text-gray-500">Teacher Profile</p>
                     </div>
                 </div>
-                <button onclick="window.closeTeacherModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
-                    <i class="fas fa-times"></i>
+                <button onclick="window.closeTeacherModal()" class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm border border-gray-200">
+                    <i class="fas fa-times text-gray-600"></i>
                 </button>
             </div>
             <div class="p-6">
@@ -579,7 +571,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="delete-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] hidden">
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] hidden print:hidden">
         <div class="bill-modal bg-white rounded-3xl w-full max-w-md mx-4 overflow-hidden">
             <div class="bg-gradient-to-r from-red-500 to-rose-600 p-6 text-white">
                 <div class="flex items-center gap-4">
@@ -619,10 +611,10 @@
         </div>
     </div>
 
-    <!-- Create Teacher Modal (No role checkboxes, default sets to Teacher) -->
-    <div id="create-teacher-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-        <div class="bill-modal bg-white rounded-3xl w-full max-w-lg mx-4 max-h-[90vh] overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-5 text-white flex items-center justify-between">
+    <!-- Create Teacher Modal -->
+    <div id="create-teacher-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden print:hidden">
+        <div class="bill-modal bg-white rounded-3xl w-full max-w-lg mx-4 max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 p-5 text-white flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-user-plus text-xl"></i>
@@ -635,7 +627,7 @@
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="p-6 overflow-y-auto max-h-[70vh]">
+            <div class="p-6 overflow-y-auto flex-1">
                 <form id="create-teacher-form" onsubmit="window.createTeacher(event)" class="space-y-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
@@ -719,10 +711,10 @@
         </div>
     </div>
 
-    <!-- 1. SCRIPT FOR GLOBAL VARIABLES (Solves "Cannot access before initialization") -->
+    <!-- 1. SCRIPT FOR GLOBAL VARIABLES -->
     <script>
         const TOKEN_RATE = 0.0001;
-        const BASE_RATE = 10;
+        const BASE_RATE = 100;
         const ADMIN_EMAIL = 'admin@eburon.ai';
         const ADMIN_PASSWORD = 'JoLernout26';
 
@@ -734,10 +726,9 @@
         let isLoggedIn = false;
         let isSuperuser = false;
         let currentUserView = localStorage.getItem('userView') || 'cards';
-        
+
         let editingTeacherId = null;
         let pendingDeleteId = null;
-        let currentPrintInvoice = null;
     </script>
 
     <!-- 2. SCRIPT FOR FIREBASE INITIALIZATION -->
@@ -747,13 +738,14 @@
 
         async function initialize() {
             try {
-                const response = await fetch('api.json');
-                
-                if (!response.ok) {
-                    throw new Error("api.json not found or network error. Are you running a local server?");
-                }
-
-                const FIREBASE_CONFIG = await response.json();
+                // Hardcoded Firebase Config based on requirements
+                const FIREBASE_CONFIG = {
+                    apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
+                    authDomain: "macx-5feca.firebaseapp.com",
+                    databaseURL: "https://macx-5feca-default-rtdb.asia-southeast1.firebasedatabase.app",
+                    projectId: "macx-5feca",
+                    storageBucket: "macx-5feca.appspot.com"
+                };
 
                 const app = initializeApp(FIREBASE_CONFIG);
                 const db = getDatabase(app);
@@ -766,14 +758,14 @@
                 window.fbRemove = remove; 
 
                 document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
-                
+
                 if (window.checkAuth) {
                     window.checkAuth();
                 }
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
                 document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-red-500 mr-1"></i> Config Error';
-                alert("Database Initialization Failed.\nMake sure api.json exists and you are running the file over a local web server (http://localhost:...), not directly (file://).");
+                alert("Database Initialization Failed.\nPlease ensure your configuration is correct and network is available.");
             }
         }
 
@@ -787,7 +779,7 @@
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
         }
-        
+
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
@@ -839,16 +831,11 @@
                             students: new Set(),
                             lastActive: 0,
                             roomCodes:[],
-                            rawData: { sessions: 0, messages: 0, students:[] }
+                            rawData: { sessions: 0, messages: 0, students: [] }
                         };
                     }
 
                     teachersMap[teacherKey].sessions++;
-                    teachersMap[teacherKey].lastActive = Math.max(
-                        teachersMap[teacherKey].lastActive,
-                        meta.createdAt || 0,
-                        room.lastActivity || 0
-                    );
                     teachersMap[teacherKey].roomCodes.push(roomCode);
 
                     const msgCount = room.messages ? Object.keys(room.messages).length : 0;
@@ -857,19 +844,6 @@
                     const cCount = room.studentChats ? Object.keys(room.studentChats).length : 0;
                     const totalMsgs = msgCount + qCount + rCount + cCount;
                     teachersMap[teacherKey].messages += totalMsgs;
-
-                    if (room.messages) {
-                        Object.entries(room.messages).forEach(([msgId, msg]) => {
-                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
-                            teachersMap[teacherKey].rawData.messages.push({ id: msgId, ...msg });
-                        });
-                    }
-                    if (room.questions) {
-                        Object.entries(room.questions).forEach(([qId, q]) => {
-                            teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages ||[];
-                            teachersMap[teacherKey].rawData.messages.push({ id: qId, ...q, type: 'question' });
-                        });
-                    }
 
                     if (room.students) {
                         Object.keys(room.students).forEach(s => {
@@ -888,16 +862,41 @@
             }
         }
 
+        function extractTime(m) {
+            let t = m.timestamp || m.created || 0;
+            if (typeof t === 'string') return new Date(t).getTime();
+            return t;
+        }
+
         async function loadConversations() {
             try {
                 const snap = await window.fbGet(window.fbRef(window.fbDb, 'chats'));
                 const chats = snap.val() || {};
 
                 allConversations = Object.entries(chats).map(([roomCode, room]) => {
-                    const createdAt = room.meta?.createdAt || room.created || Date.now();
-                    const lastActivity = room.lastActivity || createdAt;
+                    let earliest = room.meta?.createdAt || room.created;
+                    let latest = room.lastActivity;
+
+                    let allTimes =[];
+                    if (room.messages) Object.values(room.messages).forEach(m => allTimes.push(extractTime(m)));
+                    if (room.questions) Object.values(room.questions).forEach(m => allTimes.push(extractTime(m)));
+                    if (room.studentResponses) Object.values(room.studentResponses).forEach(m => allTimes.push(extractTime(m)));
+                    if (room.studentChats) Object.values(room.studentChats).forEach(m => allTimes.push(extractTime(m)));
+
+                    allTimes = allTimes.filter(t => t > 0);
+
+                    if (allTimes.length > 0) {
+                        if (!earliest) earliest = Math.min(...allTimes);
+                        if (!latest) latest = Math.max(...allTimes);
+                    } else {
+                        earliest = earliest || Date.now();
+                        latest = latest || earliest;
+                    }
+
+                    const createdAt = earliest;
+                    const lastActivity = latest;
                     const durationMs = lastActivity - createdAt;
-                    const durationMinutes = Math.round(durationMs / 60000);
+                    const durationMinutes = Math.max(0, Math.round(durationMs / 60000));
 
                     const teacherMsgs = room.messages ? Object.keys(room.messages).length : 0;
                     const questions = room.questions ? Object.keys(room.questions).length : 0;
@@ -1061,8 +1060,8 @@
 
                 document.getElementById('modal-room-info').textContent = `Room: ${roomCode} | Teacher: ${room.meta?.teacherName || 'Unknown'}`;
 
-                const allMessages = [];
-                const types =['messages', 'questions', 'studentResponses', 'studentChats'];
+                const allMessages =[];
+                const types = ['messages', 'questions', 'studentResponses', 'studentChats'];
                 types.forEach(type => {
                     if (room[type]) {
                         Object.entries(room[type]).forEach(([id, msg]) => {
@@ -1071,17 +1070,17 @@
                     }
                 });
 
-                allMessages.sort((a, b) => (a.timestamp || a.created || 0) - (b.timestamp || b.created || 0));
+                allMessages.sort((a, b) => extractTime(a) - extractTime(b));
 
                 document.getElementById('conversation-messages').innerHTML = allMessages.map(msg => `
                     <div class="flex gap-3 p-4 rounded-xl ${msg.sender === 'teacher' ? 'bg-blue-50' : 'bg-gray-50'}">
-                        <div class="w-10 h-10 ${msg.sender === 'teacher' ? 'bg-blue-500' : 'bg-purple-500'} rounded-xl flex items-center justify-center text-white font-bold">
+                        <div class="w-10 h-10 ${msg.sender === 'teacher' ? 'bg-blue-500' : 'bg-purple-500'} rounded-xl flex items-center justify-center text-white font-bold shrink-0">
                             ${(msg.sender || 'U').charAt(0).toUpperCase()}
                         </div>
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
                                 <span class="font-semibold text-gray-800">${msg.sender || 'Unknown'}</span>
-                                <span class="text-xs text-gray-500">${formatDate(msg.timestamp || msg.created)}</span>
+                                <span class="text-xs text-gray-500">${formatDate(extractTime(msg))}</span>
                                 <span class="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">${msg.type}</span>
                             </div>
                             <p class="text-gray-700">${msg.text || msg.content || 'No content'}</p>
@@ -1100,6 +1099,36 @@
             document.getElementById('conversation-modal').classList.add('hidden');
         }
         window.closeConversationModal = closeConversationModal;
+
+        function printHTML(htmlContent) {
+            const container = document.getElementById('print-container');
+            container.innerHTML = htmlContent;
+            
+            setTimeout(() => {
+                window.print();
+                container.innerHTML = '';
+            }, 150);
+        }
+
+        function printConversation() {
+            const roomInfo = document.getElementById('modal-room-info').textContent;
+            const messagesHTML = document.getElementById('conversation-messages').innerHTML;
+            
+            const html = `
+                <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; color: #333;">
+                    <div style="border-bottom: 2px solid #4f46e5; padding-bottom: 20px; margin-bottom: 20px;">
+                        <h1 style="color: #4f46e5; margin: 0 0 10px 0;">Conversation Details</h1>
+                        <p style="margin: 0; color: #666; font-size: 16px; font-weight: bold;">${roomInfo}</p>
+                        <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">Exported on: ${new Date().toLocaleString()}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        ${messagesHTML}
+                    </div>
+                </div>
+            `;
+            printHTML(html);
+        }
+        window.printConversation = printConversation;
 
         function viewTeacherDetail(teacherKey) {
             const teacher = allTeachers[teacherKey];
@@ -1179,17 +1208,34 @@
             const tokenCost = tokenUsage * TOKEN_RATE;
             const total = BASE_RATE + tokenCost;
 
-            const invoice = {
-                teacherName,
-                tokenUsage,
-                baseCost: BASE_RATE,
-                tokenCost: parseFloat(tokenCost.toFixed(4)),
-                total: parseFloat(total.toFixed(2)),
-                createdAt: Date.now(),
-                provider: 'Success Class by Eburon AI'
-            };
-
             try {
+                // Generate sequential Invoice ID
+                const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/billing/invoices'));
+                const existing = snap.val() ? Object.values(snap.val()) :[];
+                
+                const dateObj = new Date();
+                const yy = dateObj.getFullYear().toString().slice(-2);
+                const mm = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+                
+                const thisMonthInvoices = existing.filter(i => {
+                    const d = new Date(i.createdAt);
+                    return d.getFullYear() === dateObj.getFullYear() && d.getMonth() === dateObj.getMonth();
+                });
+                
+                const nextNum = 152 + thisMonthInvoices.length;
+                const invoiceNum = `V${yy}${mm}-${nextNum.toString().padStart(4, '0')}`;
+
+                const invoice = {
+                    invoiceNumber: invoiceNum,
+                    teacherName,
+                    tokenUsage,
+                    baseCost: BASE_RATE,
+                    tokenCost: parseFloat(tokenCost.toFixed(4)),
+                    total: parseFloat(total.toFixed(2)),
+                    createdAt: Date.now(),
+                    provider: 'Success Class by Eburon AI'
+                };
+
                 const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/billing/invoices'));
                 await window.fbSet(newRef, invoice);
                 closeBillModal();
@@ -1231,7 +1277,7 @@
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <p class="font-semibold text-gray-800">${inv.teacherName}</p>
-                            <p class="text-xs text-gray-500">${formatDate(inv.createdAt)}</p>
+                            <p class="text-xs text-gray-500">${inv.invoiceNumber || 'INV-Old'} &middot; ${formatDate(inv.createdAt)}</p>
                         </div>
                         <span class="text-lg font-bold text-indigo-600">€${inv.total.toFixed(2)}</span>
                     </div>
@@ -1312,7 +1358,7 @@
         function resetBilling() {
             document.getElementById('billing-tokens').value = '';
             document.getElementById('token-cost').textContent = '€0.00';
-            document.getElementById('total-billing').textContent = '10.00';
+            document.getElementById('total-billing').textContent = '100.00';
         }
         window.resetBilling = resetBilling;
 
@@ -1374,7 +1420,7 @@
 
         function showToast(message) {
             const toast = document.createElement('div');
-            toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-bounce';
+            toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[150] animate-bounce';
             toast.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
@@ -1418,17 +1464,17 @@
                     displayName = 'Superuser';
                 } else {
                     if (!window.fbDb || !window.fbGet || !window.fbRef) {
-                        throw new Error("Database disconnected. Ensure api.json is loaded correctly.");
+                        throw new Error("Database disconnected.");
                     }
-                    
+
                     const fetchPromise = window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                     const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out.")), 8000));
-                    
+
                     const snap = await Promise.race([fetchPromise, timeoutPromise]);
                     const teachers = snap.val() || {};
-                    
+
                     for (const [id, teacher] of Object.entries(teachers)) {
-                        const roles = teacher.roles || (teacher.role ? [teacher.role] :[]);
+                        const roles = teacher.roles || (teacher.role ?[teacher.role] :[]);
                         if (roles.includes('admin') && teacher.email && teacher.email.toLowerCase() === email && teacher.password === password && teacher.active !== false) {
                             isValidUser = true;
                             displayName = teacher.name || email;
@@ -1444,13 +1490,13 @@
                     sessionStorage.setItem('dashboard_is_superuser', isSuperuser ? 'true' : 'false');
                     sessionStorage.setItem('dashboard_user', email);
                     sessionStorage.setItem('dashboard_display_name', displayName);
-                    
+
                     document.getElementById('login-screen').classList.add('hidden');
                     document.getElementById('dashboard-content').classList.remove('hidden');
-                    
+
                     const userBadge = isSuperuser ? ' <span class="ml-1 text-xs bg-yellow-400 text-yellow-800 px-2 py-0.5 rounded-full">Superuser</span>' : '';
                     document.getElementById('logged-in-user').innerHTML = displayName + userBadge;
-                    
+
                     refreshAll();
                 } else {
                     errorDiv.classList.remove('hidden');
@@ -1517,7 +1563,7 @@
                 const teachers = snap.val() || {};
 
                 let superuserExists = false;
-                for (const [id, teacher] of Object.entries(teachers)) {
+                for (const[id, teacher] of Object.entries(teachers)) {
                     if (teacher.email && teacher.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
                         superuserExists = true;
                         if (!teacher.isSuperuser || !teacher.roles?.includes('admin')) {
@@ -1557,14 +1603,14 @@
         async function loadTeacherAccounts() {
             try {
                 if (!window.fbDb) return;
-                
+
                 await ensureSuperuserInFirebase();
                 await migrateExistingUsers();
 
                 const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
                 const teachers = snap.val() || {};
                 allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
-                
+
                 filterUsers();
             } catch (err) {
                 console.error('Error loading teacher accounts:', err);
@@ -1644,7 +1690,7 @@
                     (t.email && t.email.toLowerCase().includes(searchTerm)) ||
                     (t.company && t.company.toLowerCase().includes(searchTerm));
 
-                const roles = t.roles || (t.role ?[t.role] :[]);
+                const roles = t.roles || (t.role ? [t.role] :[]);
                 const isUserSuper = t.isSuperuser === true;
                 let matchesRole = true;
 
@@ -1705,7 +1751,7 @@
         }
 
         function renderUserCard(t) {
-            const roles = t.roles || (t.role ? [t.role] :[]);
+            const roles = t.roles || (t.role ?[t.role] :[]);
             const headerColor = getHeaderColor(roles);
             const rolesBadges = getRolesBadges(roles);
 
@@ -1895,7 +1941,7 @@
                 if (editingTeacherId) {
                     const snap = await window.fbGet(window.fbRef(window.fbDb, `admin/teachers/${editingTeacherId}`));
                     const existing = snap.val() || {};
-                    
+
                     if (existing.roles && existing.roles.length > 0) {
                         userRoles = existing.roles;
                     }
@@ -1989,7 +2035,14 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
 
             try {
+                // Remove from both places to prevent migration from bringing it back
                 await window.fbRemove(window.fbRef(window.fbDb, `admin/teachers/${pendingDeleteId}`));
+                await window.fbRemove(window.fbRef(window.fbDb, `admin/users/${pendingDeleteId}`));
+                
+                // Immediately remove from UI list
+                allTeacherAccounts = allTeacherAccounts.filter(t => t.id !== pendingDeleteId);
+                filterUsers();
+                
                 await loadTeacherAccounts();
                 closeDeleteModal();
                 showToast('Teacher account deleted');
@@ -2052,29 +2105,18 @@
         window.resetTeacherForm = resetTeacherForm;
 
         function printInvoice(idx) {
-            currentPrintInvoice = allInvoices[idx];
-            generatePrintableInvoice(currentPrintInvoice);
-            document.getElementById('print-modal').classList.remove('hidden');
-        }
-        window.printInvoice = printInvoice;
-
-        function closePrintModal() {
-            document.getElementById('print-modal').classList.add('hidden');
-        }
-        window.closePrintModal = closePrintModal;
-
-        function generatePrintableInvoice(inv) {
-            const invoiceNum = 'INV-' + inv.createdAt.toString().slice(-8);
+            const inv = allInvoices[idx];
+            const invoiceNum = inv.invoiceNumber || ('INV-' + inv.createdAt.toString().slice(-8));
             const date = new Date(inv.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
 
             const html = `
-                <div class="invoice-document" style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 800px; margin: 0 auto;">
+                <div style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 800px; margin: 0 auto; background: white; padding: 20px;">
                     <!-- Header -->
                     <div style="border-bottom: 3px solid #4f46e5; padding-bottom: 20px; margin-bottom: 30px;">
                         <div style="display: table; width: 100%;">
                             <div style="display: table-cell; vertical-align: top;">
                                 <h1 style="margin: 0; font-size: 28px; color: #4f46e5; font-weight: 700;">ARIOLAS BV</h1>
-                                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Veurnseweg 564/1A<br>Ieper 8906<br>BTW.BE: 0782.953.514</p>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Boterstraat 36<br>8900 Ieper<br>BTW: BE 0782.953.514</p>
                             </div>
                             <div style="display: table-cell; vertical-align: top; text-align: right;">
                                 <h2 style="margin: 0; font-size: 24px; color: #333;">FACTUUR</h2>
@@ -2147,8 +2189,8 @@
                             </div>
                             <div style="display: table-cell; vertical-align: top; text-align: right; font-size: 12px; color: #64748b;">
                                 <p style="margin: 0;"><strong>ARIOLAS BV</strong></p>
-                                <p style="margin: 5px 0 0 0;">Veurnseweg 564/1A</p>
-                                <p style="margin: 0;">Ieper 8906</p>
+                                <p style="margin: 5px 0 0 0;">Boterstraat 36</p>
+                                <p style="margin: 0;">8900 Ieper</p>
                                 <p style="margin: 5px 0 0 0;">BTW: BE 0782.953.514</p>
                             </div>
                         </div>
@@ -2157,28 +2199,11 @@
                         </div>
                     </div>
                 </div>
-
-                <style>
-                    @media print {
-                        body * { visibility: hidden; }
-                        #invoice-print-content, #invoice-print-content * { visibility: visible; }
-                        #invoice-print-content {
-                            position: absolute; left: 0; top: 0; width: 100%;
-                            padding: 20px; background: white;
-                        }
-                        .invoice-document { max-width: 100% !important; }
-                        @page { size: A4; margin: 15mm; }
-                    }
-                </style>
             `;
-
-            document.getElementById('invoice-print-content').innerHTML = html;
+            
+            printHTML(html);
         }
-
-        function printCurrentInvoice() {
-            window.print();
-        }
-        window.printCurrentInvoice = printCurrentInvoice;
+        window.printInvoice = printInvoice;
     </script>
 </body>
 
