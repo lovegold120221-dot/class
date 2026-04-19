@@ -1,0 +1,2626 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Success Class - Teacher Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #fafbff 100%);
+        }
+
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(99, 102, 241, 0.15);
+        }
+
+        .table-row:hover {
+            background: #f8faff;
+        }
+
+        .bill-modal {
+            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge-green {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+        }
+
+        .badge-blue {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+        }
+
+        .badge-purple {
+            background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+            color: #6b21a8;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen"
+        class="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center z-[100]">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <div
+                    class="w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <i class="fas fa-user-shield text-white text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
+                <p class="text-sm text-gray-500 mt-1">Sign in to access Success Class</p>
+            </div>
+            <form id="login-form" onsubmit="window.handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="email" id="login-email" required placeholder="hello@northfield-mail.com"
+                            class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="login-password" required placeholder="Enter password"
+                            class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                        <button type="button" onclick="window.togglePassword()"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye" id="password-toggle-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="login-error" class="hidden text-red-500 text-sm text-center py-2 bg-red-50 rounded-lg">
+                    <i class="fas fa-exclamation-circle mr-1"></i> Invalid credentials
+                </div>
+                <button type="submit" id="login-btn"
+                    class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl font-semibold hover:from-indigo-600 hover:to-purple-600 transition shadow-lg mt-4">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                </button>
+            </form>
+            <p class="text-center text-xs text-gray-400 mt-6">Powered by <span
+                    class="font-semibold text-indigo-600">Success Class</span> &amp; <span
+                    class="font-semibold text-indigo-600">Eburon AI</span></p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (hidden until logged in) -->
+    <div id="dashboard-content" class="hidden">
+        <!-- Header -->
+        <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-12 h-12 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1
+                            class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                            Teacher Dashboard</h1>
+                        <p class="text-xs text-gray-500">Powered by <span class="font-semibold text-indigo-600">Success
+                                Class</span> &amp; <span class="font-semibold text-indigo-600">Eburon AI</span></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-medium text-gray-700" id="current-date"></p>
+                        <p class="text-xs text-gray-500" id="current-time"></p>
+                    </div>
+                    <span id="connection-status" class="text-sm">
+                        <i class="fas fa-circle text-yellow-400 animate-pulse mr-1"></i> Connecting...
+                    </span>
+                    <div
+                        class="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-xl">
+                        <div
+                            class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-user-shield text-white text-sm"></i>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:inline"
+                            id="logged-in-user">hello@northfield-mail.com</span>
+                    </div>
+                    <button onclick="window.refreshAll()"
+                        class="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                    <button onclick="window.logout()"
+                        class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition shadow-md"
+                        title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            <!-- Stats Overview -->
+            <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-chalkboard-teacher text-white text-xl"></i>
+                        </div>
+                        <span class="badge-green px-3 py-1 rounded-full text-xs font-semibold">Active</span>
+                    </div>
+                    <p class="text-4xl font-bold text-gray-800" id="stat-total-teachers">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Total Teachers</p>
+                </div>
+
+                <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-comments text-white text-xl"></i>
+                        </div>
+                        <span class="badge-blue px-3 py-1 rounded-full text-xs font-semibold">Sessions</span>
+                    </div>
+                    <p class="text-4xl font-bold text-gray-800" id="stat-total-sessions">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Total Sessions</p>
+                </div>
+
+                <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-language text-white text-xl"></i>
+                        </div>
+                        <span class="badge-purple px-3 py-1 rounded-full text-xs font-semibold">Messages</span>
+                    </div>
+                    <p class="text-4xl font-bold text-gray-800" id="stat-total-messages">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Messages Translated</p>
+                </div>
+
+                <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                    <div class="flex items-center justify-between mb-4">
+                        <div
+                            class="w-14 h-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-md">
+                            <i class="fas fa-euro-sign text-white text-xl"></i>
+                        </div>
+                        <span
+                            class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Revenue</span>
+                    </div>
+                    <p class="text-4xl font-bold text-gray-800">€<span id="stat-total-revenue">0.00</span></p>
+                    <p class="text-sm text-gray-500 mt-1">Total Revenue</p>
+                </div>
+            </section>
+
+            <!-- Tabs -->
+            <div class="flex gap-2 mb-6 flex-wrap">
+                <button onclick="window.showTab('teachers')" id="tab-teachers"
+                    class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>Teachers
+                </button>
+                <button onclick="window.showTab('conversations')" id="tab-conversations"
+                    class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-white text-gray-600 hover:bg-gray-50 border border-gray-200">
+                    <i class="fas fa-history mr-2"></i>Conversations
+                </button>
+                <button onclick="window.showTab('billing')" id="tab-billing"
+                    class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-white text-gray-600 hover:bg-gray-50 border border-gray-200">
+                    <i class="fas fa-file-invoice-dollar mr-2"></i>Billing
+                </button>
+            </div>
+
+            <!-- Teachers Tab -->
+            <section id="panel-teachers" class="tab-panel">
+                <!-- Header with Create Teacher Button -->
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-chalkboard-teacher text-indigo-600 mr-3"></i>Teachers
+                    </h2>
+                    <button onclick="window.openCreateTeacherModal()"
+                        class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-lg font-semibold">
+                        <i class="fas fa-user-plus mr-2"></i>Create User Account
+                    </button>
+                </div>
+
+                <!-- Teachers View Toggle & Search -->
+                <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+                    <div class="flex items-center gap-2">
+                        <button onclick="window.setUserView('cards')" id="view-cards-btn"
+                            class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg transition font-medium">
+                            <i class="fas fa-th-large mr-1"></i> Cards
+                        </button>
+                        <button onclick="window.setUserView('list')" id="view-list-btn"
+                            class="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg transition font-medium hover:bg-gray-200">
+                            <i class="fas fa-list mr-1"></i> List
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="user-search" placeholder="Search users..."
+                                oninput="window.filterUsers()"
+                                class="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm w-64">
+                        </div>
+                        <select id="user-role-filter" onchange="window.filterUsers()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <option value="">All Roles</option>
+                            <option value="admin">Admin</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="superuser">Superuser</option>
+                        </select>
+                        <select id="user-status-filter" onchange="window.filterUsers()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Teachers Cards Grid -->
+                <div id="teachers-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="col-span-full text-center py-16 text-gray-400">
+                        <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+                        <p class="text-lg">Loading users...</p>
+                    </div>
+                </div>
+
+                <!-- Teachers List Table -->
+                <div id="teachers-list-container" class="hidden">
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <table class="w-full">
+                            <thead class="bg-gray-50/50">
+                                <tr>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">User
+                                    </th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Roles
+                                    </th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Company</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status
+                                    </th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Created</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teachers-table-body">
+                                <tr>
+                                    <td colspan="6" class="px-6 py-16 text-center text-gray-400">
+                                        <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
+                                        <p>Loading users...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Conversations Tab -->
+            <section id="panel-conversations" class="tab-panel hidden">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
+                    <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4">
+                        <h2 class="text-lg font-bold text-gray-800">
+                            <i class="fas fa-history text-indigo-600 mr-2"></i>Conversation History
+                        </h2>
+                        <div class="flex items-center gap-3 flex-wrap">
+                            <select id="conv-teacher-filter" onchange="window.filterConversations()"
+                                class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                                <option value="">All Teachers</option>
+                            </select>
+                            <input type="date" id="conv-date-from" onchange="window.filterConversations()"
+                                class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <input type="date" id="conv-date-to" onchange="window.filterConversations()"
+                                class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 text-sm">
+                            <button onclick="window.clearConversationFilters()"
+                                class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition text-sm">
+                                <i class="fas fa-times mr-1"></i> Clear
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50/50">
+                                <tr>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Room
+                                    </th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Teacher</th>
+                                    <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Messages</th>
+                                    <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Students</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Started</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Last
+                                        Activity</th>
+                                    <th class="text-center px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Duration</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="conversations-table-body">
+                                <tr>
+                                    <td colspan="6" class="px-6 py-16 text-center text-gray-400">
+                                        <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
+                                        <p>Loading conversations...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Billing Tab -->
+            <section id="panel-billing" class="tab-panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Billing Calculator -->
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                        <h2 class="text-lg font-bold text-gray-800 mb-6">
+                            <i class="fas fa-calculator text-indigo-600 mr-2"></i>Usage Billing Calculator
+                        </h2>
+
+                        <div class="space-y-4">
+                            <div
+                                class="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-robot text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Powered by Eburon AI</p>
+                                        <p class="text-xs text-gray-500">Speech-to-Text & Translation Services</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Optional Character
+                                    Usage</label>
+                                <input type="number" id="billing-tokens" placeholder="Enter token/character count"
+                                    min="0"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    oninput="window.calculateBilling()">
+                                <p class="text-xs text-gray-400 mt-1">Optional character-processing charge. Leave it at
+                                    0 when only the base fee applies.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Base Rate per Usage</label>
+                                <div class="flex items-center gap-2">
+                                    <span
+                                        class="px-4 py-3 bg-gray-100 rounded-xl text-gray-600 font-medium">€100.00</span>
+                                    <span class="text-sm text-gray-500">per session</span>
+                                </div>
+                            </div>
+
+                            <div class="pt-4 border-t border-gray-100">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Base Billing:</span>
+                                    <span class="font-medium">€100.00</span>
+                                </div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-gray-600">Token Cost (<span
+                                            id="token-rate">€0.0001</span>/char):</span>
+                                    <span class="font-medium" id="token-cost">€0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                                    <span class="text-lg font-bold text-gray-800">Total Billing:</span>
+                                    <span class="text-2xl font-bold text-indigo-600">€<span
+                                            id="total-billing">100.00</span></span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 mt-6">
+                                <button onclick="window.resetBilling()"
+                                    class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                                    <i class="fas fa-redo mr-2"></i>Reset
+                                </button>
+                                <button onclick="window.generateInvoice()"
+                                    class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
+                                    <i class="fas fa-file-invoice mr-2"></i>Generate Invoice
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Invoices -->
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold text-gray-800">
+                                <i class="fas fa-file-invoice-dollar text-indigo-600 mr-2"></i>Recent Invoices
+                            </h2>
+                            <button onclick="window.exportAllInvoices()"
+                                class="px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                                <i class="fas fa-download mr-1"></i> Export All
+                            </button>
+                        </div>
+
+                        <div id="invoices-list" class="space-y-3 max-h-[500px] overflow-y-auto">
+                            <div class="text-center py-12 text-gray-400">
+                                <i class="fas fa-file-invoice-dollar text-4xl mb-3 opacity-30"></i>
+                                <p>No invoices generated yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Billing Summary by Teacher -->
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm mt-6 p-6">
+                    <h2 class="text-lg font-bold text-gray-800 mb-6">
+                        <i class="fas fa-chart-pie text-indigo-600 mr-2"></i>Billing Summary by Teacher
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50/50">
+                                <tr>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Teacher</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Sessions</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Characters Billed</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Base
+                                        Cost</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Token
+                                        Cost</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Total
+                                    </th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">
+                                        Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billing-summary-body">
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                        <p>Loading billing data...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bill Modal -->
+        <div id="bill-modal"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bill-modal bg-white rounded-3xl w-full max-w-lg mx-4 overflow-hidden">
+                <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-file-invoice-dollar text-2xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold">Generate Invoice</h3>
+                                <p class="text-white/80 text-sm">Powered by Eburon AI</p>
+                            </div>
+                        </div>
+                        <button onclick="window.closeBillModal()"
+                            class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Teacher Name</label>
+                            <input type="text" id="bill-teacher-name"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Optional Character Usage</label>
+                            <input type="number" id="bill-token-usage" placeholder="Enter characters processed" min="0"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                                oninput="window.updateBillPreview()">
+                            <p class="text-xs text-gray-400 mt-1">Only enter usage here when you want to bill extra
+                                processing beyond the base session fee.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Base Rate:</span>
+                                <span class="font-medium">€100.00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Token Cost:</span>
+                                <span class="font-medium" id="bill-token-cost">€0.00</span>
+                            </div>
+                            <div class="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
+                                <span>Total:</span>
+                                <span class="text-indigo-600" id="bill-total-cost">€100.00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-6">
+                        <button onclick="window.closeBillModal()"
+                            class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                            Cancel
+                        </button>
+                        <button onclick="window.saveInvoice()"
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md">
+                            <i class="fas fa-save mr-2"></i>Save Invoice
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Invoice Modal -->
+        <div id="print-modal"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bill-modal bg-white rounded-3xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-hidden">
+                <div
+                    class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-print text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">Print Invoice</h3>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.printCurrentInvoice()"
+                            class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition">
+                            <i class="fas fa-print mr-2"></i>Print
+                        </button>
+                        <button onclick="window.closePrintModal()"
+                            class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[75vh]" id="invoice-print-content">
+                    <!-- Invoice content generated by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Conversation Detail Modal -->
+        <div id="conversation-modal"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bill-modal bg-white rounded-3xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+                <div
+                    class="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-indigo-50 to-purple-50">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">
+                            <i class="fas fa-comments text-indigo-600 mr-2"></i>Conversation Details
+                        </h3>
+                        <p class="text-sm text-gray-500" id="modal-room-info"></p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="window.exportConversationPdf()"
+                            class="px-4 py-2 bg-white text-indigo-700 rounded-xl hover:bg-indigo-50 transition shadow-sm font-medium">
+                            <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                        </button>
+                        <button onclick="window.closeConversationModal()"
+                            class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[70vh]">
+                    <div id="conversation-messages" class="space-y-3">
+                        <!-- Messages loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teacher Detail Modal -->
+        <div id="teacher-detail-modal"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bill-modal bg-white rounded-3xl w-full max-w-2xl mx-4 overflow-hidden">
+                <div
+                    class="p-6 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50">
+                    <div class="flex items-center gap-4">
+                        <div id="teacher-avatar"
+                            class="w-16 h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold">
+                            T
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-800" id="teacher-detail-name">Teacher Name</h3>
+                            <p class="text-sm text-gray-500">Teacher Profile</p>
+                        </div>
+                    </div>
+                    <button onclick="window.closeTeacherModal()"
+                        class="w-10 h-10 bg-white rounded-xl hover:bg-gray-100 transition shadow-sm">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center p-4 bg-blue-50 rounded-xl">
+                            <p class="text-2xl font-bold text-blue-600" id="teacher-detail-sessions">0</p>
+                            <p class="text-xs text-gray-600 mt-1">Sessions</p>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-xl">
+                            <p class="text-2xl font-bold text-purple-600" id="teacher-detail-messages">0</p>
+                            <p class="text-xs text-gray-600 mt-1">Messages</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-xl">
+                            <p class="text-2xl font-bold text-green-600" id="teacher-detail-students">0</p>
+                            <p class="text-xs text-gray-600 mt-1">Students</p>
+                        </div>
+                    </div>
+
+                    <h4 class="font-semibold text-gray-800 mb-3">
+                        <i class="fas fa-history text-indigo-600 mr-2"></i>Recent Conversations
+                    </h4>
+                    <div id="teacher-conversations-list" class="space-y-2 max-h-60 overflow-y-auto">
+                        <!-- Conversation list -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-confirm-modal"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] hidden">
+            <div class="bill-modal bg-white rounded-3xl w-full max-w-md mx-4 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-500 to-rose-600 p-6 text-white">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-exclamation-triangle text-2xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">Delete Teacher Account</h3>
+                            <p class="text-white/80 text-sm">This action cannot be undone</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <p class="text-gray-600 mb-4">You are about to delete teacher: <strong id="delete-teacher-name"
+                            class="text-gray-800"></strong></p>
+                    <p class="text-sm text-gray-500 mb-4">Enter your admin password to confirm deletion:</p>
+                    <div class="relative mb-4">
+                        <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="password" id="delete-confirm-password" placeholder="Enter admin password"
+                            class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                            onkeydown="if(event.key==='Enter') window.confirmDeleteTeacher()">
+                        <button type="button" onclick="window.toggleDeletePassword()"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-eye" id="delete-password-toggle"></i>
+                        </button>
+                    </div>
+                    <div id="delete-error"
+                        class="hidden text-red-500 text-sm text-center py-2 bg-red-50 rounded-lg mb-4">
+                        <i class="fas fa-exclamation-circle mr-1"></i> Incorrect password
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="window.closeDeleteModal()"
+                            class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                            Cancel
+                        </button>
+                        <button onclick="window.confirmDeleteTeacher()" id="confirm-delete-btn"
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 transition shadow-md">
+                            <i class="fas fa-trash mr-2"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Teacher Modal (No role checkboxes, default sets to Teacher) -->
+        <div id="create-teacher-modal"
+            class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+            <div class="bill-modal bg-white rounded-3xl w-full max-w-lg mx-4 max-h-[90vh] overflow-hidden">
+                <div
+                    class="bg-gradient-to-r from-indigo-500 to-purple-500 p-5 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-user-plus text-xl"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold">Create User Account</h3>
+                        </div>
+                    </div>
+                    <button onclick="window.closeCreateTeacherModal()"
+                        class="w-10 h-10 bg-white/20 rounded-xl hover:bg-white/30 transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6 overflow-y-auto max-h-[70vh]">
+                    <form id="create-teacher-form" onsubmit="window.createTeacher(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                            <div class="relative">
+                                <i class="fas fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="teacher-name" required placeholder="Enter full name"
+                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <div class="relative">
+                                <i class="fas fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="email" id="teacher-email" required placeholder="teacher@example.com"
+                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Password *</label>
+                            <div class="relative">
+                                <i class="fas fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="password" id="teacher-password" required placeholder="Min 6 characters"
+                                    minlength="6"
+                                    class="w-full pl-12 pr-12 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Company</label>
+                            <div class="relative">
+                                <i class="fas fa-building absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="teacher-company" placeholder="Company name"
+                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+                                <div class="relative">
+                                    <i class="fas fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="tel" id="teacher-phone" placeholder="+32 xxx xx xx"
+                                        class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">VAT Number</label>
+                                <div class="relative">
+                                    <i
+                                        class="fas fa-file-invoice absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input type="text" id="teacher-vat" placeholder="BE 0xxx.xxx.xxx"
+                                        class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+                            <div class="relative">
+                                <i
+                                    class="fas fa-map-marker-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" id="teacher-address" placeholder="Street, City, Postal Code"
+                                    class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div id="create-teacher-error"
+                            class="hidden text-red-500 text-sm text-center py-2 bg-red-50 rounded-lg"></div>
+                        <div id="create-teacher-success"
+                            class="hidden text-green-600 text-sm text-center py-2 bg-green-50 rounded-lg">
+                            <i class="fas fa-check-circle mr-1"></i> User saved successfully!
+                        </div>
+
+                        <div class="flex gap-3 pt-4">
+                            <button type="button" onclick="window.closeCreateTeacherModal()"
+                                class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition">
+                                Cancel
+                            </button>
+                            <button type="submit" id="create-teacher-btn"
+                                class="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl hover:from-indigo-600 hover:to-purple-600 transition shadow-md font-semibold">
+                                <i class="fas fa-user-plus mr-2"></i>Create Teacher
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 1. SCRIPT FOR GLOBAL VARIABLES (Solves "Cannot access before initialization") -->
+        <script>
+            const TOKEN_RATE = 0.0001;
+            const BASE_RATE = 100;
+            const ADMIN_EMAIL = 'administrator@successclass.edu';
+            const ADMIN_PASSWORD = 'JoLernout26';
+            const PLACEHOLDER_LOGIN_EMAIL = 'hello@northfield-mail.com';
+            const INVOICE_SEQUENCE_START = 152;
+            const SELLER_INFO = {
+                companyName: 'Ariolas bv',
+                addressLine1: 'Boterstraat 36',
+                postalCity: '8900 Ieper'
+            };
+
+            let allTeachers = {};
+            let allConversations = [];
+            let allInvoices = [];
+            let allTeacherAccounts = [];
+
+            let isLoggedIn = false;
+            let isSuperuser = false;
+            let currentUserView = localStorage.getItem('userView') || 'cards';
+
+            let editingTeacherId = null;
+            let pendingDeleteId = null;
+            let currentPrintInvoice = null;
+            let currentConversationRoomCode = null;
+        </script>
+
+        <!-- 2. SCRIPT FOR FIREBASE INITIALIZATION -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+            import { getDatabase, ref, get, set, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+            async function initialize() {
+                try {
+                    const response = await fetch('api.json');
+
+                    if (!response.ok) {
+                        throw new Error("api.json not found or network error. Are you running a local server?");
+                    }
+
+                    const FIREBASE_CONFIG = await response.json();
+
+                    const app = initializeApp(FIREBASE_CONFIG);
+                    const db = getDatabase(app);
+
+                    window.fbDb = db;
+                    window.fbRef = ref;
+                    window.fbGet = get;
+                    window.fbSet = set;
+                    window.fbPush = push;
+                    window.fbRemove = remove;
+
+                    document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
+
+                    if (window.checkAuth) {
+                        window.checkAuth();
+                    }
+                } catch (error) {
+                    console.error("Firebase initialization failed:", error);
+                    document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-red-500 mr-1"></i> Config Error';
+                    alert("Database Initialization Failed.\nMake sure api.json exists and you are running the file over a local web server (http://localhost:...), not directly (file://).");
+                }
+            }
+
+            initialize();
+        </script>
+
+        <!-- 3. SCRIPT FOR ALL LOGIC -->
+        <script>
+            function updateDateTime() {
+                const now = new Date();
+                document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+                document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            setInterval(updateDateTime, 1000);
+            updateDateTime();
+
+            function showTab(tabName) {
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                document.querySelectorAll('.tab-btn').forEach(b => {
+                    b.classList.remove('bg-gradient-to-r', 'from-indigo-500', 'to-purple-500', 'text-white', 'shadow-md');
+                    b.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-200');
+                });
+                document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+                const btn = document.getElementById(`tab-${tabName}`);
+                btn.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
+                btn.classList.add('bg-gradient-to-r', 'from-indigo-500', 'to-purple-500', 'text-white', 'shadow-md');
+            }
+            window.showTab = showTab;
+
+            async function refreshAll() {
+                if (!window.fbDb) return;
+                await Promise.all([
+                    loadTeachers(),
+                    loadConversations(),
+                    loadInvoices(),
+                    loadTeacherAccounts()
+                ]);
+                renderBillingSummary();
+                updateStats();
+            }
+            window.refreshAll = refreshAll;
+
+            function escapeHtml(value) {
+                return String(value ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function collectRoomTimestamps(room) {
+                const timestamps = [];
+                const pushTimestamp = (value) => {
+                    const numericValue = Number(value);
+                    if (Number.isFinite(numericValue) && numericValue > 0) {
+                        timestamps.push(numericValue);
+                    }
+                };
+
+                // Extract timestamp from Firebase push keys (they contain timestamp info)
+                const extractTimestampFromKey = (key) => {
+                    // Firebase push keys are timestamp-based, extract the timestamp portion
+                    if (key && key.length > 10) {
+                        try {
+                            // Firebase push keys have this structure: -timestamp-randomstring
+                            // The timestamp is the first part after the dash
+                            if (key.startsWith('-')) {
+                                const parts = key.substring(1).split('_');
+                                if (parts.length > 0) {
+                                    const timestamp = parseInt(parts[0], 36); // Base36 decode
+                                    if (!isNaN(timestamp)) {
+                                        return timestamp;
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            return null;
+                        }
+                    }
+                    return null;
+                };
+
+                pushTimestamp(room?.created);
+                pushTimestamp(room?.createdAt);
+                pushTimestamp(room?.lastActivity);
+                pushTimestamp(room?.meta?.createdAt);
+                pushTimestamp(room?.meta?.updatedAt);
+
+                Object.values(room?.students || {}).forEach((student) => {
+                    pushTimestamp(student?.joinedAt);
+                    pushTimestamp(student?.timestamp);
+                    pushTimestamp(student?.created);
+                });
+
+                ['messages', 'questions', 'studentResponses', 'studentChats'].forEach((type) => {
+                    const messages = room?.[type] || {};
+                    // Extract timestamps from message data and push keys
+                    Object.keys(messages).forEach((key) => {
+                        const message = messages[key];
+                        pushTimestamp(message?.timestamp);
+                        pushTimestamp(message?.created);
+                        pushTimestamp(message?.approvedAt);
+                        // Extract timestamp from Firebase push key if available
+                        const keyTimestamp = extractTimestampFromKey(key);
+                        if (keyTimestamp) pushTimestamp(keyTimestamp);
+                    });
+                });
+
+                // If no timestamps found, use current time as fallback
+                if (timestamps.length === 0) {
+                    timestamps.push(Date.now());
+                }
+
+                timestamps.sort((a, b) => a - b);
+                return timestamps;
+            }
+
+            function getRoomTimeline(room) {
+                const timestamps = collectRoomTimestamps(room);
+                if (timestamps.length === 0) {
+                    return {
+                        createdAt: null,
+                        lastActivity: null,
+                        durationMs: 0,
+                        durationMinutes: 0
+                    };
+                }
+
+                const createdAt = timestamps[0];
+                const lastActivity = timestamps[timestamps.length - 1];
+                const durationMs = Math.max(0, lastActivity - createdAt);
+
+                return {
+                    createdAt,
+                    lastActivity,
+                    durationMs,
+                    durationMinutes: Math.round(durationMs / 60000)
+                };
+            }
+
+            function getConversationMessages(room) {
+                const allMessages = [];
+                const types = ['messages', 'questions', 'studentResponses', 'studentChats'];
+
+                types.forEach((type) => {
+                    if (!room?.[type]) return;
+                    Object.entries(room[type]).forEach(([id, msg]) => {
+                        allMessages.push({ ...msg, id, type });
+                    });
+                });
+
+                return allMessages.sort((a, b) => (a.timestamp || a.created || 0) - (b.timestamp || b.created || 0));
+            }
+
+            function buildInvoiceNumber(createdAt, sequenceNumber) {
+                const invoiceDate = new Date(createdAt);
+                const year = String(invoiceDate.getFullYear()).slice(-2);
+                const month = String(invoiceDate.getMonth() + 1).padStart(2, '0');
+                return `V${year}${month}-${String(sequenceNumber).padStart(4, '0')}`;
+            }
+
+            function getInvoiceSequenceForMonth(createdAt, invoiceId = null) {
+                const invoiceDate = new Date(createdAt);
+                const sameMonthInvoices = allInvoices
+                    .filter((invoice) => {
+                        const date = new Date(invoice.createdAt || 0);
+                        return date.getFullYear() === invoiceDate.getFullYear() && date.getMonth() === invoiceDate.getMonth();
+                    })
+                    .slice()
+                    .sort((a, b) =>
+                        (a.createdAt || 0) - (b.createdAt || 0) ||
+                        String(a.id || a.invoiceNumber || a.teacherName || '').localeCompare(String(b.id || b.invoiceNumber || b.teacherName || ''))
+                    );
+
+                if (!invoiceId) {
+                    return INVOICE_SEQUENCE_START + sameMonthInvoices.length;
+                }
+
+                const position = sameMonthInvoices.findIndex((invoice) => invoice.id === invoiceId);
+                return INVOICE_SEQUENCE_START + (position >= 0 ? position : 0);
+            }
+
+            function getInvoiceNumber(invoice) {
+                if (invoice.invoiceNumber) return invoice.invoiceNumber;
+                if (!invoice.createdAt) return buildInvoiceNumber(Date.now(), INVOICE_SEQUENCE_START);
+                return buildInvoiceNumber(invoice.createdAt, getInvoiceSequenceForMonth(invoice.createdAt, invoice.id));
+            }
+
+            function createPrintWindow(title) {
+                const printWindow = window.open('', '_blank', 'width=1080,height=900');
+                if (!printWindow) {
+                    alert('Please allow pop-ups to export a PDF.');
+                    return null;
+                }
+
+                printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${escapeHtml(title)}</title>
+                    <style>
+                        body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 32px; color: #1f2937; background: #fff; }
+                        .loading { color: #4f46e5; font-weight: 600; }
+                    </style>
+                </head>
+                <body>
+                    <p class="loading">Preparing PDF export...</p>
+                </body>
+                </html>
+            `);
+                printWindow.document.close();
+                return printWindow;
+            }
+
+            async function loadTeachers() {
+                try {
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, 'chats'));
+                    const chats = snap.val() || {};
+
+                    const teachersMap = {};
+
+                    for (const [roomCode, room] of Object.entries(chats)) {
+                        const teacherName = room.meta?.teacherName || room.meta?.teacher || 'Unknown';
+                        const teacherEmail = room.meta?.teacherEmail || '';
+                        const meta = room.meta || {};
+                        const timeline = getRoomTimeline(room);
+
+                        const teacherKey = teacherEmail || teacherName;
+
+                        if (!teachersMap[teacherKey]) {
+                            teachersMap[teacherKey] = {
+                                name: teacherName,
+                                email: teacherEmail,
+                                sessions: 0,
+                                messages: 0,
+                                students: new Set(),
+                                lastActive: 0,
+                                roomCodes: [],
+                                rawData: { sessions: 0, messages: 0, students: [] }
+                            };
+                        }
+
+                        teachersMap[teacherKey].sessions++;
+                        teachersMap[teacherKey].lastActive = Math.max(
+                            teachersMap[teacherKey].lastActive,
+                            timeline.lastActivity || 0,
+                            meta.updatedAt || 0
+                        );
+                        teachersMap[teacherKey].roomCodes.push(roomCode);
+
+                        const msgCount = room.messages ? Object.keys(room.messages).length : 0;
+                        const qCount = room.questions ? Object.keys(room.questions).length : 0;
+                        const rCount = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
+                        const cCount = room.studentChats ? Object.keys(room.studentChats).length : 0;
+                        const totalMsgs = msgCount + qCount + rCount + cCount;
+                        teachersMap[teacherKey].messages += totalMsgs;
+
+                        if (room.messages) {
+                            Object.entries(room.messages).forEach(([msgId, msg]) => {
+                                teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
+                                teachersMap[teacherKey].rawData.messages.push({ id: msgId, ...msg });
+                            });
+                        }
+                        if (room.questions) {
+                            Object.entries(room.questions).forEach(([qId, q]) => {
+                                teachersMap[teacherKey].rawData.messages = teachersMap[teacherKey].rawData.messages || [];
+                                teachersMap[teacherKey].rawData.messages.push({ id: qId, ...q, type: 'question' });
+                            });
+                        }
+
+                        if (room.students) {
+                            Object.keys(room.students).forEach(s => {
+                                teachersMap[teacherKey].students.add(s);
+                                if (!teachersMap[teacherKey].rawData.students.includes(s)) {
+                                    teachersMap[teacherKey].rawData.students.push(s);
+                                }
+                            });
+                        }
+                    }
+
+                    allTeachers = teachersMap;
+                    updateTeacherFilter();
+                } catch (err) {
+                    console.error('Error loading teachers:', err);
+                }
+            }
+
+            async function loadConversations() {
+                try {
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, 'chats'));
+                    const chats = snap.val() || {};
+
+                    allConversations = Object.entries(chats).map(([roomCode, room]) => {
+                        const timeline = getRoomTimeline(room);
+                        const createdAt = timeline.createdAt;
+                        const lastActivity = timeline.lastActivity;
+                        const durationMs = timeline.durationMs;
+                        const durationMinutes = timeline.durationMinutes;
+
+                        const teacherMsgs = room.messages ? Object.keys(room.messages).length : 0;
+                        const questions = room.questions ? Object.keys(room.questions).length : 0;
+                        const studentResponses = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
+                        const studentChats = room.studentChats ? Object.keys(room.studentChats).length : 0;
+                        const totalMessages = teacherMsgs + questions + studentResponses + studentChats;
+
+                        const students = room.students ? Object.keys(room.students).length : 0;
+
+                        return {
+                            roomCode,
+                            teacher: room.meta?.teacherName || room.meta?.teacher || 'Unknown',
+                            teacherEmail: room.meta?.teacherEmail || '',
+                            createdAt,
+                            lastActivity,
+                            durationMinutes,
+                            durationMs,
+                            teacherMessages: teacherMsgs,
+                            questions,
+                            studentResponses,
+                            studentChats,
+                            totalMessages,
+                            students
+                        };
+                    }).sort((a, b) => (b.lastActivity || 0) - (a.lastActivity || 0));
+
+                    renderConversationsTable(allConversations);
+                } catch (err) {
+                    console.error('Error loading conversations:', err);
+                }
+            }
+
+            function formatDuration(minutes) {
+                if (minutes < 1) return '<1m';
+                if (minutes < 60) return `${minutes}m`;
+                const hours = Math.floor(minutes / 60);
+                const mins = minutes % 60;
+                return mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+            }
+
+            function formatConversationDate(timestamp) {
+                if (!timestamp) return 'Unknown';
+                const date = new Date(timestamp);
+                if (Number.isNaN(date.getTime())) return 'Unknown';
+                const now = new Date();
+                const isToday = date.toDateString() === now.toDateString();
+                const isYesterday = new Date(now - 86400000).toDateString() === date.toDateString();
+
+                if (isToday) {
+                    return `Today ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+                }
+                if (isYesterday) {
+                    return `Yesterday ${date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+                }
+                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+                    ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function renderConversationsTable(conversations) {
+                const tbody = document.getElementById('conversations-table-body');
+
+                if (conversations.length === 0) {
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center text-gray-400">
+                            <i class="fas fa-comments text-4xl mb-3"></i>
+                            <p>No conversations found</p>
+                        </td>
+                    </tr>
+                `;
+                    return;
+                }
+
+                tbody.innerHTML = conversations.map(conv => `
+                <tr class="table-row border-b border-gray-50 hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">${conv.roomCode}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="font-medium text-gray-800">${conv.teacher}</div>
+                        <div class="text-xs text-gray-400">${conv.teacherEmail || 'No email'}</div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="font-semibold text-gray-800">${conv.totalMessages}</div>
+                        <div class="text-xs text-gray-400">
+                            ${conv.teacherMessages}T / ${conv.questions}Q / ${conv.studentResponses}R / ${conv.studentChats}C
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="font-medium text-gray-600">${conv.students}</div>
+                        <div class="text-xs text-gray-400">students</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-600">Started</div>
+                        <div class="text-xs text-gray-500">${formatConversationDate(conv.createdAt)}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-600">Last Activity</div>
+                        <div class="text-xs text-gray-500">${formatConversationDate(conv.lastActivity)}</div>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
+                            ${formatDuration(conv.durationMinutes)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <button onclick="window.viewConversationDetail('${conv.roomCode}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            }
+
+            function updateTeacherFilter() {
+                const select = document.getElementById('conv-teacher-filter');
+                const teachers = Object.values(allTeachers);
+                select.innerHTML = '<option value="">All Teachers</option>' +
+                    teachers.map(t => `<option value="${t.email || t.name}">${t.name} (${t.email || 'No email'})</option>`).join('');
+            }
+
+            function filterConversations() {
+                const teacher = document.getElementById('conv-teacher-filter').value;
+                const dateFrom = document.getElementById('conv-date-from').value;
+                const dateTo = document.getElementById('conv-date-to').value;
+
+                let filtered = [...allConversations];
+
+                if (teacher) {
+                    filtered = filtered.filter(c =>
+                        c.teacherEmail === teacher ||
+                        c.teacher === teacher ||
+                        (c.teacherEmail === '' && c.teacher === teacher)
+                    );
+                }
+                if (dateFrom) {
+                    filtered = filtered.filter(c => c.lastActivity && new Date(c.lastActivity) >= new Date(dateFrom));
+                }
+                if (dateTo) {
+                    filtered = filtered.filter(c => c.lastActivity && new Date(c.lastActivity) <= new Date(dateTo + 'T23:59:59'));
+                }
+
+                renderConversationsTable(filtered);
+            }
+            window.filterConversations = filterConversations;
+
+            function clearConversationFilters() {
+                document.getElementById('conv-teacher-filter').value = '';
+                document.getElementById('conv-date-from').value = '';
+                document.getElementById('conv-date-to').value = '';
+                renderConversationsTable(allConversations);
+            }
+            window.clearConversationFilters = clearConversationFilters;
+
+            async function viewConversationDetail(roomCode) {
+                try {
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, `chats/${roomCode}`));
+                    const room = snap.val();
+
+                    if (!room) return;
+
+                    currentConversationRoomCode = roomCode;
+                    document.getElementById('modal-room-info').textContent = `Room: ${roomCode} | Teacher: ${room.meta?.teacherName || 'Unknown'}`;
+
+                    const allMessages = getConversationMessages(room);
+
+                    document.getElementById('conversation-messages').innerHTML = allMessages.map(msg => `
+                    <div class="flex gap-3 p-4 rounded-xl ${msg.sender === 'teacher' ? 'bg-blue-50' : 'bg-gray-50'}">
+                        <div class="w-10 h-10 ${msg.sender === 'teacher' ? 'bg-blue-500' : 'bg-purple-500'} rounded-xl flex items-center justify-center text-white font-bold">
+                            ${(msg.sender || 'U').charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-semibold text-gray-800">${msg.sender || 'Unknown'}</span>
+                                <span class="text-xs text-gray-500">${formatDate(msg.timestamp || msg.created)}</span>
+                                <span class="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">${msg.type}</span>
+                            </div>
+                            <p class="text-gray-700">${msg.text || msg.content || 'No content'}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                    document.getElementById('conversation-modal').classList.remove('hidden');
+                } catch (err) {
+                    console.error('Error loading conversation:', err);
+                }
+            }
+            window.viewConversationDetail = viewConversationDetail;
+
+            function closeConversationModal() {
+                document.getElementById('conversation-modal').classList.add('hidden');
+                currentConversationRoomCode = null;
+            }
+            window.closeConversationModal = closeConversationModal;
+
+            async function exportConversationPdf(roomCode = currentConversationRoomCode) {
+                if (!roomCode) {
+                    alert('Open a conversation first.');
+                    return;
+                }
+
+                const printWindow = createPrintWindow(`conversation-${roomCode}`);
+                if (!printWindow) return;
+
+                try {
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, `chats/${roomCode}`));
+                    const room = snap.val();
+
+                    if (!room) {
+                        printWindow.close();
+                        alert('Conversation not found');
+                        return;
+                    }
+
+                    const timeline = getRoomTimeline(room);
+                    const participants = new Set();
+                    Object.values(room.students || {}).forEach((student) => {
+                        if (student?.name) participants.add(student.name);
+                    });
+
+                    const messages = getConversationMessages(room);
+                    messages.forEach((msg) => {
+                        if (msg.sender) participants.add(msg.sender);
+                        if (msg.senderName) participants.add(msg.senderName);
+                    });
+
+                    const html = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>${escapeHtml(`Conversation ${roomCode}`)}</title>
+                        <style>
+                            body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 32px; color: #1f2937; background: #ffffff; }
+                            h1, h2, h3, p { margin: 0; }
+                            .header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #c7d2fe; }
+                            .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+                            .meta-card { padding: 14px 16px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; }
+                            .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; margin-bottom: 6px; }
+                            .message { border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; page-break-inside: avoid; }
+                            .message.teacher { background: #eff6ff; }
+                            .message.student { background: #f8fafc; }
+                            .message-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 12px; color: #6b7280; }
+                            .message-body { font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+                            @page { size: A4; margin: 14mm; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1 style="font-size: 26px; color: #312e81;">Conversation Export</h1>
+                            <p style="margin-top: 8px; color: #6b7280;">Room ${escapeHtml(roomCode)}</p>
+                        </div>
+                        <div class="meta">
+                            <div class="meta-card">
+                                <div class="meta-label">Teacher</div>
+                                <div>${escapeHtml(room.meta?.teacherName || room.meta?.teacher || 'Unknown')}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Participants</div>
+                                <div>${escapeHtml(Array.from(participants).join(', ') || 'Unknown')}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Started</div>
+                                <div>${escapeHtml(formatDate(timeline.createdAt))}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Last Activity</div>
+                                <div>${escapeHtml(formatDate(timeline.lastActivity))}</div>
+                            </div>
+                        </div>
+                        <h2 style="font-size: 18px; margin-bottom: 14px;">Messages</h2>
+                        ${messages.map((msg) => `
+                            <div class="message ${msg.sender === 'teacher' ? 'teacher' : 'student'}">
+                                <div class="message-head">
+                                    <strong>${escapeHtml(msg.senderName || msg.sender || 'Unknown')}</strong>
+                                    <span>${escapeHtml(formatDate(msg.timestamp || msg.created))} | ${escapeHtml(msg.type)}</span>
+                                </div>
+                                <div class="message-body">${escapeHtml(msg.text || msg.content || 'No content')}</div>
+                            </div>
+                        `).join('')}
+                    </body>
+                    </html>
+                `;
+
+                    printWindow.document.open();
+                    printWindow.document.write(html);
+                    printWindow.document.close();
+                    printWindow.focus();
+                    setTimeout(() => printWindow.print(), 250);
+                } catch (err) {
+                    printWindow.close();
+                    console.error('Error exporting conversation PDF:', err);
+                    alert('Failed to export conversation PDF');
+                }
+            }
+            window.exportConversationPdf = exportConversationPdf;
+
+            function viewTeacherDetail(teacherKey) {
+                const teacher = allTeachers[teacherKey];
+                if (!teacher) return;
+
+                document.getElementById('teacher-avatar').textContent = teacher.name.charAt(0).toUpperCase();
+                document.getElementById('teacher-detail-name').textContent = teacher.name + (teacher.email ? ` (${teacher.email})` : '');
+                document.getElementById('teacher-detail-sessions').textContent = teacher.sessions;
+                document.getElementById('teacher-detail-messages').textContent = teacher.messages;
+                document.getElementById('teacher-detail-students').textContent = teacher.students.size;
+
+                const filterValue = teacher.email || teacher.name;
+                const teacherConvs = allConversations.filter(c =>
+                    c.teacherEmail === filterValue ||
+                    c.teacher === filterValue
+                ).slice(0, 5);
+                document.getElementById('teacher-conversations-list').innerHTML = teacherConvs.length > 0
+                    ? teacherConvs.map(c => `
+                    <div class="p-3 bg-gray-50 rounded-xl flex justify-between items-center">
+                        <div>
+                            <span class="font-mono text-sm text-indigo-600">${c.roomCode}</span>
+                            <span class="text-xs text-gray-500 ml-2">${c.messages} messages</span>
+                        </div>
+                        <span class="text-xs text-gray-400">${formatDate(c.lastActivity)}</span>
+                    </div>
+                `).join('')
+                    : '<p class="text-center text-gray-400 py-4">No conversations</p>';
+
+                document.getElementById('teacher-detail-modal').classList.remove('hidden');
+            }
+            window.viewTeacherDetail = viewTeacherDetail;
+
+            function closeTeacherModal() {
+                document.getElementById('teacher-detail-modal').classList.add('hidden');
+            }
+            window.closeTeacherModal = closeTeacherModal;
+
+            function viewTeacherConversations(teacherKey) {
+                const teacher = allTeachers[teacherKey];
+                const filterValue = teacher?.email || teacher?.name || teacherKey;
+                document.getElementById('conv-teacher-filter').value = filterValue;
+                showTab('conversations');
+                filterConversations();
+            }
+            window.viewTeacherConversations = viewTeacherConversations;
+
+            function openBillForTeacher(teacherKey) {
+                const teacher = allTeachers[teacherKey];
+                if (!teacher) return;
+
+                document.getElementById('bill-teacher-name').value = teacher.name;
+                document.getElementById('bill-teacher-name').dataset.teacherKey = teacherKey;
+                document.getElementById('bill-token-usage').value = 0;
+                updateBillPreview();
+                document.getElementById('bill-modal').classList.remove('hidden');
+            }
+            window.openBillForTeacher = openBillForTeacher;
+
+            function closeBillModal() {
+                document.getElementById('bill-modal').classList.add('hidden');
+                delete document.getElementById('bill-teacher-name').dataset.teacherKey;
+            }
+            window.closeBillModal = closeBillModal;
+
+            function updateBillPreview() {
+                const tokens = parseInt(document.getElementById('bill-token-usage').value) || 0;
+                const tokenCost = tokens * TOKEN_RATE;
+                const total = BASE_RATE + tokenCost;
+
+                document.getElementById('bill-token-cost').textContent = `€${tokenCost.toFixed(2)}`;
+                document.getElementById('bill-total-cost').textContent = `€${total.toFixed(2)}`;
+            }
+            window.updateBillPreview = updateBillPreview;
+
+            async function saveInvoice() {
+                const teacherName = document.getElementById('bill-teacher-name').value;
+                const tokenUsage = parseInt(document.getElementById('bill-token-usage').value) || 0;
+                const tokenCost = tokenUsage * TOKEN_RATE;
+                const total = BASE_RATE + tokenCost;
+                const teacherKey = document.getElementById('bill-teacher-name').dataset.teacherKey || teacherName;
+                const teacher = allTeachers[teacherKey];
+                const createdAt = Date.now();
+                const invoiceNumber = buildInvoiceNumber(createdAt, getInvoiceSequenceForMonth(createdAt));
+
+                const invoice = {
+                    teacherName,
+                    teacherKey,
+                    teacherEmail: teacher?.email || '',
+                    tokenUsage,
+                    baseCost: BASE_RATE,
+                    tokenCost: parseFloat(tokenCost.toFixed(4)),
+                    total: parseFloat(total.toFixed(2)),
+                    createdAt,
+                    invoiceNumber,
+                    provider: 'Success Class by Eburon AI'
+                };
+
+                try {
+                    const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/billing/invoices'));
+                    await window.fbSet(newRef, invoice);
+                    closeBillModal();
+                    await loadInvoices();
+                    showToast('Invoice saved successfully!');
+                } catch (err) {
+                    console.error('Error saving invoice:', err);
+                    alert('Failed to save invoice');
+                }
+            }
+            window.saveInvoice = saveInvoice;
+
+            async function loadInvoices() {
+                try {
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/billing/invoices'));
+                    allInvoices = snap.val()
+                        ? Object.entries(snap.val()).map(([id, invoice]) => ({ id, ...invoice })).sort((a, b) => b.createdAt - a.createdAt)
+                        : [];
+                    renderInvoices();
+                    renderBillingSummary();
+                } catch (err) {
+                    console.error('Error loading invoices:', err);
+                }
+            }
+
+            function renderInvoices() {
+                const container = document.getElementById('invoices-list');
+
+                if (allInvoices.length === 0) {
+                    container.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fas fa-file-invoice-dollar text-4xl mb-3 opacity-30"></i>
+                        <p>No invoices generated yet</p>
+                    </div>
+                `;
+                    return;
+                }
+
+                container.innerHTML = allInvoices.slice(0, 10).map((inv, idx) => `
+                <div class="p-4 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-100 hover:border-indigo-200 transition">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-800">${inv.teacherName}</p>
+                            <p class="text-xs font-medium text-indigo-600">${getInvoiceNumber(inv)}</p>
+                            <p class="text-xs text-gray-500">${formatDate(inv.createdAt)}</p>
+                        </div>
+                        <span class="text-lg font-bold text-indigo-600">€${inv.total.toFixed(2)}</span>
+                    </div>
+                    <div class="flex gap-4 text-xs text-gray-500 mb-2">
+                        <span>Characters: ${inv.tokenUsage.toLocaleString()}</span>
+                        <span>Base: €${inv.baseCost.toFixed(2)}</span>
+                        <span>Token Cost: €${inv.tokenCost.toFixed(4)}</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="window.printInvoice(${idx})" class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-xs">
+                            <i class="fas fa-print mr-1"></i>Print
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            function renderBillingSummary() {
+                const tbody = document.getElementById('billing-summary-body');
+                const teachers = Object.values(allTeachers);
+
+                if (teachers.length === 0) {
+                    tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                            <p>No billing data available</p>
+                        </td>
+                    </tr>
+                `;
+                    return;
+                }
+
+                tbody.innerHTML = teachers.map(t => {
+                    const teacherKey = t.email || t.name;
+                    const teacherInvoices = allInvoices.filter((invoice) =>
+                        invoice.teacherKey === teacherKey ||
+                        (invoice.teacherEmail && t.email && invoice.teacherEmail === t.email) ||
+                        invoice.teacherName === t.name
+                    );
+                    const tokenUsage = teacherInvoices.reduce((sum, invoice) => sum + (invoice.tokenUsage || 0), 0);
+                    const baseCost = t.sessions * BASE_RATE;
+                    const tokenCost = teacherInvoices.reduce((sum, invoice) => sum + (invoice.tokenCost || 0), 0);
+                    const total = baseCost + tokenCost;
+
+                    return `
+                    <tr class="table-row border-b border-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-emerald-500 rounded-lg flex items-center justify-center text-white font-bold">
+                                    ${t.name.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <span class="font-medium text-gray-800">${t.name}</span>
+                                    ${t.email ? `<span class="block text-xs text-gray-400">${t.email}</span>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">${t.sessions}</td>
+                        <td class="px-6 py-4 text-gray-600">${tokenUsage.toLocaleString()}</td>
+                        <td class="px-6 py-4 text-gray-600">€${baseCost.toFixed(2)}</td>
+                        <td class="px-6 py-4 text-gray-600">€${tokenCost.toFixed(2)}</td>
+                        <td class="px-6 py-4 font-bold text-indigo-600">€${total.toFixed(2)}</td>
+                        <td class="px-6 py-4">
+                            <button onclick="window.openBillForTeacher('${teacherKey.replace(/'/g, "\\'")}')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Generate Bill">
+                                <i class="fas fa-file-invoice-dollar"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                }).join('');
+            }
+
+            function calculateBilling() {
+                const tokens = parseInt(document.getElementById('billing-tokens').value) || 0;
+                const tokenCost = tokens * TOKEN_RATE;
+                const total = BASE_RATE + tokenCost;
+
+                document.getElementById('token-cost').textContent = `€${tokenCost.toFixed(2)}`;
+                document.getElementById('total-billing').textContent = total.toFixed(2);
+            }
+            window.calculateBilling = calculateBilling;
+
+            function resetBilling() {
+                document.getElementById('billing-tokens').value = '';
+                document.getElementById('token-cost').textContent = '€0.00';
+                document.getElementById('total-billing').textContent = '100.00';
+            }
+            window.resetBilling = resetBilling;
+
+            function generateInvoice() {
+                const teacherName = prompt('Enter teacher name for invoice:');
+                if (!teacherName) return;
+
+                document.getElementById('bill-teacher-name').value = teacherName;
+                document.getElementById('bill-teacher-name').dataset.teacherKey = teacherName;
+                document.getElementById('bill-token-usage').value = document.getElementById('billing-tokens').value || 0;
+                updateBillPreview();
+                document.getElementById('bill-modal').classList.remove('hidden');
+            }
+            window.generateInvoice = generateInvoice;
+
+            async function exportAllInvoices() {
+                if (allInvoices.length === 0) {
+                    alert('No invoices to export');
+                    return;
+                }
+
+                const data = allInvoices.map(inv => ({
+                    ...inv,
+                    invoiceNumber: getInvoiceNumber(inv),
+                    exportedAt: new Date().toISOString()
+                }));
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `invoices-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            window.exportAllInvoices = exportAllInvoices;
+
+            function updateStats() {
+                const teachers = Object.values(allTeachers);
+                const totalTeachers = teachers.length;
+                const totalSessions = teachers.reduce((sum, t) => sum + t.sessions, 0);
+                const totalMessages = teachers.reduce((sum, t) => sum + t.messages, 0);
+                const totalRevenue = allInvoices.reduce((sum, inv) => sum + inv.total, 0);
+
+                document.getElementById('stat-total-teachers').textContent = totalTeachers;
+                document.getElementById('stat-total-sessions').textContent = totalSessions;
+                document.getElementById('stat-total-messages').textContent = totalMessages.toLocaleString();
+                document.getElementById('stat-total-revenue').textContent = totalRevenue.toFixed(2);
+            }
+
+            function formatDate(timestamp) {
+                if (!timestamp) return 'Never';
+                return new Date(timestamp).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+
+            function showToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate-bounce';
+                toast.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            }
+
+            function togglePassword() {
+                const input = document.getElementById('login-password');
+                const icon = document.getElementById('password-toggle-icon');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            }
+            window.togglePassword = togglePassword;
+
+            async function handleLogin(e) {
+                e.preventDefault();
+
+                const email = document.getElementById('login-email').value.trim().toLowerCase();
+                const password = document.getElementById('login-password').value.trim();
+                const errorDiv = document.getElementById('login-error');
+                const loginBtn = document.getElementById('login-btn');
+
+                errorDiv.classList.add('hidden');
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Signing in...';
+
+                try {
+                    await new Promise(r => setTimeout(r, 400));
+
+                    let isValidUser = false;
+                    let displayName = email;
+                    isSuperuser = false;
+
+                    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                        isValidUser = true;
+                        isSuperuser = true;
+                        displayName = 'Superuser';
+                    } else {
+                        if (!window.fbDb || !window.fbGet || !window.fbRef) {
+                            throw new Error("Database disconnected. Ensure api.json is loaded correctly.");
+                        }
+
+                        const fetchPromise = window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
+                        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Database connection timed out.")), 8000));
+
+                        const snap = await Promise.race([fetchPromise, timeoutPromise]);
+                        const teachers = snap.val() || {};
+
+                        for (const [id, teacher] of Object.entries(teachers)) {
+                            const roles = teacher.roles || (teacher.role ? [teacher.role] : []);
+                            if (roles.includes('admin') && teacher.email && teacher.email.toLowerCase() === email && teacher.password === password && teacher.active !== false) {
+                                isValidUser = true;
+                                displayName = teacher.name || email;
+                                isSuperuser = teacher.isSuperuser === true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (isValidUser) {
+                        isLoggedIn = true;
+                        sessionStorage.setItem('dashboard_auth', 'true');
+                        sessionStorage.setItem('dashboard_is_superuser', isSuperuser ? 'true' : 'false');
+                        sessionStorage.setItem('dashboard_user', email);
+                        sessionStorage.setItem('dashboard_display_name', displayName);
+
+                        document.getElementById('login-screen').classList.add('hidden');
+                        document.getElementById('dashboard-content').classList.remove('hidden');
+
+                        const userBadge = isSuperuser ? ' <span class="ml-1 text-xs bg-yellow-400 text-yellow-800 px-2 py-0.5 rounded-full">Superuser</span>' : '';
+                        document.getElementById('logged-in-user').innerHTML = displayName + userBadge;
+
+                        refreshAll();
+                    } else {
+                        errorDiv.classList.remove('hidden');
+                        errorDiv.innerHTML = '<i class="fas fa-exclamation-circle mr-1"></i> Invalid email or password';
+                    }
+                } catch (err) {
+                    console.error('Login error:', err);
+                    errorDiv.classList.remove('hidden');
+                    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> Error: ${err.message}`;
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Sign In';
+                }
+            }
+            window.handleLogin = handleLogin;
+
+            function logout() {
+                if (!confirm('Are you sure you want to logout?')) return;
+                sessionStorage.removeItem('dashboard_auth');
+                sessionStorage.removeItem('dashboard_user');
+                sessionStorage.removeItem('dashboard_display_name');
+                sessionStorage.removeItem('dashboard_is_superuser');
+                isLoggedIn = false;
+                isSuperuser = false;
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('dashboard-content').classList.add('hidden');
+                document.getElementById('login-email').value = '';
+                document.getElementById('login-password').value = '';
+            }
+            window.logout = logout;
+
+            function checkAuth() {
+                const auth = sessionStorage.getItem('dashboard_auth');
+                if (auth === 'true') {
+                    const displayName = sessionStorage.getItem('dashboard_display_name') || sessionStorage.getItem('dashboard_user') || PLACEHOLDER_LOGIN_EMAIL;
+                    isSuperuser = sessionStorage.getItem('dashboard_is_superuser') === 'true';
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('dashboard-content').classList.remove('hidden');
+                    document.getElementById('logged-in-user').innerHTML = displayName + (isSuperuser ? ' <span class="ml-1 text-xs bg-yellow-400 text-yellow-800 px-2 py-0.5 rounded-full">Superuser</span>' : '');
+                    isLoggedIn = true;
+                    setUserView(currentUserView);
+                    showTab('teachers');
+                    refreshAll();
+                }
+            }
+            window.checkAuth = checkAuth;
+
+            function toggleTeacherPassword() {
+                const input = document.getElementById('teacher-password');
+                const icon = document.getElementById('teacher-password-toggle');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            }
+            window.toggleTeacherPassword = toggleTeacherPassword;
+
+            async function ensureSuperuserInFirebase() {
+                try {
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
+                    const teachers = snap.val() || {};
+
+                    let superuserExists = false;
+                    for (const [id, teacher] of Object.entries(teachers)) {
+                        if (teacher.email && teacher.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                            superuserExists = true;
+                            if (!teacher.isSuperuser || !teacher.roles?.includes('admin')) {
+                                await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${id}`), {
+                                    ...teacher,
+                                    name: 'Superuser',
+                                    email: ADMIN_EMAIL,
+                                    password: ADMIN_PASSWORD,
+                                    roles: ['admin'],
+                                    isSuperuser: true,
+                                    active: true,
+                                    updatedAt: Date.now()
+                                });
+                            }
+                            break;
+                        }
+                    }
+
+                    if (!superuserExists) {
+                        const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
+                        await window.fbSet(newRef, {
+                            name: 'Superuser',
+                            email: ADMIN_EMAIL,
+                            password: ADMIN_PASSWORD,
+                            roles: ['admin'],
+                            isSuperuser: true,
+                            active: true,
+                            createdAt: Date.now(),
+                            createdBy: 'system'
+                        });
+                    }
+                } catch (err) {
+                    console.error('Error ensuring superuser:', err);
+                }
+            }
+
+            async function loadTeacherAccounts() {
+                try {
+                    if (!window.fbDb) return;
+
+                    await ensureSuperuserInFirebase();
+                    await migrateExistingUsers();
+
+                    const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
+                    const teachers = snap.val() || {};
+                    allTeacherAccounts = Object.entries(teachers).map(([id, t]) => ({ id, ...t }));
+
+                    filterUsers();
+                } catch (err) {
+                    console.error('Error loading teacher accounts:', err);
+                }
+            }
+            window.loadTeacherAccounts = loadTeacherAccounts;
+
+            async function migrateExistingUsers() {
+                try {
+                    const usersSnap = await window.fbGet(window.fbRef(window.fbDb, 'admin/users'));
+                    const users = usersSnap.val() || {};
+
+                    for (const [key, user] of Object.entries(users)) {
+                        if (!user.role) {
+                            await window.fbSet(window.fbRef(window.fbDb, `admin/users/${key}/role`), 'teacher');
+                        }
+
+                        if (user.role === 'teacher' || !user.role) {
+                            const teachersSnap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
+                            const teachers = teachersSnap.val() || {};
+                            const emailExists = Object.values(teachers).some(t => t.email === user.email);
+
+                            if (!emailExists && user.email) {
+                                const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
+                                await window.fbSet(newRef, {
+                                    name: user.name || user.email,
+                                    email: user.email,
+                                    password: user.generatedId || '',
+                                    company: '',
+                                    phone: '',
+                                    vat: '',
+                                    address: '',
+                                    roles: ['teacher'],
+                                    active: true,
+                                    createdAt: user.createdAt || Date.now(),
+                                    createdBy: 'system_migration'
+                                });
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Migration error:', err);
+                }
+            }
+
+            async function removeLegacyTeacherRecords(teacher) {
+                const usersSnap = await window.fbGet(window.fbRef(window.fbDb, 'admin/users'));
+                const users = usersSnap.val() || {};
+                const teacherEmail = (teacher.email || '').trim().toLowerCase();
+                const teacherName = (teacher.name || '').trim().toLowerCase();
+                const teacherPassword = teacher.password || '';
+
+                const deletes = Object.entries(users)
+                    .filter(([, user]) => {
+                        const emailMatches = teacherEmail && (user.email || '').trim().toLowerCase() === teacherEmail;
+                        const passwordMatches = teacherPassword && user.generatedId === teacherPassword;
+                        const nameMatches = teacherName && (user.name || '').trim().toLowerCase() === teacherName;
+                        const looksLikeTeacher = user.role === 'teacher' || !user.role;
+                        return looksLikeTeacher && (emailMatches || (nameMatches && passwordMatches));
+                    })
+                    .map(([key]) => window.fbRemove(window.fbRef(window.fbDb, `admin/users/${key}`)));
+
+                await Promise.all(deletes);
+            }
+
+            function setUserView(view) {
+                currentUserView = view;
+                localStorage.setItem('userView', view);
+
+                const cardsBtn = document.getElementById('view-cards-btn');
+                const listBtn = document.getElementById('view-list-btn');
+                const cardsContainer = document.getElementById('teachers-cards-container');
+                const listContainer = document.getElementById('teachers-list-container');
+
+                if (view === 'cards') {
+                    cardsBtn.className = 'px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg transition font-medium';
+                    listBtn.className = 'px-4 py-2 bg-gray-100 text-gray-600 rounded-lg transition font-medium hover:bg-gray-200';
+                    cardsContainer.classList.remove('hidden');
+                    listContainer.classList.add('hidden');
+                } else {
+                    listBtn.className = 'px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg transition font-medium';
+                    cardsBtn.className = 'px-4 py-2 bg-gray-100 text-gray-600 rounded-lg transition font-medium hover:bg-gray-200';
+                    listContainer.classList.remove('hidden');
+                    cardsContainer.classList.add('hidden');
+                }
+            }
+            window.setUserView = setUserView;
+
+            function filterUsers() {
+                const searchTerm = (document.getElementById('user-search')?.value || '').toLowerCase();
+                const roleFilter = document.getElementById('user-role-filter')?.value || '';
+                const statusFilter = document.getElementById('user-status-filter')?.value || '';
+
+                const filteredCards = allTeacherAccounts.filter(t => {
+                    const matchesSearch = !searchTerm ||
+                        (t.name && t.name.toLowerCase().includes(searchTerm)) ||
+                        (t.email && t.email.toLowerCase().includes(searchTerm)) ||
+                        (t.company && t.company.toLowerCase().includes(searchTerm));
+
+                    const roles = t.roles || (t.role ? [t.role] : []);
+                    const isUserSuper = t.isSuperuser === true;
+                    let matchesRole = true;
+
+                    if (roleFilter) {
+                        if (roleFilter === 'superuser') {
+                            matchesRole = isUserSuper;
+                        } else {
+                            matchesRole = roles.includes(roleFilter);
+                        }
+                    }
+
+                    const isActive = t.active !== false;
+                    let matchesStatus = true;
+                    if (statusFilter === 'active') matchesStatus = isActive;
+                    if (statusFilter === 'inactive') matchesStatus = !isActive;
+
+                    return matchesSearch && matchesRole && matchesStatus;
+                });
+
+                renderFilteredUsers(filteredCards);
+            }
+            window.filterUsers = filterUsers;
+
+            function renderFilteredUsers(filteredUsers) {
+                renderTeacherAccountsFiltered(filteredUsers, 'cards');
+                renderTeacherAccountsFiltered(filteredUsers, 'list');
+            }
+
+            function renderTeacherAccountsFiltered(users, view) {
+                if (view === 'cards') {
+                    const container = document.getElementById('teachers-cards-container');
+                    if (users.length === 0) {
+                        container.innerHTML = `
+                        <div class="col-span-full text-center py-20 text-gray-400">
+                            <i class="fas fa-search text-6xl mb-4 opacity-30"></i>
+                            <p class="text-xl mb-2">No users found</p>
+                            <p class="text-sm">Try adjusting your search or filters</p>
+                        </div>
+                    `;
+                        return;
+                    }
+                    container.innerHTML = users.map(t => renderUserCard(t)).join('');
+                } else {
+                    const tbody = document.getElementById('teachers-table-body');
+                    if (users.length === 0) {
+                        tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="px-6 py-16 text-center text-gray-400">
+                                <i class="fas fa-search text-4xl mb-3"></i>
+                                <p class="text-lg">No users found</p>
+                            </td>
+                        </tr>
+                    `;
+                        return;
+                    }
+                    tbody.innerHTML = users.map(t => renderUserRow(t)).join('');
+                }
+            }
+
+            function renderUserCard(t) {
+                const roles = t.roles || (t.role ? [t.role] : []);
+                const headerColor = getHeaderColor(roles);
+                const rolesBadges = getRolesBadges(roles);
+
+                return `
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-all overflow-hidden">
+                <div class="bg-gradient-to-r ${headerColor} p-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center text-white font-bold text-2xl">
+                                ${(t.name || 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <div class="text-white">
+                                <p class="font-bold text-lg">${t.name || 'Unknown'}</p>
+                                <p class="text-white/80 text-sm">${t.email || 'No email'}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            <div class="flex flex-wrap justify-end gap-1">
+                                ${rolesBadges}
+                                ${t.isSuperuser ? '<span class="px-2 py-0.5 bg-yellow-400 text-yellow-800 rounded text-xs font-bold">SU</span>' : ''}
+                            </div>
+                            <span class="px-3 py-1 bg-white/20 rounded-full text-white text-xs font-semibold">
+                                ${t.active !== false ? '<i class="fas fa-circle text-green-400 mr-1"></i>Active' : '<i class="fas fa-circle text-gray-400 mr-1"></i>Inactive'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 space-y-2 text-sm">
+                    ${t.company ? `<p class="flex items-center gap-2 text-gray-600"><i class="fas fa-building w-5 text-indigo-400"></i>${t.company}</p>` : ''}
+                    ${t.phone ? `<p class="flex items-center gap-2 text-gray-600"><i class="fas fa-phone w-5 text-indigo-400"></i>${t.phone}</p>` : ''}
+                    <p class="flex items-center gap-2 text-gray-400 pt-2 border-t"><i class="fas fa-calendar w-5"></i>Created: ${t.createdAt ? formatDate(t.createdAt) : 'Unknown'}</p>
+                </div>
+                <div class="border-t border-gray-100 p-4 flex gap-2">
+                    <button onclick="window.viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" 
+                        class="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition font-medium text-sm">
+                        <i class="fas fa-history mr-1"></i>History
+                    </button>
+                    <button onclick="window.editTeacherAccount('${t.id}')" 
+                        class="flex-1 px-3 py-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-100 transition font-medium text-sm">
+                        <i class="fas fa-edit mr-1"></i>Edit
+                    </button>
+                    <button onclick="window.showDeleteConfirm('${t.id}', '${(t.name || 'Unknown').replace(/'/g, "\\'")}')" 
+                        class="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition font-medium text-sm">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>`;
+            }
+
+            function renderUserRow(t) {
+                const roles = t.roles || (t.role ? [t.role] : []);
+                const rolesBadges = getRolesBadges(roles);
+                const displayName = t.name || 'Unknown';
+
+                return `
+            <tr class="border-b border-gray-50 hover:bg-gray-50">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center text-white font-bold">
+                            ${displayName.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">${displayName}</div>
+                            <div class="text-xs text-gray-400">${t.email || 'No email'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex flex-wrap gap-1 items-center">
+                        ${rolesBadges}
+                        ${t.isSuperuser ? '<span class="px-2 py-0.5 bg-yellow-400 text-yellow-800 rounded text-xs font-bold">Superuser</span>' : ''}
+                    </div>
+                </td>
+                <td class="px-6 py-4 text-gray-600">${t.company || '-'}</td>
+                <td class="px-6 py-4">
+                    <button onclick="window.toggleUserStatus('${t.id}')" class="px-3 py-1 ${t.active !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'} rounded-full text-xs font-medium cursor-pointer transition">
+                        ${t.active !== false ? '<i class="fas fa-toggle-on mr-1"></i>Active' : '<i class="fas fa-toggle-off mr-1"></i>Inactive'}
+                    </button>
+                </td>
+                <td class="px-6 py-4 text-gray-500 text-sm">${t.createdAt ? formatDate(t.createdAt) : '-'}</td>
+                <td class="px-6 py-4">
+                    <div class="flex gap-2">
+                        <button onclick="window.viewTeacherConversations('${(t.email || t.name || 'Unknown').replace(/'/g, "\\'")}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="History">
+                            <i class="fas fa-history"></i>
+                        </button>
+                        <button onclick="window.editTeacherAccount('${t.id}')" class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="window.showDeleteConfirm('${t.id}', '${displayName.replace(/'/g, "\\'")}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+            }
+
+            async function toggleUserStatus(userId) {
+                try {
+                    const user = allTeacherAccounts.find(t => t.id === userId);
+                    if (!user) return;
+
+                    const newStatus = user.active === false ? true : false;
+                    await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${userId}/active`), newStatus);
+                    await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${userId}/updatedAt`), Date.now());
+
+                    showToast(`User ${newStatus ? 'activated' : 'deactivated'}`);
+                    await loadTeacherAccounts();
+                } catch (err) {
+                    console.error('Error toggling user status:', err);
+                    showToast('Failed to update user status');
+                }
+            }
+            window.toggleUserStatus = toggleUserStatus;
+
+            function getRoleBadge(role) {
+                const roleColors = {
+                    'admin': { bg: 'bg-gradient-to-r from-red-500 to-rose-500', text: 'bg-red-100 text-red-700', icon: 'fa-user-shield' },
+                    'teacher': { bg: 'bg-gradient-to-r from-indigo-500 to-purple-500', text: 'bg-indigo-100 text-indigo-700', icon: 'fa-chalkboard-teacher' },
+                    'user': { bg: 'bg-gradient-to-r from-gray-500 to-gray-600', text: 'bg-gray-100 text-gray-700', icon: 'fa-user' }
+                };
+                const colors = roleColors[role] || roleColors['user'];
+                return `<span class="px-3 py-1 ${colors.text} rounded-full text-xs font-semibold uppercase">
+                <i class="fas ${colors.icon} mr-1"></i>${role}
+            </span>`;
+            }
+
+            function getRolesBadges(roles) {
+                if (!roles || roles.length === 0) return getRoleBadge('teacher');
+                return roles.map(role => getRoleBadge(role)).join(' ');
+            }
+
+            function getHeaderColor(roles) {
+                if (!roles || roles.length === 0) return 'from-indigo-500 to-purple-500';
+                if (roles.includes('admin')) return 'from-red-500 to-rose-600';
+                if (roles.includes('teacher')) return 'from-indigo-500 to-purple-500';
+                return 'from-gray-500 to-gray-600';
+            }
+
+            async function createTeacher(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('teacher-name').value.trim();
+                const email = document.getElementById('teacher-email').value.trim();
+                const password = document.getElementById('teacher-password').value;
+                const company = document.getElementById('teacher-company').value.trim();
+                const phone = document.getElementById('teacher-phone').value.trim();
+                const vat = document.getElementById('teacher-vat').value.trim();
+                const address = document.getElementById('teacher-address').value.trim();
+
+                const errorDiv = document.getElementById('create-teacher-error');
+                const successDiv = document.getElementById('create-teacher-success');
+                const btn = document.getElementById('create-teacher-btn');
+
+                errorDiv.classList.add('hidden');
+                successDiv.classList.add('hidden');
+
+                if (!name || !email || !password) {
+                    errorDiv.textContent = 'Please fill in Name, Email, and Password';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    errorDiv.textContent = 'Password must be at least 6 characters';
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+
+                try {
+                    let userRoles = ['teacher'];
+
+                    const teacherData = {
+                        name,
+                        email,
+                        password,
+                        company,
+                        phone,
+                        vat,
+                        address,
+                        active: true,
+                        updatedAt: Date.now()
+                    };
+
+                    if (editingTeacherId) {
+                        const snap = await window.fbGet(window.fbRef(window.fbDb, `admin/teachers/${editingTeacherId}`));
+                        const existing = snap.val() || {};
+
+                        if (existing.roles && existing.roles.length > 0) {
+                            userRoles = existing.roles;
+                        }
+                        teacherData.roles = userRoles;
+                        teacherData.createdAt = existing.createdAt || Date.now();
+                        teacherData.createdBy = existing.createdBy || 'admin';
+
+                        await window.fbSet(window.fbRef(window.fbDb, `admin/teachers/${editingTeacherId}`), teacherData);
+                        successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> User updated successfully!';
+                    } else {
+                        const snap = await window.fbGet(window.fbRef(window.fbDb, 'admin/teachers'));
+                        const teachers = snap.val() || {};
+                        const exists = Object.values(teachers).some(t => t.email.toLowerCase() === email.toLowerCase());
+
+                        if (exists) {
+                            errorDiv.textContent = 'A user with this email already exists';
+                            errorDiv.classList.remove('hidden');
+                            return;
+                        }
+
+                        teacherData.roles = userRoles;
+                        teacherData.createdAt = Date.now();
+                        teacherData.createdBy = sessionStorage.getItem('dashboard_user') || 'admin';
+
+                        const newRef = window.fbPush(window.fbRef(window.fbDb, 'admin/teachers'));
+                        await window.fbSet(newRef, teacherData);
+                        successDiv.innerHTML = '<i class="fas fa-check-circle mr-1"></i> Teacher created successfully!';
+                    }
+
+                    successDiv.classList.remove('hidden');
+                    await loadTeacherAccounts();
+
+                    setTimeout(() => {
+                        closeCreateTeacherModal();
+                        successDiv.classList.add('hidden');
+                    }, 1500);
+
+                } catch (err) {
+                    console.error('Error saving user:', err);
+                    errorDiv.textContent = 'Failed to save user account. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = editingTeacherId ? '<i class="fas fa-save mr-2"></i>Update' : '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
+                }
+            }
+            window.createTeacher = createTeacher;
+
+            function showDeleteConfirm(id, name) {
+                pendingDeleteId = id;
+                document.getElementById('delete-teacher-name').textContent = name;
+                document.getElementById('delete-confirm-password').value = '';
+                document.getElementById('delete-error').classList.add('hidden');
+                document.getElementById('delete-confirm-modal').classList.remove('hidden');
+                document.getElementById('delete-confirm-password').focus();
+            }
+            window.showDeleteConfirm = showDeleteConfirm;
+
+            function closeDeleteModal() {
+                document.getElementById('delete-confirm-modal').classList.add('hidden');
+                pendingDeleteId = null;
+            }
+            window.closeDeleteModal = closeDeleteModal;
+
+            function toggleDeletePassword() {
+                const input = document.getElementById('delete-confirm-password');
+                const icon = document.getElementById('delete-password-toggle');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            }
+            window.toggleDeletePassword = toggleDeletePassword;
+
+            async function confirmDeleteTeacher() {
+                const password = document.getElementById('delete-confirm-password').value;
+                const errorDiv = document.getElementById('delete-error');
+                const btn = document.getElementById('confirm-delete-btn');
+
+                if (password !== ADMIN_PASSWORD) {
+                    errorDiv.classList.remove('hidden');
+                    return;
+                }
+
+                if (!pendingDeleteId) return;
+
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
+
+                try {
+                    const teacher = allTeacherAccounts.find((account) => account.id === pendingDeleteId);
+                    await window.fbRemove(window.fbRef(window.fbDb, `admin/teachers/${pendingDeleteId}`));
+                    if (teacher) {
+                        await removeLegacyTeacherRecords(teacher);
+                    }
+                    await loadTeacherAccounts();
+                    closeDeleteModal();
+                    showToast('Teacher account deleted');
+                } catch (err) {
+                    console.error('Error deleting teacher:', err);
+                    errorDiv.textContent = 'Failed to delete teacher account';
+                    errorDiv.classList.remove('hidden');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-trash mr-2"></i>Delete';
+                }
+            }
+            window.confirmDeleteTeacher = confirmDeleteTeacher;
+
+            function openCreateTeacherModal() {
+                resetTeacherForm();
+                document.getElementById('create-teacher-form').reset();
+                document.getElementById('create-teacher-modal').classList.remove('hidden');
+            }
+            window.openCreateTeacherModal = openCreateTeacherModal;
+
+            function closeCreateTeacherModal() {
+                document.getElementById('create-teacher-modal').classList.add('hidden');
+                resetTeacherForm();
+            }
+            window.closeCreateTeacherModal = closeCreateTeacherModal;
+
+            async function editTeacherAccount(id) {
+                const teacher = allTeacherAccounts.find(t => t.id === id);
+                if (!teacher) return;
+
+                editingTeacherId = id;
+                document.getElementById('teacher-name').value = teacher.name || '';
+                document.getElementById('teacher-email').value = teacher.email || '';
+                document.getElementById('teacher-password').value = teacher.password || '';
+                document.getElementById('teacher-company').value = teacher.company || '';
+                document.getElementById('teacher-phone').value = teacher.phone || '';
+                document.getElementById('teacher-vat').value = teacher.vat || '';
+                document.getElementById('teacher-address').value = teacher.address || '';
+
+                document.getElementById('create-teacher-form').querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save mr-2"></i>Update';
+                document.getElementById('create-teacher-modal').classList.remove('hidden');
+            }
+            window.editTeacherAccount = editTeacherAccount;
+
+            function resetTeacherForm() {
+                editingTeacherId = null;
+                document.getElementById('teacher-name').value = '';
+                document.getElementById('teacher-email').value = '';
+                document.getElementById('teacher-password').value = '';
+                document.getElementById('teacher-company').value = '';
+                document.getElementById('teacher-phone').value = '';
+                document.getElementById('teacher-vat').value = '';
+                document.getElementById('teacher-address').value = '';
+                document.getElementById('create-teacher-error').classList.add('hidden');
+                document.getElementById('create-teacher-success').classList.add('hidden');
+                const btn = document.getElementById('create-teacher-form').querySelector('button[type="submit"]');
+                if (btn) btn.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Create Teacher';
+            }
+            window.resetTeacherForm = resetTeacherForm;
+
+            function printInvoice(idx) {
+                currentPrintInvoice = allInvoices[idx];
+                generatePrintableInvoice(currentPrintInvoice);
+                document.getElementById('print-modal').classList.remove('hidden');
+            }
+            window.printInvoice = printInvoice;
+
+            function closePrintModal() {
+                document.getElementById('print-modal').classList.add('hidden');
+            }
+            window.closePrintModal = closePrintModal;
+
+            function generatePrintableInvoice(inv) {
+                const invoiceNum = getInvoiceNumber(inv);
+                const date = new Date(inv.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+                const tokenRow = inv.tokenUsage > 0 ? `
+                            <tr>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">
+                                    <strong>AI Spraakservice - Usage</strong><br>
+                                    <span style="color: #64748b; font-size: 13px;">Characters processed: ${inv.tokenUsage.toLocaleString()}</span>
+                                </td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">${inv.tokenUsage.toLocaleString()}</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${TOKEN_RATE.toFixed(4)}</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${inv.tokenCost.toFixed(4)}</td>
+                            </tr>
+            ` : '';
+
+                const html = `
+                <div class="invoice-document" style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 800px; margin: 0 auto;">
+                    <!-- Header -->
+                    <div style="border-bottom: 3px solid #4f46e5; padding-bottom: 20px; margin-bottom: 30px;">
+                        <div style="display: table; width: 100%;">
+                            <div style="display: table-cell; vertical-align: top;">
+                                <h1 style="margin: 0; font-size: 28px; color: #4f46e5; font-weight: 700;">${escapeHtml(SELLER_INFO.companyName)}</h1>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">${escapeHtml(SELLER_INFO.addressLine1)}<br>${escapeHtml(SELLER_INFO.postalCity)}</p>
+                            </div>
+                            <div style="display: table-cell; vertical-align: top; text-align: right;">
+                                <h2 style="margin: 0; font-size: 24px; color: #333;">FACTUUR</h2>
+                                <p style="margin: 10px 0 0 0; font-size: 14px;"><strong>Factuur Nr:</strong> ${invoiceNum}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 14px;"><strong>Datum:</strong> ${date}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bill To -->
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; color: #999;">Gefactureerd aan / Facturé à</h3>
+                        <p style="margin: 0; font-size: 16px; font-weight: 600;">${escapeHtml(inv.teacherName)}</p>
+                        <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Success Class Teacher</p>
+                    </div>
+
+                    <!-- Invoice Details -->
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                        <thead>
+                            <tr style="background: #f8fafc;">
+                                <th style="padding: 12px 15px; text-align: left; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; color: #64748b;">Beschrijving</th>
+                                <th style="padding: 12px 15px; text-align: right; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; color: #64748b;">Aantal</th>
+                                <th style="padding: 12px 15px; text-align: right; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; color: #64748b;">Eenheidsprijs</th>
+                                <th style="padding: 12px 15px; text-align: right; border-bottom: 2px solid #e2e8f0; font-size: 12px; text-transform: uppercase; color: #64748b;">Bedrag</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">
+                                    <strong>AI Spraakservice - Basis Kost</strong><br>
+                                    <span style="color: #64748b; font-size: 13px;">Success Class by Eburon AI</span>
+                                </td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">1</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${inv.baseCost.toFixed(2)}</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${inv.baseCost.toFixed(2)}</td>
+                            </tr>
+                            ${tokenRow}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" style="padding: 15px; text-align: right; font-size: 14px; color: #64748b;">Subtotaal:</td>
+                                <td style="padding: 15px; text-align: right; font-size: 14px;">€${(inv.baseCost + inv.tokenCost).toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="padding: 15px; text-align: right; font-size: 14px; color: #64748b;">BTW 0%:</td>
+                                <td style="padding: 15px; text-align: right; font-size: 14px;">€0.00</td>
+                            </tr>
+                            <tr style="background: #4f46e5; color: white;">
+                                <td colspan="3" style="padding: 20px 15px; text-align: right; font-size: 18px; font-weight: 700;">TOTAAL:</td>
+                                <td style="padding: 20px 15px; text-align: right; font-size: 24px; font-weight: 700;">€${inv.total.toFixed(2)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Footer -->
+                    <div style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 20px;">
+                        <div style="display: table; width: 100%;">
+                            <div style="display: table-cell; vertical-align: top; font-size: 12px; color: #64748b;">
+                                <p style="margin: 0 0 5px 0;"><strong>Betalingsvoorwaarden:</strong></p>
+                                <p style="margin: 0;">Betaling binnen 30 dagen na factuurdatum.</p>
+                            </div>
+                            <div style="display: table-cell; vertical-align: top; text-align: right; font-size: 12px; color: #64748b;">
+                                <p style="margin: 0;"><strong>${escapeHtml(SELLER_INFO.companyName)}</strong></p>
+                                <p style="margin: 5px 0 0 0;">${escapeHtml(SELLER_INFO.addressLine1)}</p>
+                                <p style="margin: 0;">${escapeHtml(SELLER_INFO.postalCity)}</p>
+                            </div>
+                        </div>
+                        <div style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Dit is een automatisch gegenereerde factuur van Success Class by Eburon AI</p>
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    @media print {
+                        body * { visibility: hidden; }
+                        #invoice-print-content, #invoice-print-content * { visibility: visible; }
+                        #invoice-print-content {
+                            position: absolute; left: 0; top: 0; width: 100%;
+                            padding: 20px; background: white;
+                        }
+                        .invoice-document { max-width: 100% !important; }
+                        @page { size: A4; margin: 15mm; }
+                    }
+                </style>
+            `;
+
+                document.getElementById('invoice-print-content').innerHTML = html;
+            }
+
+            function printCurrentInvoice() {
+                window.print();
+            }
+            window.printCurrentInvoice = printCurrentInvoice;
+        </script>
+</body>
+
+</html>

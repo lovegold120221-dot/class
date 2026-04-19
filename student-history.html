@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#3b82f6">
+    <title>Succes Class - My History</title>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease forwards',
+                        'slide-up': 'slideUp 0.3s ease forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .filter-chip.active {
+            background: #3b82f6;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="antialiased text-gray-800">
+
+    <div class="max-w-2xl mx-auto p-4 md:p-8 md:max-w-none md:w-full md:h-full">
+        <!-- Header -->
+        <header class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <a href="index.html" title="Back to App" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-200 transition-colors">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-900">My History</h1>
+                        <p class="text-xs md:text-sm text-gray-500">
+                            <span id="student-name-display">Student</span> • 
+                            <span id="room-code-display" class="font-mono">----</span>
+                        </p>
+                    </div>
+                </div>
+                <button onclick="refreshHistory()" title="Refresh" class="w-10 h-10 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-rotate"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Search -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+            <div class="relative">
+                <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="search-input" placeholder="Search your messages..."
+                    class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    oninput="filterHistory()">
+            </div>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="flex flex-wrap gap-2 mb-6">
+            <button onclick="setFilter('all')" class="filter-chip active px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 transition-all" data-filter="all">
+                All
+            </button>
+            <button onclick="setFilter('broadcast')" class="filter-chip px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all" data-filter="broadcast">
+                <i class="fa-solid fa-bullhorn mr-1 text-blue-500"></i> Teacher
+            </button>
+            <button onclick="setFilter('question')" class="filter-chip px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all" data-filter="question">
+                <i class="fa-solid fa-circle-question mr-1 text-purple-500"></i> My Questions
+            </button>
+            <button onclick="setFilter('studentSpeech')" class="filter-chip px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all" data-filter="studentSpeech">
+                <i class="fa-solid fa-microphone mr-1 text-green-500"></i> My Speech
+            </button>
+            <button onclick="setFilter('chat')" class="filter-chip px-4 py-2 rounded-full text-sm font-semibold border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 transition-all" data-filter="chat">
+                <i class="fa-solid fa-comment-dots mr-1 text-sky-500"></i> My Chats
+            </button>
+        </div>
+
+        <!-- Stats -->
+        <div id="stats-section" class="hidden grid grid-cols-4 gap-3 mb-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+                <p class="text-xl font-bold text-blue-600" id="stat-broadcasts">0</p>
+                <p class="text-[10px] text-gray-500 font-semibold uppercase">Teacher</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+                <p class="text-xl font-bold text-purple-600" id="stat-questions">0</p>
+                <p class="text-[10px] text-gray-500 font-semibold uppercase">Questions</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+                <p class="text-xl font-bold text-green-600" id="stat-speech">0</p>
+                <p class="text-[10px] text-gray-500 font-semibold uppercase">Speech</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-3 text-center">
+                <p class="text-xl font-bold text-sky-600" id="stat-chats">0</p>
+                <p class="text-[10px] text-gray-500 font-semibold uppercase">Chats</p>
+            </div>
+        </div>
+
+        <!-- History List -->
+        <div id="history-container" class="space-y-3 custom-scrollbar">
+            <!-- Will be populated -->
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-20">
+            <i class="fa-solid fa-circle-notch animate-spin text-4xl text-blue-500 mb-4"></i>
+            <p class="text-gray-500 font-medium">Loading your history...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-20">
+            <i class="fa-solid fa-inbox text-5xl mb-4 text-gray-300"></i>
+            <p class="text-gray-500 font-medium">No messages yet</p>
+            <p class="text-sm text-gray-400 mt-1">Start participating in the session!</p>
+        </div>
+
+        <!-- No Results State -->
+        <div id="no-results-state" class="hidden text-center py-20">
+            <i class="fa-solid fa-search text-5xl mb-4 text-gray-300"></i>
+            <p class="text-gray-500 font-medium">No results match your search</p>
+        </div>
+
+        <!-- Not Logged In State -->
+        <div id="not-logged-in-state" class="hidden text-center py-20">
+            <i class="fa-solid fa-user-slash text-5xl mb-4 text-gray-300"></i>
+            <p class="text-gray-500 font-medium">You're not logged in</p>
+            <a href="auth.html" class="inline-block mt-4 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-colors">
+                Go to Login
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
+            authDomain: "macx-5feca.firebaseapp.com",
+            databaseURL: "https://macx-5feca-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "macx-5feca",
+            storageBucket: "macx-5feca.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890abcdef"
+        };
+
+        const app = initializeApp(FIREBASE_CONFIG);
+        const db = getDatabase(app);
+
+        let allHistory = [];
+        let currentFilter = 'all';
+        let session = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get session from localStorage
+            const saved = localStorage.getItem('orbit_session');
+            if (!saved) {
+                showNotLoggedIn();
+                return;
+            }
+
+            try {
+                session = JSON.parse(saved);
+                if (!session.room || !session.name) {
+                    showNotLoggedIn();
+                    return;
+                }
+
+                // Update UI
+                document.getElementById('student-name-display').textContent = session.name;
+                document.getElementById('room-code-display').textContent = session.room;
+
+                // Load history
+                loadHistory();
+            } catch (e) {
+                showNotLoggedIn();
+            }
+        });
+
+        function showNotLoggedIn() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('not-logged-in-state').classList.remove('hidden');
+        }
+
+        async function loadHistory() {
+            const container = document.getElementById('history-container');
+            const loading = document.getElementById('loading-state');
+            const empty = document.getElementById('empty-state');
+            const stats = document.getElementById('stats-section');
+            const noResults = document.getElementById('no-results-state');
+
+            container.innerHTML = '';
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+            stats.classList.add('hidden');
+            noResults.classList.add('hidden');
+
+            try {
+                allHistory = [];
+                const roomCode = session.room;
+                const studentName = session.name.toLowerCase();
+
+                // Fetch all data types
+                const [messages, questions, responses, chats] = await Promise.all([
+                    get(ref(db, `chats/${roomCode}/messages`)),
+                    get(ref(db, `chats/${roomCode}/questions`)),
+                    get(ref(db, `chats/${roomCode}/studentResponses`)),
+                    get(ref(db, `chats/${roomCode}/studentChats`))
+                ]);
+
+                // Process messages (broadcasts from teacher - show all)
+                if (messages.exists()) {
+                    messages.forEach(snap => {
+                        allHistory.push({
+                            ...snap.val(),
+                            type: 'broadcast',
+                            id: snap.key,
+                            ts: snap.val().timestamp || parseInt(snap.key) || Date.now()
+                        });
+                    });
+                }
+
+                // Process questions (only this student's questions)
+                if (questions.exists()) {
+                    questions.forEach(snap => {
+                        const data = snap.val();
+                        if (data.senderName && data.senderName.toLowerCase() === studentName) {
+                            allHistory.push({
+                                ...data,
+                                type: 'question',
+                                id: snap.key,
+                                ts: data.timestamp || parseInt(snap.key) || Date.now()
+                            });
+                        }
+                    });
+                }
+
+                // Process student responses (only this student's speech)
+                if (responses.exists()) {
+                    responses.forEach(snap => {
+                        const data = snap.val();
+                        if (data.senderName && data.senderName.toLowerCase() === studentName) {
+                            allHistory.push({
+                                ...data,
+                                type: 'studentSpeech',
+                                id: snap.key,
+                                ts: data.timestamp || parseInt(snap.key) || Date.now()
+                            });
+                        }
+                    });
+                }
+
+                // Process chats (only this student's chats)
+                if (chats.exists()) {
+                    chats.forEach(snap => {
+                        const data = snap.val();
+                        if (data.senderName && data.senderName.toLowerCase() === studentName) {
+                            allHistory.push({
+                                ...data,
+                                type: 'chat',
+                                id: snap.key,
+                                ts: data.timestamp || parseInt(snap.key) || Date.now()
+                            });
+                        }
+                    });
+                }
+
+                // Sort by timestamp (newest first)
+                allHistory.sort((a, b) => b.ts - a.ts);
+
+                loading.classList.add('hidden');
+
+                if (allHistory.length === 0) {
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                // Update stats
+                updateStats();
+                stats.classList.remove('hidden');
+
+                // Render
+                renderHistory();
+
+            } catch (error) {
+                console.error('Error loading history:', error);
+                loading.classList.add('hidden');
+                container.innerHTML = `
+                    <div class="text-center py-10">
+                        <i class="fa-solid fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                        <p class="text-red-500 font-medium">Error loading history</p>
+                        <p class="text-sm text-gray-400 mt-1">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function updateStats() {
+            const broadcasts = allHistory.filter(h => h.type === 'broadcast').length;
+            const questions = allHistory.filter(h => h.type === 'question').length;
+            const speech = allHistory.filter(h => h.type === 'studentSpeech').length;
+            const chats = allHistory.filter(h => h.type === 'chat').length;
+
+            document.getElementById('stat-broadcasts').textContent = broadcasts;
+            document.getElementById('stat-questions').textContent = questions;
+            document.getElementById('stat-speech').textContent = speech;
+            document.getElementById('stat-chats').textContent = chats;
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+            const noResults = document.getElementById('no-results-state');
+            const empty = document.getElementById('empty-state');
+
+            container.innerHTML = '';
+            noResults.classList.add('hidden');
+            empty.classList.add('hidden');
+
+            let filtered = allHistory;
+
+            // Apply type filter
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(h => h.type === currentFilter);
+            }
+
+            // Apply search
+            if (searchQuery) {
+                filtered = filtered.filter(h => {
+                    const text = (h.text || '').toLowerCase();
+                    const sender = (h.senderName || '').toLowerCase();
+                    return text.includes(searchQuery) || sender.includes(searchQuery);
+                });
+            }
+
+            if (filtered.length === 0) {
+                if (searchQuery || currentFilter !== 'all') {
+                    noResults.classList.remove('hidden');
+                } else {
+                    empty.classList.remove('hidden');
+                }
+                return;
+            }
+
+            filtered.forEach((item, index) => {
+                const card = createHistoryCard(item, index);
+                container.appendChild(card);
+            });
+        }
+
+        function createHistoryCard(item, index) {
+            const div = document.createElement('div');
+            div.className = 'animate-slide-up';
+            div.style.animationDelay = `${index * 0.03}s`;
+
+            const typeConfig = {
+                broadcast: {
+                    icon: 'fa-bullhorn',
+                    color: 'blue',
+                    label: 'Teacher',
+                    bgClass: 'bg-blue-50 border-blue-100'
+                },
+                question: {
+                    icon: 'fa-circle-question',
+                    color: 'purple',
+                    label: 'My Question',
+                    bgClass: 'bg-purple-50 border-purple-100'
+                },
+                studentSpeech: {
+                    icon: 'fa-microphone',
+                    color: 'green',
+                    label: 'My Speech',
+                    bgClass: 'bg-green-50 border-green-100'
+                },
+                chat: {
+                    icon: 'fa-comment-dots',
+                    color: 'sky',
+                    label: 'My Chat',
+                    bgClass: 'bg-sky-50 border-sky-100'
+                }
+            };
+
+            const config = typeConfig[item.type] || typeConfig.broadcast;
+            const time = new Date(item.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = new Date(item.ts).toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+            div.innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow ${config.bgClass}">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-${config.color}-100 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid ${config.icon} text-${config.color}-600"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold text-${config.color}-600 uppercase tracking-tight">${config.label}</span>
+                                <span class="text-[10px] text-gray-400 font-medium">${date} ${time}</span>
+                            </div>
+                            <p class="text-sm text-gray-800 leading-relaxed">${item.text || item.textForTeacher || 'No content'}</p>
+                            ${item.text && item.textForTeacher && item.text !== item.textForTeacher ? `
+                                <p class="text-xs text-gray-400 mt-1 italic truncate">Original: ${item.text}</p>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return div;
+        }
+
+        window.setFilter = function(filter) {
+            currentFilter = filter;
+
+            // Update chip styles
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.classList.remove('active', 'bg-blue-500', 'text-white');
+                chip.classList.add('bg-white', 'text-gray-600');
+            });
+
+            const activeChip = document.querySelector(`[data-filter="${filter}"]`);
+            if (activeChip) {
+                activeChip.classList.add('active');
+                activeChip.classList.remove('bg-white', 'text-gray-600');
+            }
+
+            renderHistory();
+        }
+
+        window.filterHistory = function() {
+            renderHistory();
+        }
+
+        window.refreshHistory = function() {
+            if (session) {
+                loadHistory();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

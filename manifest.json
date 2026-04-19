@@ -1,0 +1,36 @@
+{
+    "id": "/index.html",
+    "name": "Succes Class",
+    "short_name": "Succes",
+    "start_url": "./auth.html",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#ffffff",
+    "theme_color": "#3b82f6",
+    "icons": [
+        {
+            "src": "pwa_icon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "description": "Real-time AI Translation and Hybrid Learning Platform",
+    "scope": "./",
+    "lang": "en",
+    "categories": ["education", "productivity"],
+    "shortcuts": [
+        {
+            "name": "Teacher Login",
+            "short_name": "Teacher",
+            "url": "./auth.html",
+            "icons": [{"src": "pwa_icon.png", "sizes": "512x512"}]
+        },
+        {
+            "name": "History",
+            "short_name": "History",
+            "url": "./history.html",
+            "icons": [{"src": "pwa_icon.png", "sizes": "512x512"}]
+        }
+    ]
+}

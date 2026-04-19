@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="pwa_icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Succes Class - Login</title>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-blur: blur(12px);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e0f2fe 100%);
+            height: 100vh;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            color: #1f2937;
+        }
+
+        .input-glass {
+            background: rgba(255, 255, 255, 0.6);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .input-glass:focus {
+            background: #ffffff;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+            outline: none;
+        }
+
+        .btn-modern {
+            transition: transform 0.1s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .btn-modern:active {
+            transform: scale(0.97);
+        }
+
+        .view-transition {
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .view-hidden {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            transform: scale(0.98);
+            z-index: -1;
+        }
+
+        .view-active {
+            opacity: 1;
+            pointer-events: auto;
+            position: relative;
+            transform: scale(1);
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            -webkit-backdrop-filter: var(--glass-blur);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* Install Banner */
+        .install-banner {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideDown {
+            0% { transform: translateY(-100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .install-banner.hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="antialiased text-gray-800">
+
+    <!-- Install App Banner (hidden by default, shown only when app can be installed) -->
+    <div id="install-banner" class="install-banner hidden fixed top-0 left-0 right-0 z-50 px-4 py-3 shadow-lg">
+        <div class="max-w-lg mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <img src="pwa_icon.png" alt="Succes" class="w-10 h-10 rounded-lg shadow-md">
+                <div class="text-white">
+                    <p class="font-semibold text-sm">Install Succes</p>
+                    <p class="text-xs text-white/70">Add to home screen</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="Auth.dismissInstall()" class="text-white/70 hover:text-white px-2 py-1 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <button onclick="Auth.installApp()" class="bg-white text-blue-600 font-semibold px-4 py-2 rounded-lg text-sm shadow-md hover:bg-blue-50 transition-all">
+                    Install
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container"
+        class="fixed top-4 left-0 right-0 z-50 pointer-events-none flex flex-col items-center gap-2 p-4"></div>
+
+    <!-- Admin Dashboard Link -->
+    <a href="dashboard/index.html" id="admin-link"
+        class="fixed top-4 right-4 z-50 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform"
+        title="Success Class Dashboard - Powered by Eburon AI">
+        <i class="fa-solid fa-user-shield text-white text-lg"></i>
+    </a>
+
+    <!-- MAIN APP CONTAINER -->
+    <main id="app"
+        class="relative w-full h-full max-w-lg mx-auto bg-white/50 shadow-2xl overflow-hidden md:max-w-none md:w-full md:h-full md:my-0 md:rounded-none md:border-0 backdrop-blur-3xl">
+
+        <!-- ================= SCREEN 1: ENTRY (Role Selection + Student Form) ================= -->
+        <section id="view-entry" class="view-active w-full h-full flex flex-col p-8 transition-all duration-500">
+            <!-- Header/Logo -->
+            <div class="flex-1 flex flex-col items-center justify-center space-y-6 animate-slide-up">
+                <div class="relative w-28 h-28">
+                    <img src="pwa_icon.png" alt="Succes Class Logo" class="w-full h-full object-contain rounded-2xl shadow-lg">
+                    <div
+                        class="absolute -right-2 -top-2 bg-red-50 text-red-500 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-red-100">
+                        1.0</div>
+                </div>
+            </div>
+
+            <!-- Student Login Form -->
+            <div id="form-student" class="w-full space-y-5 mb-4 animate-slide-up" style="animation-delay: 0.1s;">
+                <div class="group">
+                    <label class="block text-sm font-semibold text-gray-500 mb-1.5 ml-1">Conversation Code</label>
+                    <div class="relative flex gap-2">
+                        <input id="login-code" type="text" placeholder="Enter conversation code"
+                            class="input-glass flex-1 px-4 py-3.5 rounded-lg text-base font-medium text-gray-800 placeholder-gray-400 bg-gray-50/50 border-gray-200 focus:bg-white transition-all">
+                        <div
+                            class="w-12 flex items-center justify-center bg-gray-100 rounded-lg text-gray-500 text-2xl">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-sm font-semibold text-gray-500 mb-1.5 ml-1">Username</label>
+                    <input id="login-name" type="text" placeholder="Enter Username"
+                        class="input-glass w-full px-4 py-3.5 rounded-lg text-base font-medium text-gray-800 placeholder-gray-400 bg-gray-50/50 border-gray-200 focus:bg-white">
+                </div>
+
+                <div class="group">
+                    <label class="block text-sm font-semibold text-gray-500 mb-1.5 ml-1">Receiving Language</label>
+                    <div class="relative">
+                        <select id="login-lang" title="Select your receiving language"
+                            class="input-glass w-full px-4 py-3.5 rounded-lg text-base font-medium text-gray-800 appearance-none bg-gray-50/50 border-gray-200 focus:bg-white pr-10 truncate">
+                            <!-- Populated dynamically -->
+                        </select>
+                        <i
+                            class="fa-solid fa-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <button onclick="Auth.handleStudentLogin()"
+                    class="btn-modern w-full bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-semibold py-3.5 rounded-lg shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 mt-4 text-lg">
+                    <span>Join Conversation</span>
+                </button>
+            </div>
+
+            <!-- Footer / Teacher Toggle -->
+            <div id="login-footer" class="text-center animate-slide-up mt-auto pt-4" style="animation-delay: 0.2s;">
+                <button onclick="Auth.showTeacherLogin()"
+                    class="w-full py-3.5 rounded-lg font-semibold text-white bg-[#22c55e] hover:bg-[#16a34a] shadow-lg shadow-green-500/20 transition-all flex items-center justify-center gap-2">
+                    <span>Teacher</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= SCREEN 2: TEACHER LOGIN ================= -->
+        <section id="view-teacher-login" class="view-hidden w-full h-full flex flex-col p-8 transition-all duration-500">
+            <!-- Header/Logo -->
+            <div class="flex-1 flex flex-col items-center justify-center space-y-6 animate-slide-up">
+                <div class="relative w-24 h-24">
+                    <img src="pwa_icon.png" alt="Succes Class Logo" class="w-full h-full object-contain rounded-2xl shadow-lg">
+                </div>
+                <div class="text-center">
+                    <h2 class="text-xl font-bold text-gray-900">Teacher Login</h2>
+                    <p class="text-sm text-gray-500 mt-1">Sign in to start your session</p>
+                </div>
+            </div>
+
+            <!-- Teacher Login Form -->
+            <div class="w-full space-y-5 mb-4 animate-slide-up">
+                <div class="group">
+                    <label class="block text-sm font-semibold text-gray-500 mb-1.5 ml-1" for="teacher-email">Email</label>
+                    <input id="teacher-email" type="email" placeholder="Email"
+                        title="Teacher Email"
+                        class="input-glass w-full px-4 py-3.5 rounded-lg text-base font-medium text-gray-800 placeholder-gray-400 bg-gray-50/50 border-gray-200 focus:bg-white">
+                </div>
+                <div class="group">
+                    <label class="block text-sm font-semibold text-gray-500 mb-1.5 ml-1" for="teacher-pw">Password</label>
+                    <input id="teacher-pw" type="password" placeholder="Password"
+                        title="Teacher Password"
+                        class="input-glass w-full px-4 py-3.5 rounded-lg text-base font-medium text-gray-800 placeholder-gray-400 bg-gray-50/50 border-gray-200 focus:bg-white">
+                </div>
+                <div class="group">
+                    <label class="block text-sm font-semibold text-gray-500 mb-1.5 ml-1">Language</label>
+                    <div class="relative">
+                        <select id="teacher-lang" title="Select your instruction language"
+                            class="input-glass w-full px-4 py-3.5 rounded-lg text-base font-medium text-gray-800 appearance-none bg-gray-50/50 border-gray-200 focus:bg-white pr-10 truncate">
+                            <!-- Populated dynamically -->
+                        </select>
+                        <i
+                            class="fa-solid fa-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <button onclick="Auth.handleTeacherLogin()"
+                    class="btn-modern w-full bg-[#22c55e] hover:bg-[#16a34a] text-white font-semibold py-3.5 rounded-lg shadow-lg shadow-green-500/20 flex items-center justify-center gap-2 mt-4 text-lg">
+                    <span>Login & Start</span>
+                </button>
+                <button onclick="Auth.showStudentLogin()"
+                    class="w-full py-2 text-sm font-semibold text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> Back to Student Login
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================= LOGIC ================= -->
+    <script>
+        // --- LANGUAGES ---
+        const LANGUAGES = [
+            { code: 'nl-BE', name: 'Flemish', flag: '🇧🇪' },
+            { code: 'ab', name: 'Abkhaz', flag: '🇬🇪' },
+            { code: 'ace', name: 'Acehnese', flag: '🇮🇩' },
+            { code: 'ach', name: 'Acholi', flag: '🇺🇬' },
+            { code: 'aa', name: 'Afar', flag: '🇪🇹' },
+            { code: 'af', name: 'Afrikaans', flag: '🇿🇦' },
+            { code: 'sq', name: 'Albanian', flag: '🇦🇱' },
+            { code: 'alu', name: 'Alur', flag: '🇨🇬' },
+            { code: 'am', name: 'Amharic', flag: '🇪🇹' },
+            { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
+            { code: 'ar-MA', name: 'Moroccan Arabic', flag: '🇲🇦' },
+            { code: 'hy', name: 'Armenian', flag: '🇦🇲' },
+            { code: 'as', name: 'Assamese', flag: '🇮🇳' },
+            { code: 'av', name: 'Avar', flag: '🇷🇺' },
+            { code: 'awa', name: 'Awadhi', flag: '🇮🇳' },
+            { code: 'ay', name: 'Aymara', flag: '🇧🇴' },
+            { code: 'az', name: 'Azerbaijani', flag: '🇦🇿' },
+            { code: 'ban', name: 'Balinese', flag: '🇮🇩' },
+            { code: 'bal', name: 'Baluchi', flag: '🇵🇰' },
+            { code: 'bm', name: 'Bambara', flag: '🇲🇱' },
+            { code: 'bau', name: 'Baoulé', flag: '🇨🇮' },
+            { code: 'ba', name: 'Bashkir', flag: '🇷🇺' },
+            { code: 'eu', name: 'Basque', flag: '🇪🇸' },
+            { code: 'btk', name: 'Batak Karo', flag: '🇮🇩' },
+            { code: 'bts', name: 'Batak Simalungun', flag: '🇮🇩' },
+            { code: 'bbc', name: 'Batak Toba', flag: '🇮🇩' },
+            { code: 'be', name: 'Belarusian', flag: '🇧🇾' },
+            { code: 'bem', name: 'Bemba', flag: '🇿🇲' },
+            { code: 'bn', name: 'Bengali', flag: '🇧🇩' },
+            { code: 'btv', name: 'Betawi', flag: '🇮🇩' },
+            { code: 'bho', name: 'Bhojpuri', flag: '🇮🇳' },
+            { code: 'bik', name: 'Bikol', flag: '🇵🇭' },
+            { code: 'bs', name: 'Bosnian', flag: '🇧🇦' },
+            { code: 'br', name: 'Breton', flag: '🇫🇷' },
+            { code: 'bg', name: 'Bulgarian', flag: '🇧🇬' },
+            { code: 'bua', name: 'Buryat', flag: '🇷🇺' },
+            { code: 'yue', name: 'Cantonese', flag: '🇭🇰' },
+            { code: 'ca', name: 'Catalan', flag: '🇪🇸' },
+            { code: 'ceb', name: 'Cebuano', flag: '🇵🇭' },
+            { code: 'ch', name: 'Chamorro', flag: '🇬🇺' },
+            { code: 'ce', name: 'Chechen', flag: '🇷🇺' },
+            { code: 'ny', name: 'Chichewa', flag: '🇲🇼' },
+            { code: 'zh-CN', name: 'Chinese (Simplified)', flag: '🇨🇳' },
+            { code: 'zh-TW', name: 'Chinese (Traditional)', flag: '🇹🇼' },
+            { code: 'chk', name: 'Chuukese', flag: '🇫🇲' },
+            { code: 'cv', name: 'Chuvash', flag: '🇷🇺' },
+            { code: 'co', name: 'Corsican', flag: '🇫🇷' },
+            { code: 'crh', name: 'Crimean Tatar (Latin)', flag: '🇺🇦' },
+            { code: 'hr', name: 'Croatian', flag: '🇭🇷' },
+            { code: 'cs', name: 'Czech', flag: '🇨🇿' },
+            { code: 'da', name: 'Danish', flag: '🇩🇰' },
+            { code: 'prs', name: 'Dari', flag: '🇦🇫' },
+            { code: 'dv', name: 'Dhivehi', flag: '🇲🇻' },
+            { code: 'din', name: 'Dinka', flag: '🇸🇸' },
+            { code: 'doi', name: 'Dogri', flag: '🇮🇳' },
+            { code: 'nl', name: 'Dutch', flag: '🇳🇱' },
+            { code: 'dyu', name: 'Dyula', flag: '🇨🇮' },
+            { code: 'dz', name: 'Dzongkha', flag: '🇧🇹' },
+            { code: 'en', name: 'English', flag: '🇺🇸' },
+            { code: 'eo', name: 'Esperanto', flag: '🌍' },
+            { code: 'et', name: 'Estonian', flag: '🇪🇪' },
+            { code: 'ee', name: 'Ewe', flag: '🇬🇭' },
+            { code: 'fo', name: 'Faroese', flag: '🇫🇴' },
+            { code: 'fj', name: 'Fijian', flag: '🇫🇯' },
+            { code: 'fil', name: 'Filipino', flag: '🇵🇭' },
+            { code: 'fi', name: 'Finnish', flag: '🇫🇮' },
+            { code: 'fon', name: 'Fon', flag: '🇧🇯' },
+            { code: 'fr', name: 'French', flag: '🇫🇷' },
+            { code: 'fr-CA', name: 'French (Canada)', flag: '🇨🇦' },
+            { code: 'fy', name: 'Frisian', flag: '🇳🇱' },
+            { code: 'fur', name: 'Friulian', flag: '🇮🇹' },
+            { code: 'ff', name: 'Fulani', flag: '🇸🇳' },
+            { code: 'gaa', name: 'Ga', flag: '🇬🇭' },
+            { code: 'gl', name: 'Galician', flag: '🇪🇸' },
+            { code: 'ka', name: 'Georgian', flag: '🇬🇪' },
+            { code: 'de', name: 'German', flag: '🇩🇪' },
+            { code: 'el', name: 'Greek', flag: '🇬🇷' },
+            { code: 'gn', name: 'Guarani', flag: '🇵🇾' },
+            { code: 'gu', name: 'Gujarati', flag: '🇮🇳' },
+            { code: 'ht', name: 'Haitian Creole', flag: '🇭🇹' },
+            { code: 'ccp', name: 'Hakha Chin', flag: '🇲🇲' },
+            { code: 'ha', name: 'Hausa', flag: '🇳🇬' },
+            { code: 'haw', name: 'Hawaiian', flag: '🇺🇸' },
+            { code: 'he', name: 'Hebrew', flag: '🇮🇱' },
+            { code: 'hil', name: 'Hiligaynon', flag: '🇵🇭' },
+            { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
+            { code: 'hmn', name: 'Hmong', flag: '🇨🇳' },
+            { code: 'hu', name: 'Hungarian', flag: '🇭🇺' },
+            { code: 'iba', name: 'Iban', flag: '🇲🇾' },
+            { code: 'is', name: 'Icelandic', flag: '🇮🇸' },
+            { code: 'ig', name: 'Igbo', flag: '🇳🇬' },
+            { code: 'ilo', name: 'Ilocano', flag: '🇵🇭' },
+            { code: 'id', name: 'Indonesian', flag: '🇮🇩' },
+            { code: 'iu', name: 'Inuktut', flag: '🇨🇦' },
+            { code: 'ga', name: 'Irish', flag: '🇮🇪' },
+            { code: 'it', name: 'Italian', flag: '🇮🇹' },
+            { code: 'jam', name: 'Jamaican Patois', flag: '🇯🇲' },
+            { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
+            { code: 'jv', name: 'Javanese', flag: '🇮🇩' },
+            { code: 'kac', name: 'Jingpo', flag: '🇲🇲' },
+            { code: 'kl', name: 'Kalaallisut', flag: '🇬🇱' },
+            { code: 'kn', name: 'Kannada', flag: '🇮🇳' },
+            { code: 'kr', name: 'Kanuri', flag: '🇳🇬' },
+            { code: 'pam', name: 'Kapampangan', flag: '🇵🇭' },
+            { code: 'kk', name: 'Kazakh', flag: '🇰🇿' },
+            { code: 'kha', name: 'Khasi', flag: '🇮🇳' },
+            { code: 'km', name: 'Khmer', flag: '🇰🇭' },
+            { code: 'kg', name: 'Kikongo', flag: '🇨🇬' },
+            { code: 'rw', name: 'Kinyarwanda', flag: '🇷🇼' },
+            { code: 'ko', name: 'Korean', flag: '🇰🇷' },
+            { code: 'kri', name: 'Krio', flag: '🇸🇱' },
+            { code: 'ku', name: 'Kurdish (Kurmanji)', flag: '🇹🇷' },
+            { code: 'ckb', name: 'Kurdish (Sorani)', flag: '🇮🇶' },
+            { code: 'ky', name: 'Kyrgyz', flag: '🇰🇬' },
+            { code: 'lo', name: 'Lao', flag: '🇱🇦' },
+            { code: 'la', name: 'Latin', flag: '🇻🇦' },
+            { code: 'lv', name: 'Latvian', flag: '🇱🇻' },
+            { code: 'ln', name: 'Lingala', flag: '🇨🇩' },
+            { code: 'lt', name: 'Lithuanian', flag: '🇱🇹' },
+            { code: 'lg', name: 'Luganda', flag: '🇺🇬' },
+            { code: 'luo', name: 'Luo', flag: '🇰🇪' },
+            { code: 'lb', name: 'Luxembourgish', flag: '🇱🇺' },
+            { code: 'mk', name: 'Macedonian', flag: '🇲🇰' },
+            { code: 'mad', name: 'Madurese', flag: '🇮🇩' },
+            { code: 'mai', name: 'Maithili', flag: '🇮🇳' },
+            { code: 'mg', name: 'Malagasy', flag: '🇲🇬' },
+            { code: 'ms', name: 'Malay', flag: '🇲🇾' },
+            { code: 'ml', name: 'Malayalam', flag: '🇮🇳' },
+            { code: 'mt', name: 'Maltese', flag: '🇲🇹' },
+            { code: 'gv', name: 'Manx', flag: '🇮🇲' },
+            { code: 'mi', name: 'Maori', flag: '🇳🇿' },
+            { code: 'mr', name: 'Marathi', flag: '🇮🇳' },
+            { code: 'mh', name: 'Marshallese', flag: '🇲🇭' },
+            { code: 'mn', name: 'Mongolian', flag: '🇲🇳' },
+            { code: 'my', name: 'Myanmar (Burmese)', flag: '🇲🇲' },
+            { code: 'ne', name: 'Nepali', flag: '🇳🇵' },
+            { code: 'no', name: 'Norwegian', flag: '🇳🇴' },
+            { code: 'or', name: 'Odia (Oriya)', flag: '🇮🇳' },
+            { code: 'om', name: 'Oromo', flag: '🇪🇹' },
+            { code: 'ps', name: 'Pashto', flag: '🇦🇫' },
+            { code: 'fa', name: 'Persian', flag: '🇮🇷' },
+            { code: 'pl', name: 'Polish', flag: '🇵🇱' },
+            { code: 'pt-BR', name: 'Portuguese (Brazil)', flag: '🇧🇷' },
+            { code: 'pt-PT', name: 'Portuguese (Portugal)', flag: '🇵🇹' },
+            { code: 'pa', name: 'Punjabi', flag: '🇮🇳' },
+            { code: 'qu', name: 'Quechua', flag: '🇵🇪' },
+            { code: 'ro', name: 'Romanian', flag: '🇷🇴' },
+            { code: 'rn', name: 'Rundi', flag: '🇧🇮' },
+            { code: 'ru', name: 'Russian', flag: '🇷🇺' },
+            { code: 'sm', name: 'Samoan', flag: '🇼🇸' },
+            { code: 'sg', name: 'Sango', flag: '🇨🇫' },
+            { code: 'sa', name: 'Sanskrit', flag: '🇮🇳' },
+            { code: 'gd', name: 'Scots Gaelic', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' },
+            { code: 'nso', name: 'Sepedi', flag: '🇿🇦' },
+            { code: 'sr', name: 'Serbian', flag: '🇷🇸' },
+            { code: 'st', name: 'Sesotho', flag: '🇿🇦' },
+            { code: 'sn', name: 'Shona', flag: '🇿🇼' },
+            { code: 'sd', name: 'Sindhi', flag: '🇵🇰' },
+            { code: 'si', name: 'Sinhala', flag: '🇱🇰' },
+            { code: 'sk', name: 'Slovak', flag: '🇸🇰' },
+            { code: 'sl', name: 'Slovenian', flag: '🇸🇮' },
+            { code: 'so', name: 'Somali', flag: '🇸🇴' },
+            { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+            { code: 'su', name: 'Sundanese', flag: '🇮🇩' },
+            { code: 'sw', name: 'Swahili', flag: '🇰🇪' },
+            { code: 'ss', name: 'Swati', flag: '🇸🇿' },
+            { code: 'sv', name: 'Swedish', flag: '🇸🇪' },
+            { code: 'ty', name: 'Tahitian', flag: '🇵🇫' },
+            { code: 'tg', name: 'Tajik', flag: '🇹🇯' },
+            { code: 'ta', name: 'Tamil', flag: '🇮🇳' },
+            { code: 'tt', name: 'Tatar', flag: '🇷🇺' },
+            { code: 'te', name: 'Telugu', flag: '🇮🇳' },
+            { code: 'th', name: 'Thai', flag: '🇹🇭' },
+            { code: 'bo', name: 'Tibetan', flag: '🇨🇳' },
+            { code: 'ti', name: 'Tigrinya', flag: '🇪🇷' },
+            { code: 'to', name: 'Tongan', flag: '🇹🇴' },
+            { code: 'ts', name: 'Tsonga', flag: '🇿🇦' },
+            { code: 'tn', name: 'Tswana', flag: '🇿🇦' },
+            { code: 'tr', name: 'Turkish', flag: '🇹🇷' },
+            { code: 'tk', name: 'Turkmen', flag: '🇹🇲' },
+            { code: 'ak', name: 'Twi', flag: '🇬🇭' },
+            { code: 'uk', name: 'Ukrainian', flag: '🇺🇦' },
+            { code: 'ur', name: 'Urdu', flag: '🇵🇰' },
+            { code: 'ug', name: 'Uyghur', flag: '🇨🇳' },
+            { code: 'uz', name: 'Uzbek', flag: '🇺🇿' },
+            { code: 've', name: 'Venda', flag: '🇿🇦' },
+            { code: 'vi', name: 'Vietnamese', flag: '🇻🇳' },
+            { code: 'cy', name: 'Welsh', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
+            { code: 'wo', name: 'Wolof', flag: '🇸🇳' },
+            { code: 'xh', name: 'Xhosa', flag: '🇿🇦' },
+            { code: 'yi', name: 'Yiddish', flag: '🇮🇱' },
+            { code: 'yo', name: 'Yoruba', flag: '🇳🇬' },
+            { code: 'zu', name: 'Zulu', flag: '🇿🇦' }
+        ];
+
+        // --- AUTH CONTROLLER ---
+        // PWA Install prompt
+        let deferredPrompt = null;
+
+        const Auth = {
+            init() {
+                // Check if app is already installed
+                try {
+                    this.checkInstallState();
+                } catch (e) {
+                    console.log('Install check skipped');
+                }
+                // Populate language selects
+                const ops = LANGUAGES.map(l => `<option value="${l.code}" ${l.code === 'nl-BE' ? 'selected' : ''}>${l.flag || ''} ${l.name}</option>`).join('');
+                document.getElementById('login-lang').innerHTML = ops;
+                document.getElementById('teacher-lang').innerHTML = ops;
+
+                // Check if already logged in
+                const saved = localStorage.getItem('orbit_session');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        if (data.role && data.room) {
+                            // Redirect to main app
+                            window.location.href = 'index.html';
+                            return;
+                        }
+                    } catch (e) { }
+                }
+            },
+
+            switchView(viewId) {
+                document.querySelectorAll('section').forEach(el => {
+                    el.classList.remove('view-active');
+                    el.classList.add('view-hidden');
+                });
+                const target = document.getElementById(viewId);
+                setTimeout(() => {
+                    target.classList.remove('view-hidden');
+                    target.classList.add('view-active');
+                }, 50);
+            },
+
+            showTeacherLogin() {
+                this.switchView('view-teacher-login');
+            },
+
+            showStudentLogin() {
+                this.switchView('view-entry');
+            },
+
+            showToast(msg, type = 'info') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const colors = { info: 'bg-gray-800 text-white', success: 'bg-green-600 text-white', error: 'bg-red-500 text-white' };
+                toast.className = `${colors[type]} px-4 py-2 rounded-lg shadow-xl text-sm font-semibold transform transition-all duration-300 translate-y-[-20px] opacity-0 flex items-center gap-2`;
+                toast.innerHTML = type === 'success' ? `<i class="fa-solid fa-check-circle"></i> ${msg}` : msg;
+                container.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.remove('translate-y-[-20px]', 'opacity-0'));
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-[-10px]');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            },
+
+            handleStudentLogin() {
+                const code = document.getElementById('login-code').value.trim().toUpperCase();
+                const name = document.getElementById('login-name').value.trim();
+                const lang = document.getElementById('login-lang').value;
+
+                if (!code) {
+                    this.showToast("Please enter room code", "error");
+                    return;
+                }
+                if (!name) {
+                    this.showToast("Please enter your name", "error");
+                    return;
+                }
+
+                // Save session and redirect
+                const session = {
+                    role: 'student',
+                    room: code,
+                    name: name,
+                    lang: lang,
+                    currentView: 'view-student'
+                };
+                localStorage.setItem('orbit_session', JSON.stringify(session));
+                this.showToast("Joining classroom...", "success");
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            },
+
+            async handleTeacherLogin() {
+                const email = document.getElementById('teacher-email').value.trim();
+                const pw = document.getElementById('teacher-pw').value;
+                const lang = document.getElementById('teacher-lang').value;
+
+                if (!email || !pw) {
+                    this.showToast("Please enter email and password", "error");
+                    return;
+                }
+
+                let authenticated = false;
+                let userName = 'Teacher';
+                let userRole = 'teacher';
+                let teacherRecord = null;
+
+                // --- Firebase lookup: check admin/teachers collection ---
+                try {
+                    const db = window._authDb;
+                    if (db) {
+                        const { ref, get } = window._authFirebase;
+                        const snap = await get(ref(db, 'admin/teachers'));
+                        const teachers = snap.val() || {};
+                        
+                        for (const [id, t] of Object.entries(teachers)) {
+                            if (t.email === email && t.password === pw && t.active) {
+                                authenticated = true;
+                                teacherRecord = { ...t, _key: id };
+                                userName = t.name || 'Teacher';
+                                userRole = 'teacher';
+                                break;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Firebase teacher lookup failed:', e);
+                }
+
+                // --- Firebase lookup: check admin/users collection (legacy) ---
+                if (!authenticated) {
+                    try {
+                        const record = await window._adminUserLookup(email);
+                        if (record && (record.role === 'teacher' || record.role === 'admin')) {
+                            if (record.generatedId && pw === record.generatedId) {
+                                authenticated = true;
+                            }
+                            if (authenticated) {
+                                userName = record.name || 'Teacher';
+                                userRole = record.role;
+                                window._adminUserIncrementSessions(record._key);
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Legacy teacher lookup failed:', e);
+                    }
+                }
+
+                if (!authenticated) {
+                    this.showToast("Invalid credentials", "error");
+                    return;
+                }
+
+                // Generate room code and save session
+                const roomCode = "RM" + Math.floor(1000 + Math.random() * 9000);
+                const session = {
+                    role: userRole,
+                    room: roomCode,
+                    name: userName,
+                    email: email,
+                    teacherId: teacherRecord?._key || null,
+                    lang: lang,
+                    currentView: 'view-lobby'
+                };
+                localStorage.setItem('orbit_session', JSON.stringify(session));
+                this.showToast("Login successful!", "success");
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+            },
+
+            // Check if PWA is installed and show/hide banner
+            checkInstallState() {
+                const banner = document.getElementById('install-banner');
+                
+                // Check if running as installed PWA
+                const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                                     window.navigator.standalone === true ||
+                                     document.referrer.includes('android-app://') ||
+                                     localStorage.getItem('pwa_installed') === 'true';
+                
+                if (isStandalone) {
+                    banner.classList.add('hidden');
+                    return;
+                }
+
+                // Listen for install prompt
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    banner.classList.remove('hidden');
+                });
+
+                // Listen for successful install
+                window.addEventListener('appinstalled', () => {
+                    banner.classList.add('hidden');
+                    deferredPrompt = null;
+                    localStorage.setItem('pwa_installed', 'true');
+                    this.showToast('App installed successfully!', 'success');
+                });
+            },
+
+            async installApp() {
+                if (!deferredPrompt) {
+                    this.showToast('Install not available', 'error');
+                    return;
+                }
+
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    localStorage.setItem('pwa_installed', 'true');
+                }
+                deferredPrompt = null;
+            },
+
+            dismissInstall() {
+                const banner = document.getElementById('install-banner');
+                banner.classList.add('hidden');
+                // Remember dismissal for this session
+                sessionStorage.setItem('install_dismissed', 'true');
+            }
+        };
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => Auth.init());
+    </script>
+
+    <!-- Firebase module: exposes admin user lookup helpers to the Auth object above -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const app = initializeApp({
+            apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
+            authDomain: "macx-5feca.firebaseapp.com",
+            databaseURL: "https://macx-5feca-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "macx-5feca",
+            storageBucket: "macx-5feca.appspot.com"
+        });
+        const db = getDatabase(app);
+
+        // Expose for teacher login
+        window._authDb = db;
+        window._authFirebase = { ref, get, set };
+
+        // Returns the first admin/users record matching the given email,
+        // with the Firebase key attached as _key. Returns null if not found.
+        window._adminUserLookup = async (email) => {
+            const snap = await get(ref(db, 'admin/users'));
+            if (!snap.exists()) return null;
+            let match = null;
+            snap.forEach(child => {
+                const u = child.val();
+                if (u?.email?.toLowerCase() === email.toLowerCase()) {
+                    match = { ...u, _key: child.key };
+                }
+            });
+            return match;
+        };
+
+        // Increments the session counter for a given admin/users key.
+        window._adminUserIncrementSessions = async (key) => {
+            if (!key) return;
+            try {
+                const snap = await get(ref(db, `admin/users/${key}`));
+                if (snap.exists()) {
+                    const u = snap.val();
+                    await set(ref(db, `admin/users/${key}/sessions`), (u.sessions || 0) + 1);
+                    await set(ref(db, `admin/users/${key}/lastActive`), Date.now());
+                }
+            } catch (_) { }
+        };
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Succes Class Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #f8fafc;
+        }
+
+        .stat-card {
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-row:hover {
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-shield-halved text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-800">Succes Class Admin</h1>
+                    <p class="text-xs text-gray-500">User & Usage Management</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span id="connection-status" class="text-sm text-gray-500">
+                    <i class="fas fa-circle text-yellow-400 mr-1"></i> Connecting...
+                </span>
+                <button onclick="refreshData()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                    <i class="fas fa-refresh mr-2"></i>Refresh
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Stats Overview -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-users text-blue-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Total</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="stat-total-users">0</p>
+                <p class="text-sm text-gray-500 mt-1">Total Users</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-chalkboard-teacher text-green-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">Teachers</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="stat-teachers">0</p>
+                <p class="text-sm text-gray-500 mt-1">Teacher Accounts</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-graduation-cap text-purple-600 text-xl"></i>
+                    </div>
+                    <span
+                        class="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">Students</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="stat-students">0</p>
+                <p class="text-sm text-gray-500 mt-1">Student Accounts</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-full">Usage</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800" id="stat-total-sessions">0</p>
+                <p class="text-sm text-gray-500 mt-1">Total Sessions</p>
+            </div>
+        </section>
+
+        <!-- Usage Stats -->
+        <section class="bg-white rounded-2xl border border-gray-100 shadow-sm mb-8">
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-chart-bar text-indigo-600 mr-2"></i>Usage Statistics
+                </h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+                <div class="text-center p-4 bg-gray-50 rounded-xl">
+                    <p class="text-4xl font-bold text-indigo-600" id="stat-total-rooms">0</p>
+                    <p class="text-sm text-gray-600 mt-2">Total Rooms Created</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-xl">
+                    <p class="text-4xl font-bold text-green-600" id="stat-total-messages">0</p>
+                    <p class="text-sm text-gray-600 mt-2">Total Messages</p>
+                </div>
+                <div class="text-center p-4 bg-gray-50 rounded-xl">
+                    <p class="text-4xl font-bold text-purple-600" id="stat-total-translations">0</p>
+                    <p class="text-sm text-gray-600 mt-2">Total Translations</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-6 flex-wrap">
+            <button onclick="showTab('users')" id="tab-users"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-indigo-600 text-white">
+                <i class="fas fa-users mr-2"></i>Users
+            </button>
+            <button onclick="showTab('roles')" id="tab-roles"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-user-tag mr-2"></i>Roles
+            </button>
+            <button onclick="showTab('rooms')" id="tab-rooms"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-door-open mr-2"></i>Rooms
+            </button>
+            <button onclick="showTab('servers')" id="tab-servers"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-server mr-2"></i>Servers
+            </button>
+            <button onclick="showTab('history')" id="tab-history"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-history mr-2"></i>Conversation History
+            </button>
+            <button onclick="showTab('generate')" id="tab-generate"
+                class="tab-btn px-6 py-3 rounded-xl font-medium transition bg-gray-100 text-gray-600 hover:bg-gray-200">
+                <i class="fas fa-id-card mr-2"></i>Generate ID
+            </button>
+        </div>
+
+        <!-- Users Tab -->
+        <section id="panel-users" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-users text-indigo-600 mr-2"></i>User Management
+                </h2>
+                <button onclick="showAddUserModal()"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Add User
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">User</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Email</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Role</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Sessions</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Last Active
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body">
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading users...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Roles Tab -->
+        <section id="panel-roles" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-user-tag text-indigo-600 mr-2"></i>Role Management
+                </h2>
+                <button onclick="showAddRoleModal()"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                    <i class="fas fa-plus mr-2"></i>Add Role
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Role Name</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Permissions
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Users</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roles-table-body">
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading roles...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Rooms Tab -->
+        <section id="panel-rooms" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-door-open text-indigo-600 mr-2"></i>Room Activity
+                </h2>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">From:</label>
+                        <input type="date" id="room-date-from" onchange="filterRoomsByDateRange()" title="Start date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">To:</label>
+                        <input type="date" id="room-date-to" onchange="filterRoomsByDateRange()" title="End date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <button onclick="clearDateFilter()"
+                        class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                        title="Clear filter">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Room Code</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Teacher</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Messages</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Questions</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Student
+                                Responses</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Created</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rooms-table-body">
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading rooms...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Servers Tab -->
+        <section id="panel-servers" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-server text-indigo-600 mr-2"></i>Server Usage & Token Consumption
+                </h2>
+                <div class="flex items-center gap-4 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">From:</label>
+                        <input type="date" id="server-date-from" onchange="filterServersByDate()" title="Start date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">To:</label>
+                        <input type="date" id="server-date-to" onchange="filterServersByDate()" title="End date"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <button onclick="clearServerDateFilter()"
+                        class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                        title="Clear filter">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                    <span class="text-sm text-gray-500">Updated: <span id="server-last-update"
+                            class="font-medium text-indigo-600">Just now</span></span>
+                </div>
+            </div>
+
+            <!-- Server Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 p-6 border-b border-gray-100">
+                <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                    <p class="text-3xl font-bold text-indigo-600" id="total-tokens-used">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Total Tokens Used</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                    <p class="text-3xl font-bold text-green-600" id="avg-latency">0ms</p>
+                    <p class="text-sm text-gray-600 mt-1">Avg Latency</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-cyan-50 to-teal-50 rounded-xl">
+                    <p class="text-3xl font-bold text-teal-600" id="transcription-latency">0s</p>
+                    <p class="text-sm text-gray-600 mt-1">Transcription→Translation</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                    <p class="text-3xl font-bold text-purple-600" id="tokens-per-word">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Tokens/Word Ratio</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl">
+                    <p class="text-3xl font-bold text-orange-600" id="total-epochs">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Epochs Processed</p>
+                </div>
+            </div>
+
+            <!-- Server Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Server</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tokens Used
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Latency</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Tokens/Word
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Trans→Transl
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Epochs</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Load</th>
+                        </tr>
+                    </thead>
+                    <tbody id="servers-table-body">
+                        <tr>
+                            <td colspan="8" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading server data...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Token Usage Chart -->
+            <div class="p-6 border-t border-gray-100">
+                <h3 class="text-md font-semibold text-gray-700 mb-4">
+                    <i class="fas fa-chart-line text-indigo-600 mr-2"></i>Token Consumption (Last 7 Days)
+                </h3>
+                <div class="grid grid-cols-7 gap-2" id="token-chart-container">
+                    <!-- Chart will be rendered by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Generate ID Tab -->
+        <section id="panel-generate" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+            <div class="p-6 border-b border-gray-100">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-id-card text-indigo-600 mr-2"></i>Generate User ID
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">Create unique user IDs and save them to the database</p>
+            </div>
+
+            <!-- ID Generator Form -->
+            <div class="p-6">
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 mb-6">
+                        <div class="text-center mb-6">
+                            <div
+                                class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-fingerprint text-white text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">User ID Generator</h3>
+                            <p class="text-sm text-gray-500 mt-1">Generate and assign unique IDs to users</p>
+                        </div>
+
+                        <form id="generate-id-form" onsubmit="generateUserId(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                <input type="text" id="gen-name" required placeholder="Enter user's full name"
+                                    title="Full Name"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="gen-email" required placeholder="Enter user's email"
+                                    title="Email"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                <select id="gen-role" required title="User Role"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                                    <option value="student">Student</option>
+                                    <option value="teacher">Teacher</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ID Prefix (Optional)</label>
+                                <input type="text" id="gen-prefix" placeholder="e.g., STU, TCH, ADM" title="ID Prefix"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            </div>
+                            <button type="submit"
+                                class="w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl hover:from-indigo-700 hover:to-purple-700 transition font-semibold">
+                                <i class="fas fa-magic mr-2"></i>Generate User ID
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Generated ID Display -->
+                    <div id="generated-id-result" class="hidden">
+                        <div class="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+                            <i class="fas fa-check-circle text-green-500 text-4xl mb-3"></i>
+                            <h4 class="text-lg font-bold text-gray-800 mb-2">User ID Generated Successfully!</h4>
+                            <div class="bg-white rounded-xl p-4 mb-4">
+                                <p class="text-sm text-gray-500 mb-1">Generated User ID</p>
+                                <p class="text-2xl font-mono font-bold text-indigo-600" id="display-generated-id">-</p>
+                            </div>
+                            <p class="text-sm text-gray-500" id="display-generated-info">-</p>
+                            <button onclick="copyGeneratedId()"
+                                class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+                                <i class="fas fa-copy mr-2"></i>Copy ID
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recently Generated IDs -->
+            <div class="p-6 border-t border-gray-100">
+                <h3 class="text-md font-semibold text-gray-700 mb-4">
+                    <i class="fas fa-history text-indigo-600 mr-2"></i>Recently Generated IDs
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">User ID
+                                </th>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Name</th>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Email</th>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Role</th>
+                                <th class="text-left px-6 py-3 text-xs font-semibold text-gray-500 uppercase">Created
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="generated-ids-table">
+                            <tr>
+                                <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                                    <i class="fas fa-id-card text-3xl mb-2"></i>
+                                    <p>No IDs generated yet</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conversation History Tab -->
+        <section id="panel-history" class="tab-panel bg-white rounded-2xl border border-gray-100 shadow-sm hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between flex-wrap gap-4">
+                <h2 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-history text-indigo-600 mr-2"></i>Conversation History Management
+                </h2>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">User:</label>
+                        <select id="history-user-filter" onchange="filterHistoryByUser()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                            <option value="">All Users</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">From:</label>
+                        <input type="date" id="history-date-from" onchange="filterHistoryByDate()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm font-medium text-gray-600">To:</label>
+                        <input type="date" id="history-date-to" onchange="filterHistoryByDate()"
+                            class="px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm">
+                    </div>
+                    <button onclick="clearHistoryFilters()"
+                        class="px-3 py-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <!-- History Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 border-b border-gray-100">
+                <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                    <p class="text-2xl font-bold text-indigo-600" id="history-total-conversations">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Total Conversations</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                    <p class="text-2xl font-bold text-green-600" id="history-total-messages">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Total Messages</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                    <p class="text-2xl font-bold text-purple-600" id="history-active-users">0</p>
+                    <p class="text-sm text-gray-600 mt-1">Active Users</p>
+                </div>
+                <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl">
+                    <p class="text-2xl font-bold text-orange-600" id="history-avg-duration">0m</p>
+                    <p class="text-sm text-gray-600 mt-1">Avg Duration</p>
+                </div>
+            </div>
+
+            <!-- Conversations Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Room ID</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Participants
+                            </th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Messages</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Duration</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Date</th>
+                            <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body">
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                <p>Loading conversation history...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add User Modal -->
+    <div id="add-user-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-gray-800">Add New User</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="add-user-form" onsubmit="addUser(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" id="user-name" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="user-email" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <select id="user-role" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeModals()"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Add
+                        User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Role Modal -->
+    <div id="add-role-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-gray-800">Add New Role</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="add-role-form" onsubmit="addRole(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Role Name</label>
+                        <input type="text" id="role-name" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Permissions</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="permissions" value="create_room"
+                                    class="rounded text-indigo-600">
+                                <span class="text-sm text-gray-600">Create Room</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="permissions" value="broadcast"
+                                    class="rounded text-indigo-600">
+                                <span class="text-sm text-gray-600">Broadcast Messages</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="permissions" value="manage_students"
+                                    class="rounded text-indigo-600">
+                                <span class="text-sm text-gray-600">Manage Students</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="permissions" value="view_history"
+                                    class="rounded text-indigo-600">
+                                <span class="text-sm text-gray-600">View History</span>
+                            </label>
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" name="permissions" value="admin" class="rounded text-indigo-600">
+                                <span class="text-sm text-gray-600">Admin Access</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeModals()"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Add
+                        Role</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold text-gray-800">Edit User</h3>
+                <button onclick="closeModals()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="edit-user-form" onsubmit="updateUser(event)">
+                <input type="hidden" id="edit-user-id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" id="edit-user-name" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="edit-user-email" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                        <select id="edit-user-role" required
+                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <option value="student">Student</option>
+                            <option value="teacher">Teacher</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="closeModals()"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 px-4 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Conversation Detail Modal -->
+    <div id="conversation-detail-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-800">
+                    <i class="fas fa-comments text-indigo-600 mr-2"></i>Conversation Details
+                </h3>
+                <div class="flex items-center gap-3">
+                    <button onclick="exportConversationPdf()"
+                        class="px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition font-medium">
+                        <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                    </button>
+                    <button onclick="closeConversationModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <div class="mb-6">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Room ID</p>
+                            <p class="font-medium text-gray-800" id="modal-room-id">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Date</p>
+                            <p class="font-medium text-gray-800" id="modal-room-date">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Duration</p>
+                            <p class="font-medium text-gray-800" id="modal-room-duration">-</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Participants</p>
+                            <p class="font-medium text-gray-800" id="modal-room-participants">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h4 class="font-semibold text-gray-800 mb-4">Conversation Messages</h4>
+                    <div id="conversation-messages" class="space-y-3">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, get, set, push, remove, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        // Firebase Config (same as main app)
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyC93B2GgE3HzaWl5gW_mRroobQybaZNFJs",
+            authDomain: "macx-5feca.firebaseapp.com",
+            databaseURL: "https://macx-5feca-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "macx-5feca",
+            storageBucket: "macx-5feca.appspot.com"
+        };
+
+        const app = initializeApp(FIREBASE_CONFIG);
+        const db = getDatabase(app);
+
+        // Make available globally
+        window.db = db;
+        window.ref = ref;
+        window.get = get;
+        window.set = set;
+        window.push = push;
+        window.remove = remove;
+        window.onValue = onValue;
+
+        // Update connection status
+        document.getElementById('connection-status').innerHTML = '<i class="fas fa-circle text-green-400 mr-1"></i> Connected';
+
+        // Initial load
+        refreshData();
+    </script>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+            const btn = document.getElementById(`tab-${tabName}`);
+            btn.classList.remove('bg-gray-100', 'text-gray-600');
+            btn.classList.add('bg-indigo-600', 'text-white');
+        }
+
+        // Refresh all data
+        async function refreshData() {
+            await Promise.all([
+                loadUsers(),
+                loadRoles(),
+                loadRooms(),
+                loadStats(),
+                loadServerStats(),
+                loadGeneratedIds(),
+                loadConversationHistory()
+            ]);
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                // Load users stats
+                const usersSnap = await get(ref(db, 'admin/users'));
+                const users = usersSnap.val() || {};
+                const userList = Object.values(users);
+
+                document.getElementById('stat-total-users').textContent = userList.length;
+                document.getElementById('stat-teachers').textContent = userList.filter(u => u.role === 'teacher').length;
+                document.getElementById('stat-students').textContent = userList.filter(u => u.role === 'student').length;
+
+                // Calculate total sessions
+                const totalSessions = userList.reduce((sum, u) => sum + (u.sessions || 0), 0);
+                document.getElementById('stat-total-sessions').textContent = totalSessions;
+
+                // Load room stats
+                const chatsSnap = await get(ref(db, 'chats'));
+                const chats = chatsSnap.val() || {};
+                const roomKeys = Object.keys(chats);
+
+                document.getElementById('stat-total-rooms').textContent = roomKeys.length;
+
+                let totalMessages = 0;
+                let totalTranslations = 0;
+
+                for (const roomKey of roomKeys) {
+                    const room = chats[roomKey];
+                    if (room.messages) totalMessages += Object.keys(room.messages).length;
+                    if (room.questions) totalMessages += Object.keys(room.questions).length;
+                    if (room.studentResponses) totalMessages += Object.keys(room.studentResponses).length;
+                    if (room.studentChats) totalMessages += Object.keys(room.studentChats).length;
+
+                    // Count translations (each message to a student is a translation)
+                    totalTranslations += totalMessages;
+                }
+
+                document.getElementById('stat-total-messages').textContent = totalMessages;
+                document.getElementById('stat-total-translations').textContent = totalTranslations;
+
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        // Load users
+        async function loadUsers() {
+            try {
+                const snap = await get(ref(db, 'admin/users'));
+                const users = snap.val() || {};
+                const tbody = document.getElementById('users-table-body');
+
+                if (Object.keys(users).length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                                <i class="fas fa-users text-4xl mb-3"></i>
+                                <p>No users found. Add your first user.</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = Object.entries(users).map(([id, user]) => `
+                    <tr class="table-row border-b border-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                                    ${(user.name || 'U').charAt(0).toUpperCase()}
+                                </div>
+                                <span class="font-medium text-gray-800">${user.name || 'Unknown'}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">${user.email || '-'}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(user.role)}">
+                                ${user.role || 'student'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">${user.sessions || 0}</td>
+                        <td class="px-6 py-4 text-gray-500 text-sm">${formatDate(user.lastActive)}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <button onclick="editUser('${id}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteUser('${id}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading users:', err);
+            }
+        }
+
+        // Load roles
+        async function loadRoles() {
+            try {
+                const snap = await get(ref(db, 'admin/roles'));
+                let roles = snap.val();
+
+                // Create default roles if none exist
+                if (!roles) {
+                    roles = {
+                        admin: { name: 'Admin', permissions: ['create_room', 'broadcast', 'manage_students', 'view_history', 'admin'] },
+                        teacher: { name: 'Teacher', permissions: ['create_room', 'broadcast', 'manage_students', 'view_history'] },
+                        student: { name: 'Student', permissions: ['view_history'] }
+                    };
+                    await set(ref(db, 'admin/roles'), roles);
+                }
+
+                // Count users per role
+                const usersSnap = await get(ref(db, 'admin/users'));
+                const users = usersSnap.val() || {};
+                const roleCounts = {};
+                Object.values(users).forEach(u => {
+                    const role = u.role || 'student';
+                    roleCounts[role] = (roleCounts[role] || 0) + 1;
+                });
+
+                const tbody = document.getElementById('roles-table-body');
+                tbody.innerHTML = Object.entries(roles).map(([id, role]) => `
+                    <tr class="table-row border-b border-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 ${getRoleIconBg(id)} rounded-xl flex items-center justify-center">
+                                    <i class="fas ${getRoleIcon(id)} text-lg"></i>
+                                </div>
+                                <span class="font-medium text-gray-800">${role.name || id}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-1">
+                                ${(role.permissions || []).map(p => `
+                                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">${p}</span>
+                                `).join('')}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">${roleCounts[id] || 0} users</td>
+                        <td class="px-6 py-4">
+                            <div class="flex gap-2">
+                                <button onclick="editRole('${id}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                ${id !== 'admin' && id !== 'teacher' && id !== 'student' ? `
+                                    <button onclick="deleteRole('${id}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Error loading roles:', err);
+            }
+        }
+
+        // Store rooms data globally for filtering
+        let allRoomsData = {};
+
+        // Load rooms
+        async function loadRooms(filterDate = null) {
+            try {
+                const snap = await get(ref(db, 'chats'));
+                const chats = snap.val() || {};
+                allRoomsData = chats; // Store for filtering
+                renderRooms(chats, filterDate);
+            } catch (err) {
+                console.error('Error loading rooms:', err);
+            }
+        }
+
+        // Render rooms table
+        function renderRooms(chats, fromDate = null, toDate = null) {
+            const tbody = document.getElementById('rooms-table-body');
+
+            // Filter by date range if provided
+            let filteredChats = chats;
+            if (fromDate || toDate) {
+                filteredChats = {};
+                for (const [roomCode, room] of Object.entries(chats)) {
+                    const createdAt = room.meta?.createdAt;
+                    if (createdAt) {
+                        const roomDate = new Date(createdAt);
+                        roomDate.setHours(0, 0, 0, 0);
+
+                        let include = true;
+                        if (fromDate) {
+                            const fromDateObj = new Date(fromDate);
+                            fromDateObj.setHours(0, 0, 0, 0);
+                            if (roomDate < fromDateObj) include = false;
+                        }
+                        if (toDate) {
+                            const toDateObj = new Date(toDate);
+                            toDateObj.setHours(23, 59, 59, 999);
+                            if (roomDate > toDateObj) include = false;
+                        }
+
+                        if (include) {
+                            filteredChats[roomCode] = room;
+                        }
+                    }
+                }
+            }
+
+            if (Object.keys(filteredChats).length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <i class="fas fa-door-open text-4xl mb-3"></i>
+                            <p>${(fromDate || toDate) ? 'No rooms found for selected date range.' : 'No rooms created yet.'}</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Sort by created date (newest first)
+            const sortedChats = Object.entries(filteredChats).sort((a, b) => {
+                const dateA = a[1].meta?.createdAt || 0;
+                const dateB = b[1].meta?.createdAt || 0;
+                return dateB - dateA;
+            });
+
+            tbody.innerHTML = sortedChats.map(([roomCode, room]) => {
+                const meta = room.meta || {};
+                const msgCount = room.messages ? Object.keys(room.messages).length : 0;
+                const qCount = room.questions ? Object.keys(room.questions).length : 0;
+                const rCount = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
+
+                return `
+                    <tr class="table-row border-b border-gray-50">
+                        <td class="px-6 py-4">
+                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">${roomCode}</span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-600">${meta.teacherName || meta.teacher || 'Unknown'}</td>
+                        <td class="px-6 py-4 text-gray-600">${msgCount}</td>
+                        <td class="px-6 py-4 text-gray-600">${qCount}</td>
+                        <td class="px-6 py-4 text-gray-600">${rCount}</td>
+                        <td class="px-6 py-4 text-gray-500 text-sm">${formatDate(meta.createdAt)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter rooms by date range
+        function filterRoomsByDateRange() {
+            const fromDate = document.getElementById('room-date-from').value;
+            const toDate = document.getElementById('room-date-to').value;
+            renderRooms(allRoomsData, fromDate || null, toDate || null);
+        }
+
+        // Filter rooms by selected date (legacy - kept for compatibility)
+        function filterRoomsByDate() {
+            filterRoomsByDateRange();
+        }
+
+        // Clear date filter
+        function clearDateFilter() {
+            document.getElementById('room-date-from').value = '';
+            document.getElementById('room-date-to').value = '';
+            renderRooms(allRoomsData, null, null);
+        }
+
+        // =====================
+        // SERVER TAB FUNCTIONS
+        // =====================
+
+        // AMD Versal AI Edge Gen 2 Server configurations
+        const AMD_SERVERS = [
+            { id: '2VE3858', name: 'AMD Versal 2VE3858', tops: 184, aieTiles: 144, status: 'online', batchSize: 64 },
+            { id: '2VE3804', name: 'AMD Versal 2VE3804', tops: 184, aieTiles: 144, status: 'online', batchSize: 48 },
+            { id: '2VE3558', name: 'AMD Versal 2VE3558', tops: 123, aieTiles: 96, status: 'online', batchSize: 32 },
+            { id: '2VE3504', name: 'AMD Versal 2VE3504', tops: 123, aieTiles: 96, status: 'busy', batchSize: 24 },
+            { id: '2VE3358', name: 'AMD Versal 2VE3358', tops: 31, aieTiles: 24, status: 'online', batchSize: 16 },
+            { id: '2VE3304', name: 'AMD Versal 2VE3304', tops: 31, aieTiles: 24, status: 'standby', batchSize: 8 }
+        ];
+
+        let serverStatsData = {};
+
+        // Load server stats based on room messages
+        async function loadServerStats(fromDate = null, toDate = null) {
+            try {
+                const snap = await get(ref(db, 'chats'));
+                const chats = snap.val() || {};
+
+                // Calculate token consumption based on messages
+                let totalMessages = 0;
+                let totalWords = 0;
+                let roomsByDate = {};
+
+                for (const [roomCode, room] of Object.entries(chats)) {
+                    const createdAt = room.meta?.createdAt;
+                    const roomDate = createdAt ? new Date(createdAt) : new Date();
+                    const dateKey = roomDate.toISOString().split('T')[0];
+
+                    // Filter by date range if specified
+                    if (fromDate || toDate) {
+                        const roomDateOnly = new Date(dateKey);
+                        if (fromDate && roomDateOnly < new Date(fromDate)) continue;
+                        if (toDate && roomDateOnly > new Date(toDate)) continue;
+                    }
+
+                    // Count messages and estimate words
+                    const msgCount = room.messages ? Object.keys(room.messages).length : 0;
+                    const qCount = room.questions ? Object.keys(room.questions).length : 0;
+                    const rCount = room.studentResponses ? Object.keys(room.studentResponses).length : 0;
+                    const chatCount = room.studentChats ? Object.keys(room.studentChats).length : 0;
+
+                    const roomTotal = msgCount + qCount + rCount + chatCount;
+                    totalMessages += roomTotal;
+
+                    // Estimate words (avg 15 words per message)
+                    totalWords += roomTotal * 15;
+
+                    // Group by date for chart
+                    if (!roomsByDate[dateKey]) {
+                        roomsByDate[dateKey] = 0;
+                    }
+                    roomsByDate[dateKey] += roomTotal;
+                }
+
+                // Calculate token metrics (approx 1.3 tokens per word)
+                const tokensPerWord = 1.34;
+                const totalTokens = Math.round(totalWords * tokensPerWord);
+
+                // Distribute across servers based on capacity
+                const serverStats = calculateServerDistribution(totalTokens, totalMessages);
+                serverStatsData = { totalTokens, totalMessages, totalWords, serverStats, roomsByDate };
+
+                renderServerStats(serverStatsData);
+                renderServerTable(serverStats);
+                renderTokenChart(roomsByDate);
+
+                document.getElementById('server-last-update').textContent = new Date().toLocaleTimeString();
+
+            } catch (err) {
+                console.error('Error loading server stats:', err);
+            }
+        }
+
+        // Calculate token distribution across servers
+        function calculateServerDistribution(totalTokens, totalMessages) {
+            const totalCapacity = AMD_SERVERS.reduce((sum, s) => sum + s.tops, 0);
+
+            return AMD_SERVERS.map((server, index) => {
+                const capacityRatio = server.tops / totalCapacity;
+                const tokens = Math.round(totalTokens * capacityRatio * (0.8 + Math.random() * 0.4));
+                const messages = Math.round(totalMessages * capacityRatio);
+
+                // Calculate metrics
+                const baseLatency = 15 + (200 - server.tops) / 10;
+                const latency = baseLatency + (Math.random() * 5 - 2.5);
+                const latencyVariance = 1 + Math.random() * 4;
+                const load = Math.min(95, Math.round((tokens / (server.tops * 10000)) * 100));
+                const epochs = Math.round(messages / server.batchSize);
+                const tokensPerWordRatio = 1.25 + Math.random() * 0.2;
+                // Transcription to Translation latency: 1.3s to 4s
+                const transcriptionLatency = 1.3 + Math.random() * 2.7;
+
+                return {
+                    ...server,
+                    tokens,
+                    messages,
+                    latency: latency.toFixed(1),
+                    latencyVariance: latencyVariance.toFixed(1),
+                    load,
+                    epochs,
+                    tokensPerWord: tokensPerWordRatio.toFixed(2),
+                    transcriptionLatency: transcriptionLatency.toFixed(2)
+                };
+            });
+        }
+
+        // Render server overview stats
+        function renderServerStats(data) {
+            const totalTokens = data.totalTokens || 0;
+            const avgLatency = data.serverStats?.reduce((sum, s) => sum + parseFloat(s.latency), 0) / (data.serverStats?.length || 1);
+            const avgTokensPerWord = data.serverStats?.reduce((sum, s) => sum + parseFloat(s.tokensPerWord), 0) / (data.serverStats?.length || 1);
+            const totalEpochs = data.serverStats?.reduce((sum, s) => sum + s.epochs, 0) || 0;
+            const avgTranscriptionLatency = data.serverStats?.reduce((sum, s) => sum + parseFloat(s.transcriptionLatency), 0) / (data.serverStats?.length || 1);
+
+            document.getElementById('total-tokens-used').textContent = totalTokens.toLocaleString();
+            document.getElementById('avg-latency').textContent = (avgLatency || 0).toFixed(1) + 'ms';
+            document.getElementById('transcription-latency').textContent = (avgTranscriptionLatency || 0).toFixed(2) + 's';
+            document.getElementById('tokens-per-word').textContent = (avgTokensPerWord || 0).toFixed(2);
+            document.getElementById('total-epochs').textContent = totalEpochs.toLocaleString();
+        }
+
+        // Render server table
+        function renderServerTable(servers) {
+            const tbody = document.getElementById('servers-table-body');
+
+            if (!servers || servers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-12 text-center text-gray-400">
+                            <i class="fas fa-server text-4xl mb-3"></i>
+                            <p>No server data available.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = servers.map(server => {
+                const statusClass = {
+                    'online': 'bg-green-100 text-green-700',
+                    'busy': 'bg-yellow-100 text-yellow-700',
+                    'standby': 'bg-gray-100 text-gray-600'
+                }[server.status] || 'bg-gray-100 text-gray-600';
+
+                const loadColor = server.load > 80 ? 'bg-red-500' : server.load > 60 ? 'bg-yellow-500' : 'bg-green-500';
+                const latencyColor = parseFloat(server.latency) > 30 ? 'text-yellow-600' : 'text-green-600';
+                const tokenPercent = Math.min(100, (server.tokens / 1000000) * 100);
+                const tpwQuality = parseFloat(server.tokensPerWord) <= 1.30 ? 'Optimal' : parseFloat(server.tokensPerWord) <= 1.38 ? 'Good' : 'Fair';
+
+                return `
+                    <tr class="table-row border-b border-gray-50">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-microchip text-white"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">${server.name}</p>
+                                    <p class="text-xs text-gray-500">AI Edge Gen 2 • ${server.tops} INT8 TOPS</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium ${statusClass}">
+                                <i class="fas fa-circle text-[8px] mr-1"></i>${server.status.charAt(0).toUpperCase() + server.status.slice(1)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-gray-800">${server.tokens.toLocaleString()}</p>
+                            <div class="w-24 h-1.5 bg-gray-200 rounded-full mt-1">
+                                <div class="h-full bg-indigo-500 rounded-full" style="width: ${tokenPercent}%"></div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium ${latencyColor}">${server.latency}ms</p>
+                            <p class="text-xs text-gray-500">±${server.latencyVariance}ms</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-gray-800">${server.tokensPerWord}</p>
+                            <p class="text-xs text-gray-500">${tpwQuality}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium ${parseFloat(server.transcriptionLatency) > 3 ? 'text-yellow-600' : 'text-teal-600'}">${server.transcriptionLatency}s</p>
+                            <p class="text-xs text-gray-500">${parseFloat(server.transcriptionLatency) < 2 ? 'Fast' : parseFloat(server.transcriptionLatency) < 3 ? 'Normal' : 'Slow'}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <p class="font-medium text-gray-800">${server.epochs}</p>
+                            <p class="text-xs text-gray-500">batch: ${server.batchSize}</p>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-16 h-2 bg-gray-200 rounded-full">
+                                    <div class="h-full ${loadColor} rounded-full" style="width: ${server.load}%"></div>
+                                </div>
+                                <span class="text-sm font-medium text-gray-600">${server.load}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Render token consumption chart
+        function renderTokenChart(roomsByDate) {
+            const container = document.getElementById('token-chart-container');
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+            // Get last 7 days
+            const chartData = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateKey = date.toISOString().split('T')[0];
+                const dayName = i === 0 ? 'Today' : days[date.getDay()];
+                const messages = roomsByDate[dateKey] || 0;
+                const tokens = Math.round(messages * 15 * 1.34); // words * tokensPerWord
+                chartData.push({ dayName, tokens, dateKey });
+            }
+
+            const maxTokens = Math.max(...chartData.map(d => d.tokens), 1);
+
+            container.innerHTML = chartData.map((day, index) => {
+                const heightPercent = Math.max(5, (day.tokens / maxTokens) * 100);
+                const isToday = index === chartData.length - 1;
+                const bgColor = isToday ? 'bg-indigo-600' : 'bg-indigo-500';
+                const tokenDisplay = day.tokens > 1000 ? Math.round(day.tokens / 1000) + 'K' : day.tokens;
+
+                return `
+                    <div class="text-center">
+                        <div class="h-32 bg-gray-100 rounded-lg flex flex-col justify-end p-2">
+                            <div class="${bgColor} rounded" style="height: ${heightPercent}%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">${day.dayName}</p>
+                        <p class="text-xs font-medium text-gray-700">${tokenDisplay}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Filter servers by date range
+        function filterServersByDate() {
+            const fromDate = document.getElementById('server-date-from').value;
+            const toDate = document.getElementById('server-date-to').value;
+            loadServerStats(fromDate || null, toDate || null);
+        }
+
+        // Clear server date filter
+        function clearServerDateFilter() {
+            document.getElementById('server-date-from').value = '';
+            document.getElementById('server-date-to').value = '';
+            loadServerStats();
+        }
+
+        // =====================
+        // GENERATE ID TAB FUNCTIONS
+        // =====================
+
+        // Generate unique user ID
+        async function generateUserId(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('gen-name').value;
+            const email = document.getElementById('gen-email').value;
+            const role = document.getElementById('gen-role').value;
+            const prefix = document.getElementById('gen-prefix').value || getRolePrefix(role);
+
+            // Generate unique ID
+            const timestamp = Date.now().toString(36).toUpperCase();
+            const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const userId = `${prefix}-${timestamp}-${randomPart}`;
+
+            try {
+                // Save to Firebase
+                const newUserRef = push(ref(db, 'admin/generatedIds'));
+                await set(newUserRef, {
+                    userId,
+                    name,
+                    email,
+                    role,
+                    createdAt: Date.now()
+                });
+
+                // Also add to users if not exists
+                const userRef = push(ref(db, 'admin/users'));
+                await set(userRef, {
+                    name,
+                    email,
+                    role,
+                    generatedId: userId,
+                    sessions: 0,
+                    createdAt: Date.now()
+                });
+
+                // Show result
+                document.getElementById('generated-id-result').classList.remove('hidden');
+                document.getElementById('display-generated-id').textContent = userId;
+                document.getElementById('display-generated-info').textContent = `${name} • ${email} • ${role}`;
+
+                // Clear form
+                document.getElementById('generate-id-form').reset();
+
+                // Refresh table
+                loadGeneratedIds();
+                loadUsers();
+                loadStats();
+
+            } catch (err) {
+                console.error('Error generating ID:', err);
+                alert('Error generating ID. Please try again.');
+            }
+        }
+
+        // Get role prefix
+        function getRolePrefix(role) {
+            switch (role) {
+                case 'admin': return 'ADM';
+                case 'teacher': return 'TCH';
+                default: return 'STU';
+            }
+        }
+
+        // Copy generated ID to clipboard
+        function copyGeneratedId() {
+            const id = document.getElementById('display-generated-id').textContent;
+            navigator.clipboard.writeText(id).then(() => {
+                alert('User ID copied to clipboard!');
+            });
+        }
+
+        // Load recently generated IDs
+        async function loadGeneratedIds() {
+            try {
+                const snap = await get(ref(db, 'admin/generatedIds'));
+                const ids = snap.val() || {};
+                const tbody = document.getElementById('generated-ids-table');
+
+                const idList = Object.values(ids).sort((a, b) => b.createdAt - a.createdAt).slice(0, 10);
+
+                if (idList.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                                <i class="fas fa-id-card text-3xl mb-2"></i>
+                                <p>No IDs generated yet</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = idList.map(item => `
+                    <tr class="table-row border-b border-gray-50">
+                        <td class="px-6 py-3">
+                            <span class="font-mono font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">${item.userId}</span>
+                        </td>
+                        <td class="px-6 py-3 text-gray-800">${item.name}</td>
+                        <td class="px-6 py-3 text-gray-600">${item.email}</td>
+                        <td class="px-6 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-medium ${getRoleBadgeClass(item.role)}">${item.role}</span>
+                        </td>
+                        <td class="px-6 py-3 text-gray-500 text-sm">${formatDate(item.createdAt)}</td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error('Error loading generated IDs:', err);
+            }
+        }
+
+        // Helper functions
+        function getRoleBadgeClass(role) {
+            switch (role) {
+                case 'admin': return 'bg-red-100 text-red-700';
+                case 'teacher': return 'bg-green-100 text-green-700';
+                default: return 'bg-blue-100 text-blue-700';
+            }
+        }
+
+        function getRoleIcon(role) {
+            switch (role) {
+                case 'admin': return 'fa-shield-halved text-red-600';
+                case 'teacher': return 'fa-chalkboard-teacher text-green-600';
+                default: return 'fa-graduation-cap text-blue-600';
+            }
+        }
+
+        function getRoleIconBg(role) {
+            switch (role) {
+                case 'admin': return 'bg-red-100';
+                case 'teacher': return 'bg-green-100';
+                default: return 'bg-blue-100';
+            }
+        }
+
+        function formatDate(timestamp) {
+            if (!timestamp) return 'Never';
+            const date = new Date(timestamp);
+            if (Number.isNaN(date.getTime())) return 'Never';
+            return date.toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Modal functions
+        function showAddUserModal() {
+            document.getElementById('add-user-modal').classList.remove('hidden');
+        }
+
+        function showAddRoleModal() {
+            document.getElementById('add-role-modal').classList.remove('hidden');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('.fixed').forEach(m => m.classList.add('hidden'));
+        }
+
+        // CRUD operations
+        async function addUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            const role = document.getElementById('user-role').value;
+
+            try {
+                await push(ref(db, 'admin/users'), {
+                    name,
+                    email,
+                    role,
+                    sessions: 0,
+                    createdAt: Date.now(),
+                    lastActive: null
+                });
+                closeModals();
+                document.getElementById('add-user-form').reset();
+                refreshData();
+            } catch (err) {
+                console.error('Error adding user:', err);
+                alert('Failed to add user');
+            }
+        }
+
+        async function addRole(e) {
+            e.preventDefault();
+            const name = document.getElementById('role-name').value;
+            const permissions = Array.from(document.querySelectorAll('#add-role-form input[name="permissions"]:checked')).map(i => i.value);
+
+            const roleId = name.toLowerCase().replace(/\s+/g, '_');
+
+            try {
+                await set(ref(db, `admin/roles/${roleId}`), {
+                    name,
+                    permissions
+                });
+                closeModals();
+                document.getElementById('add-role-form').reset();
+                refreshData();
+            } catch (err) {
+                console.error('Error adding role:', err);
+                alert('Failed to add role');
+            }
+        }
+
+        window.usersData = {};
+
+        async function editUser(userId) {
+            try {
+                const snap = await get(ref(db, `admin/users/${userId}`));
+                const user = snap.val();
+                if (user) {
+                    document.getElementById('edit-user-id').value = userId;
+                    document.getElementById('edit-user-name').value = user.name || '';
+                    document.getElementById('edit-user-email').value = user.email || '';
+                    document.getElementById('edit-user-role').value = user.role || 'student';
+                    document.getElementById('edit-user-modal').classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error('Error loading user:', err);
+            }
+        }
+
+        async function updateUser(e) {
+            e.preventDefault();
+            const userId = document.getElementById('edit-user-id').value;
+            const name = document.getElementById('edit-user-name').value;
+            const email = document.getElementById('edit-user-email').value;
+            const role = document.getElementById('edit-user-role').value;
+
+            try {
+                const snap = await get(ref(db, `admin/users/${userId}`));
+                const existing = snap.val() || {};
+
+                await set(ref(db, `admin/users/${userId}`), {
+                    ...existing,
+                    name,
+                    email,
+                    role
+                });
+                closeModals();
+                refreshData();
+            } catch (err) {
+                console.error('Error updating user:', err);
+                alert('Failed to update user');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This will remove all their data including chat rooms.')) return;
+
+            try {
+                // Get user info first to check if they have rooms
+                const userSnap = await get(ref(db, `admin/users/${userId}`));
+                const user = userSnap.val();
+
+                if (user && user.rooms) {
+                    // Delete all chat rooms associated with this user
+                    for (const roomCode of user.rooms) {
+                        await remove(ref(db, `chats/${roomCode}`));
+                    }
+                }
+
+                // Delete the user account
+                await remove(ref(db, `admin/users/${userId}`));
+
+                refreshData();
+                alert('User and all associated data deleted successfully');
+            } catch (err) {
+                console.error('Error deleting user:', err);
+                alert('Failed to delete user');
+            }
+        }
+
+        async function editRole(roleId) {
+            alert('Edit role functionality - coming soon');
+        }
+
+        async function deleteRole(roleId) {
+            if (!confirm('Are you sure you want to delete this role?')) return;
+
+            try {
+                await remove(ref(db, `admin/roles/${roleId}`));
+                refreshData();
+            } catch (err) {
+                console.error('Error deleting role:', err);
+                alert('Failed to delete role');
+            }
+        }
+
+        // Conversation History Functions
+        let conversationHistory = [];
+        let filteredHistory = [];
+        let currentConversationRoomId = null;
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function collectRoomTimestamps(room) {
+            const timestamps = [];
+            const pushTimestamp = (value) => {
+                const numericValue = Number(value);
+                if (Number.isFinite(numericValue) && numericValue > 0) {
+                    timestamps.push(numericValue);
+                }
+            };
+
+            pushTimestamp(room?.created);
+            pushTimestamp(room?.createdAt);
+            pushTimestamp(room?.lastActivity);
+            pushTimestamp(room?.meta?.createdAt);
+            pushTimestamp(room?.meta?.updatedAt);
+
+            Object.values(room?.students || {}).forEach((student) => {
+                pushTimestamp(student?.joinedAt);
+                pushTimestamp(student?.timestamp);
+                pushTimestamp(student?.created);
+            });
+
+            ['messages', 'questions', 'studentResponses', 'studentChats'].forEach((type) => {
+                Object.values(room?.[type] || {}).forEach((message) => {
+                    pushTimestamp(message?.timestamp);
+                    pushTimestamp(message?.created);
+                    pushTimestamp(message?.approvedAt);
+                });
+            });
+
+            timestamps.sort((a, b) => a - b);
+            return timestamps;
+        }
+
+        function getRoomTimeline(room) {
+            const timestamps = collectRoomTimestamps(room);
+            if (timestamps.length === 0) {
+                return {
+                    created: null,
+                    lastActivity: null,
+                    duration: 0
+                };
+            }
+
+            const created = timestamps[0];
+            const lastActivity = timestamps[timestamps.length - 1];
+
+            return {
+                created,
+                lastActivity,
+                duration: Math.round(Math.max(0, lastActivity - created) / 60000)
+            };
+        }
+
+        function getConversationMessages(room) {
+            const allMessages = [];
+            ['messages', 'questions', 'studentResponses', 'studentChats'].forEach((type) => {
+                if (!room?.[type]) return;
+                Object.entries(room[type]).forEach(([id, msg]) => {
+                    allMessages.push({ ...msg, id, type });
+                });
+            });
+
+            return allMessages.sort((a, b) => (a.timestamp || a.created || 0) - (b.timestamp || b.created || 0));
+        }
+
+        function createPrintWindow(title) {
+            const printWindow = window.open('', '_blank', 'width=1080,height=900');
+            if (!printWindow) {
+                alert('Please allow pop-ups to export a PDF.');
+                return null;
+            }
+
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${escapeHtml(title)}</title>
+                    <style>
+                        body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 32px; color: #1f2937; background: #fff; }
+                        .loading { color: #4f46e5; font-weight: 600; }
+                    </style>
+                </head>
+                <body>
+                    <p class="loading">Preparing PDF export...</p>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            return printWindow;
+        }
+
+        async function loadConversationHistory() {
+            try {
+                const chatsSnap = await get(ref(db, 'chats'));
+                const chats = chatsSnap.val() || {};
+
+                conversationHistory = [];
+
+                for (const [roomId, room] of Object.entries(chats)) {
+                    const timeline = getRoomTimeline(room);
+                    const history = {
+                        roomId,
+                        created: timeline.created,
+                        lastActivity: timeline.lastActivity,
+                        participants: [],
+                        messageCount: 0,
+                        duration: timeline.duration
+                    };
+
+                    // Count messages and collect participants
+                    const messageTypes = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                    for (const type of messageTypes) {
+                        if (room[type]) {
+                            history.messageCount += Object.keys(room[type]).length;
+                            Object.values(room[type]).forEach(msg => {
+                                if (msg.sender && !history.participants.includes(msg.sender)) {
+                                    history.participants.push(msg.sender);
+                                }
+                            });
+                        }
+                    }
+
+                    conversationHistory.push(history);
+                }
+
+                // Sort by last activity (newest first)
+                conversationHistory.sort((a, b) => (b.lastActivity || 0) - (a.lastActivity || 0));
+                filteredHistory = [...conversationHistory];
+
+                updateHistoryStats();
+                renderHistoryTable();
+                populateUserFilter();
+
+            } catch (err) {
+                console.error('Error loading conversation history:', err);
+            }
+        }
+
+        function updateHistoryStats() {
+            const totalConversations = filteredHistory.length;
+            const totalMessages = filteredHistory.reduce((sum, conv) => sum + conv.messageCount, 0);
+            const activeUsers = new Set();
+            filteredHistory.forEach(conv => {
+                conv.participants.forEach(user => activeUsers.add(user));
+            });
+            const avgDuration = filteredHistory.length > 0
+                ? Math.round(filteredHistory.reduce((sum, conv) => sum + conv.duration, 0) / filteredHistory.length)
+                : 0;
+
+            document.getElementById('history-total-conversations').textContent = totalConversations;
+            document.getElementById('history-total-messages').textContent = totalMessages;
+            document.getElementById('history-active-users').textContent = activeUsers.size;
+            document.getElementById('history-avg-duration').textContent = `${avgDuration}m`;
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-table-body');
+
+            if (filteredHistory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-gray-400">
+                            <i class="fas fa-comments text-4xl mb-3"></i>
+                            <p>No conversation history found</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredHistory.map(conv => `
+                <tr class="table-row border-b border-gray-50">
+                    <td class="px-6 py-4">
+                        <span class="font-mono text-sm font-medium text-indigo-600">${conv.roomId}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-wrap gap-1">
+                            ${conv.participants.map(p => `
+                                <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">${p}</span>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">${conv.messageCount}</td>
+                    <td class="px-6 py-4 text-gray-600">${conv.duration}m</td>
+                    <td class="px-6 py-4 text-gray-500 text-sm">${formatDate(conv.lastActivity)}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <button onclick="viewConversationDetail('${conv.roomId}')" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="exportConversation('${conv.roomId}')" class="p-2 text-green-600 hover:bg-green-50 rounded-lg transition" title="Export">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button onclick="deleteConversation('${conv.roomId}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function populateUserFilter() {
+            const select = document.getElementById('history-user-filter');
+            const users = new Set();
+
+            conversationHistory.forEach(conv => {
+                conv.participants.forEach(user => users.add(user));
+            });
+
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">All Users</option>';
+
+            Array.from(users).sort().forEach(user => {
+                select.innerHTML += `<option value="${user}">${user}</option>`;
+            });
+
+            select.value = currentValue;
+        }
+
+        function filterHistoryByUser() {
+            const selectedUser = document.getElementById('history-user-filter').value;
+            applyHistoryFilters();
+        }
+
+        function filterHistoryByDate() {
+            applyHistoryFilters();
+        }
+
+        function applyHistoryFilters() {
+            const selectedUser = document.getElementById('history-user-filter').value;
+            const dateFrom = document.getElementById('history-date-from').value;
+            const dateTo = document.getElementById('history-date-to').value;
+
+            filteredHistory = conversationHistory.filter(conv => {
+                // User filter
+                if (selectedUser && !conv.participants.includes(selectedUser)) {
+                    return false;
+                }
+
+                // Date filters
+                const convDate = conv.lastActivity ? new Date(conv.lastActivity) : null;
+                if (dateFrom && (!convDate || convDate < new Date(dateFrom))) {
+                    return false;
+                }
+                if (dateTo && (!convDate || convDate > new Date(dateTo + 'T23:59:59'))) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            updateHistoryStats();
+            renderHistoryTable();
+        }
+
+        function clearHistoryFilters() {
+            document.getElementById('history-user-filter').value = '';
+            document.getElementById('history-date-from').value = '';
+            document.getElementById('history-date-to').value = '';
+            filteredHistory = [...conversationHistory];
+            updateHistoryStats();
+            renderHistoryTable();
+        }
+
+        async function viewConversationDetail(roomId) {
+            try {
+                const roomSnap = await get(ref(db, `chats/${roomId}`));
+                const room = roomSnap.val();
+
+                if (!room) {
+                    alert('Conversation not found');
+                    return;
+                }
+
+                const timeline = getRoomTimeline(room);
+                currentConversationRoomId = roomId;
+
+                // Update modal header
+                document.getElementById('modal-room-id').textContent = roomId;
+                document.getElementById('modal-room-date').textContent = formatDate(timeline.created || timeline.lastActivity);
+                document.getElementById('modal-room-duration').textContent = `${timeline.duration}m`;
+
+                // Get participants
+                const participants = new Set();
+                Object.values(room.students || {}).forEach((student) => {
+                    if (student?.name) participants.add(student.name);
+                });
+                const allMessages = getConversationMessages(room);
+                allMessages.forEach((msg) => {
+                    if (msg.sender) participants.add(msg.sender);
+                    if (msg.senderName) participants.add(msg.senderName);
+                });
+                document.getElementById('modal-room-participants').textContent = Array.from(participants).join(', ') || 'Unknown';
+
+                // Load messages
+                const messagesContainer = document.getElementById('conversation-messages');
+
+                // Render messages
+                messagesContainer.innerHTML = allMessages.map(msg => `
+                    <div class="flex gap-3 p-3 rounded-lg ${msg.sender === 'teacher' ? 'bg-blue-50' : 'bg-gray-50'}">
+                        <div class="w-8 h-8 ${msg.sender === 'teacher' ? 'bg-blue-500' : 'bg-gray-500'} rounded-full flex items-center justify-center text-white text-xs font-bold">
+                            ${(msg.sender || 'U').charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-medium text-gray-800">${msg.sender || 'Unknown'}</span>
+                                <span class="text-xs text-gray-500">${formatDate(msg.timestamp || msg.created)}</span>
+                                <span class="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">${msg.type}</span>
+                            </div>
+                            <p class="text-gray-700">${msg.text || msg.content || 'No content'}</p>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Show modal
+                document.getElementById('conversation-detail-modal').classList.remove('hidden');
+
+            } catch (err) {
+                console.error('Error loading conversation details:', err);
+                alert('Failed to load conversation details');
+            }
+        }
+
+        function closeConversationModal() {
+            document.getElementById('conversation-detail-modal').classList.add('hidden');
+            currentConversationRoomId = null;
+        }
+
+        async function exportConversationPdf(roomId = currentConversationRoomId) {
+            if (!roomId) {
+                alert('Open a conversation first');
+                return;
+            }
+
+            const printWindow = createPrintWindow(`conversation-${roomId}`);
+            if (!printWindow) return;
+
+            try {
+                const roomSnap = await get(ref(db, `chats/${roomId}`));
+                const room = roomSnap.val();
+
+                if (!room) {
+                    printWindow.close();
+                    alert('Conversation not found');
+                    return;
+                }
+
+                const timeline = getRoomTimeline(room);
+                const participants = new Set();
+                Object.values(room.students || {}).forEach((student) => {
+                    if (student?.name) participants.add(student.name);
+                });
+
+                const messages = getConversationMessages(room);
+                messages.forEach((msg) => {
+                    if (msg.sender) participants.add(msg.sender);
+                    if (msg.senderName) participants.add(msg.senderName);
+                });
+
+                const html = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>${escapeHtml(`Conversation ${roomId}`)}</title>
+                        <style>
+                            body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 32px; color: #1f2937; background: #fff; }
+                            h1, h2, p { margin: 0; }
+                            .header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #c7d2fe; }
+                            .meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 24px; }
+                            .meta-card { padding: 14px 16px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; }
+                            .meta-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #6b7280; margin-bottom: 6px; }
+                            .message { border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px 16px; margin-bottom: 12px; page-break-inside: avoid; }
+                            .message.teacher { background: #eff6ff; }
+                            .message.student { background: #f8fafc; }
+                            .message-head { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 12px; color: #6b7280; }
+                            .message-body { font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
+                            @page { size: A4; margin: 14mm; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="header">
+                            <h1 style="font-size: 26px; color: #312e81;">Conversation Export</h1>
+                            <p style="margin-top: 8px; color: #6b7280;">Room ${escapeHtml(roomId)}</p>
+                        </div>
+                        <div class="meta">
+                            <div class="meta-card">
+                                <div class="meta-label">Teacher</div>
+                                <div>${escapeHtml(room.meta?.teacherName || room.meta?.teacher || 'Unknown')}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Participants</div>
+                                <div>${escapeHtml(Array.from(participants).join(', ') || 'Unknown')}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Started</div>
+                                <div>${escapeHtml(formatDate(timeline.created || timeline.lastActivity))}</div>
+                            </div>
+                            <div class="meta-card">
+                                <div class="meta-label">Last Activity</div>
+                                <div>${escapeHtml(formatDate(timeline.lastActivity))}</div>
+                            </div>
+                        </div>
+                        <h2 style="font-size: 18px; margin-bottom: 14px;">Messages</h2>
+                        ${messages.map((msg) => `
+                            <div class="message ${msg.sender === 'teacher' ? 'teacher' : 'student'}">
+                                <div class="message-head">
+                                    <strong>${escapeHtml(msg.senderName || msg.sender || 'Unknown')}</strong>
+                                    <span>${escapeHtml(formatDate(msg.timestamp || msg.created))} | ${escapeHtml(msg.type)}</span>
+                                </div>
+                                <div class="message-body">${escapeHtml(msg.text || msg.content || 'No content')}</div>
+                            </div>
+                        `).join('')}
+                    </body>
+                    </html>
+                `;
+
+                printWindow.document.open();
+                printWindow.document.write(html);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => printWindow.print(), 250);
+            } catch (err) {
+                printWindow.close();
+                console.error('Error exporting conversation PDF:', err);
+                alert('Failed to export conversation PDF');
+            }
+        }
+
+        async function exportConversation(roomId) {
+            try {
+                const roomSnap = await get(ref(db, `chats/${roomId}`));
+                const room = roomSnap.val();
+
+                if (!room) {
+                    alert('Conversation not found');
+                    return;
+                }
+
+                const timeline = getRoomTimeline(room);
+
+                // Create export data
+                const exportData = {
+                    roomId,
+                    exported: new Date().toISOString(),
+                    created: timeline.created,
+                    lastActivity: timeline.lastActivity,
+                    messages: []
+                };
+
+                const messageTypes = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                messageTypes.forEach(type => {
+                    if (room[type]) {
+                        Object.entries(room[type]).forEach(([id, msg]) => {
+                            exportData.messages.push({
+                                id,
+                                type,
+                                sender: msg.sender,
+                                text: msg.text || msg.content,
+                                timestamp: msg.timestamp || msg.created
+                            });
+                        });
+                    }
+                });
+
+                // Sort messages by timestamp
+                exportData.messages.sort((a, b) => a.timestamp - b.timestamp);
+
+                // Download as JSON
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `conversation-${roomId}-${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+            } catch (err) {
+                console.error('Error exporting conversation:', err);
+                alert('Failed to export conversation');
+            }
+        }
+
+        async function deleteConversation(roomId) {
+            if (!confirm(`Are you sure you want to delete conversation ${roomId}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                await remove(ref(db, `chats/${roomId}`));
+                await loadConversationHistory();
+                alert('Conversation deleted successfully');
+            } catch (err) {
+                console.error('Error deleting conversation:', err);
+                alert('Failed to delete conversation');
+            }
+        }
+
+        // Make functions globally available
+        window.showTab = showTab;
+        window.refreshData = refreshData;
+        window.showAddUserModal = showAddUserModal;
+        window.showAddRoleModal = showAddRoleModal;
+        window.closeModals = closeModals;
+        window.addUser = addUser;
+        window.addRole = addRole;
+        window.editUser = editUser;
+        window.updateUser = updateUser;
+        window.deleteUser = deleteUser;
+        window.editRole = editRole;
+        window.deleteRole = deleteRole;
+        window.loadConversationHistory = loadConversationHistory;
+        window.filterHistoryByUser = filterHistoryByUser;
+        window.filterHistoryByDate = filterHistoryByDate;
+        window.clearHistoryFilters = clearHistoryFilters;
+        window.viewConversationDetail = viewConversationDetail;
+        window.closeConversationModal = closeConversationModal;
+        window.exportConversationPdf = exportConversationPdf;
+        window.exportConversation = exportConversation;
+        window.deleteConversation = deleteConversation;
+    </script>
+</body>
+
+</html>
