@@ -720,7 +720,7 @@
 
         let allTeachers = {};
         let allConversations = [];
-        let allInvoices = [];
+        let allInvoices =[];
         let allTeacherAccounts =[];
 
         let isLoggedIn = false;
@@ -831,7 +831,7 @@
                             students: new Set(),
                             lastActive: 0,
                             roomCodes:[],
-                            rawData: { sessions: 0, messages: 0, students: [] }
+                            rawData: { sessions: 0, messages: 0, students:[] }
                         };
                     }
 
@@ -1802,7 +1802,7 @@
         }
 
         function renderUserRow(t) {
-            const roles = t.roles || (t.role ? [t.role] :[]);
+            const roles = t.roles || (t.role ?[t.role] :[]);
             const rolesBadges = getRolesBadges(roles);
             const displayName = t.name || 'Unknown';
 
@@ -2128,7 +2128,7 @@
 
                     <!-- Bill To -->
                     <div style="margin-bottom: 30px;">
-                        <h3 style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; color: #999;">Gefactureerd aan / Facturé à</h3>
+                        <h3 style="margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase; color: #999;">Gefactureerd aan</h3>
                         <p style="margin: 0; font-size: 16px; font-weight: 600;">${inv.teacherName}</p>
                         <p style="margin: 5px 0 0 0; font-size: 14px; color: #666;">Success Class Teacher</p>
                     </div>
@@ -2195,7 +2195,7 @@
                             </div>
                         </div>
                         <div style="text-align: center; margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
-                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Dit is een automatisch gegenereerde factuur van Success Class by Eburon AI</p>
+                            <p style="margin: 0; font-size: 11px; color: #94a3b8;">Dit is een automatisch gegenereerde factuur van Succes Class by Eburon AI</p>
                         </div>
                     </div>
                 </div>
