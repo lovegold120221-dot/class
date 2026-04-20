@@ -373,7 +373,7 @@
                                 <span class="font-medium" id="calc-base-cost">€100.00</span>
                             </div>
                             <div class="flex justify-between items-center mb-2">
-                                <span class="text-gray-600">Token Cost (<span id="token-rate">€0.0001</span>/char):</span>
+                                <span class="text-gray-600">Maintenance (<span id="token-rate">€0.0001</span>/char):</span>
                                 <span class="font-medium" id="token-cost">€0.00</span>
                             </div>
                             <div class="flex justify-between items-center mb-2">
@@ -430,7 +430,7 @@
                                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Sessions</th>
                                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Est. Characters</th>
                                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Base Cost</th>
-                                <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Token Cost</th>
+                                <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Maintenance</th>
                                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Total (incl. BTW)</th>
                                 <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase">Actions</th>
                             </tr>
@@ -496,7 +496,7 @@
                             <span class="font-medium" id="bill-base-cost">€100.00</span>
                         </div>
                         <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Token Cost:</span>
+                            <span class="text-gray-600">Maintenance:</span>
                             <span class="font-medium" id="bill-token-cost">€0.00</span>
                         </div>
                         <div class="flex justify-between text-sm">
@@ -1686,7 +1686,7 @@
                 const usersSnap = await window.fbGet(window.fbRef(window.fbDb, 'admin/users'));
                 const users = usersSnap.val() || {};
 
-                for (const [key, user] of Object.entries(users)) {
+                for (const[key, user] of Object.entries(users)) {
                     if (!user.role) {
                         await window.fbSet(window.fbRef(window.fbDb, `admin/users/${key}/role`), 'teacher');
                     }
@@ -1753,7 +1753,7 @@
                     (t.email && t.email.toLowerCase().includes(searchTerm)) ||
                     (t.company && t.company.toLowerCase().includes(searchTerm));
 
-                const roles = t.roles || (t.role ? [t.role] :[]);
+                const roles = t.roles || (t.role ?[t.role] :[]);
                 const isUserSuper = t.isSuperuser === true;
                 let matchesRole = true;
 
@@ -2226,7 +2226,7 @@
                             </tr>
                             <tr>
                                 <td style="padding: 15px; border-bottom: 1px solid #e2e8f0;">
-                                    <strong>AI Spraakservice - Token Kosten</strong><br>
+                                    <strong>AI Spraakservice - Maintenance</strong><br>
                                     <span style="color: #64748b; font-size: 13px;">Karakters verwerkt: ${inv.tokenUsage.toLocaleString()}</span>
                                 </td>
                                 <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">${inv.tokenUsage.toLocaleString()}</td>
