@@ -343,13 +343,21 @@
                             </div>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Token Usage (Characters)</label>
-                            <input type="number" id="billing-tokens" placeholder="Enter token/character count" min="0"
-                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                                oninput="window.calculateBilling()">
-                            <p class="text-xs text-gray-400 mt-1">Number of characters processed by Eburon AI services. <em>(1 token = 1 character, charged at €0.0001 per character)</em></p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Sessions</label>
+                                <input type="number" id="billing-sessions" placeholder="Number of sessions" min="1" value="1"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    oninput="window.calculateBilling()">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Token Usage</label>
+                                <input type="number" id="billing-tokens" placeholder="Character count" min="0"
+                                    class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    oninput="window.calculateBilling()">
+                            </div>
                         </div>
+                        <p class="text-xs text-gray-400 mt-1">Number of characters processed by Eburon AI services. <em>(1 token = 1 character, charged at €0.0001 per character)</em></p>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Base Rate per Usage</label>
@@ -362,7 +370,7 @@
                         <div class="pt-4 border-t border-gray-100">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Base Billing:</span>
-                                <span class="font-medium">€100.00</span>
+                                <span class="font-medium" id="calc-base-cost">€100.00</span>
                             </div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-gray-600">Token Cost (<span id="token-rate">€0.0001</span>/char):</span>
@@ -464,16 +472,24 @@
                         <input type="text" id="bill-teacher-name" 
                             class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Token Usage</label>
-                        <input type="number" id="bill-token-usage" placeholder="Enter characters processed" min="0"
-                            class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500"
-                            oninput="window.updateBillPreview()">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sessions</label>
+                            <input type="number" id="bill-sessions" placeholder="Sessions" min="1" value="1"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                                oninput="window.updateBillPreview()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Token Usage</label>
+                            <input type="number" id="bill-token-usage" placeholder="Characters processed" min="0"
+                                class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                                oninput="window.updateBillPreview()">
+                        </div>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-xl space-y-2">
                         <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Base Rate:</span>
-                            <span class="font-medium">€100.00</span>
+                            <span class="text-gray-600">Base Cost:</span>
+                            <span class="font-medium" id="bill-base-cost">€100.00</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Token Cost:</span>
@@ -719,8 +735,8 @@
         const ADMIN_PASSWORD = 'JoLernout26';
 
         let allTeachers = {};
-        let allConversations = [];
-        let allInvoices =[];
+        let allConversations =[];
+        let allInvoices = [];
         let allTeacherAccounts =[];
 
         let isLoggedIn = false;
@@ -831,7 +847,7 @@
                             students: new Set(),
                             lastActive: 0,
                             roomCodes:[],
-                            rawData: { sessions: 0, messages: 0, students:[] }
+                            rawData: { sessions: 0, messages: 0, students: [] }
                         };
                     }
 
@@ -1023,7 +1039,7 @@
             const dateFrom = document.getElementById('conv-date-from').value;
             const dateTo = document.getElementById('conv-date-to').value;
 
-            let filtered = [...allConversations];
+            let filtered =[...allConversations];
 
             if (teacher) {
                 filtered = filtered.filter(c => 
@@ -1061,7 +1077,7 @@
                 document.getElementById('modal-room-info').textContent = `Room: ${roomCode} | Teacher: ${room.meta?.teacherName || 'Unknown'}`;
 
                 const allMessages =[];
-                const types = ['messages', 'questions', 'studentResponses', 'studentChats'];
+                const types =['messages', 'questions', 'studentResponses', 'studentChats'];
                 types.forEach(type => {
                     if (room[type]) {
                         Object.entries(room[type]).forEach(([id, msg]) => {
@@ -1182,6 +1198,7 @@
             document.getElementById('bill-teacher-name').value = teacher.name;
             const estimatedChars = teacher.messages * 20;
             document.getElementById('bill-token-usage').value = estimatedChars;
+            document.getElementById('bill-sessions').value = teacher.sessions || 1;
             updateBillPreview();
             document.getElementById('bill-modal').classList.remove('hidden');
         }
@@ -1194,9 +1211,12 @@
 
         function updateBillPreview() {
             const tokens = parseInt(document.getElementById('bill-token-usage').value) || 0;
+            const sessions = parseInt(document.getElementById('bill-sessions').value) || 1;
             const tokenCost = tokens * TOKEN_RATE;
-            const total = BASE_RATE + tokenCost;
+            const baseCost = sessions * BASE_RATE;
+            const total = baseCost + tokenCost;
 
+            document.getElementById('bill-base-cost').textContent = `€${baseCost.toFixed(2)}`;
             document.getElementById('bill-token-cost').textContent = `€${tokenCost.toFixed(2)}`;
             document.getElementById('bill-total-cost').textContent = `€${total.toFixed(2)}`;
         }
@@ -1205,8 +1225,10 @@
         async function saveInvoice() {
             const teacherName = document.getElementById('bill-teacher-name').value;
             const tokenUsage = parseInt(document.getElementById('bill-token-usage').value) || 0;
+            const sessions = parseInt(document.getElementById('bill-sessions').value) || 1;
             const tokenCost = tokenUsage * TOKEN_RATE;
-            const total = BASE_RATE + tokenCost;
+            const baseCost = sessions * BASE_RATE;
+            const total = baseCost + tokenCost;
 
             try {
                 // Generate sequential Invoice ID
@@ -1228,8 +1250,9 @@
                 const invoice = {
                     invoiceNumber: invoiceNum,
                     teacherName,
+                    sessions,
                     tokenUsage,
-                    baseCost: BASE_RATE,
+                    baseCost: parseFloat(baseCost.toFixed(2)),
                     tokenCost: parseFloat(tokenCost.toFixed(4)),
                     total: parseFloat(total.toFixed(2)),
                     createdAt: Date.now(),
@@ -1282,6 +1305,7 @@
                         <span class="text-lg font-bold text-indigo-600">€${inv.total.toFixed(2)}</span>
                     </div>
                     <div class="flex gap-4 text-xs text-gray-500 mb-2">
+                        <span>Sessions: ${inv.sessions || 1}</span>
                         <span>Tokens: ${inv.tokenUsage.toLocaleString()}</span>
                         <span>Base: €${inv.baseCost.toFixed(2)}</span>
                         <span>Token Cost: €${inv.tokenCost.toFixed(4)}</span>
@@ -1347,9 +1371,12 @@
 
         function calculateBilling() {
             const tokens = parseInt(document.getElementById('billing-tokens').value) || 0;
+            const sessions = parseInt(document.getElementById('billing-sessions').value) || 1;
             const tokenCost = tokens * TOKEN_RATE;
-            const total = BASE_RATE + tokenCost;
+            const baseCost = sessions * BASE_RATE;
+            const total = baseCost + tokenCost;
 
+            document.getElementById('calc-base-cost').textContent = `€${baseCost.toFixed(2)}`;
             document.getElementById('token-cost').textContent = `€${tokenCost.toFixed(2)}`;
             document.getElementById('total-billing').textContent = total.toFixed(2);
         }
@@ -1357,6 +1384,8 @@
 
         function resetBilling() {
             document.getElementById('billing-tokens').value = '';
+            document.getElementById('billing-sessions').value = '1';
+            document.getElementById('calc-base-cost').textContent = '€100.00';
             document.getElementById('token-cost').textContent = '€0.00';
             document.getElementById('total-billing').textContent = '100.00';
         }
@@ -1368,6 +1397,7 @@
 
             document.getElementById('bill-teacher-name').value = teacherName;
             document.getElementById('bill-token-usage').value = document.getElementById('billing-tokens').value || 0;
+            document.getElementById('bill-sessions').value = document.getElementById('billing-sessions').value || 1;
             updateBillPreview();
             document.getElementById('bill-modal').classList.remove('hidden');
         }
@@ -1572,7 +1602,7 @@
                                 name: 'Superuser',
                                 email: ADMIN_EMAIL,
                                 password: ADMIN_PASSWORD,
-                                roles: ['admin'],
+                                roles:['admin'],
                                 isSuperuser: true,
                                 active: true,
                                 updatedAt: Date.now()
@@ -2108,6 +2138,10 @@
             const inv = allInvoices[idx];
             const invoiceNum = inv.invoiceNumber || ('INV-' + inv.createdAt.toString().slice(-8));
             const date = new Date(inv.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+            
+            // Fallback for older invoices that were generated before sessions were captured
+            const sessions = inv.sessions || 1;
+            const unitBaseCost = inv.baseCost / sessions;
 
             const html = `
                 <div style="font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; max-width: 800px; margin: 0 auto; background: white; padding: 20px;">
@@ -2149,8 +2183,8 @@
                                     <strong>AI Spraakservice - Basis Kosten</strong><br>
                                     <span style="color: #64748b; font-size: 13px;">Success Class by Eburon AI</span>
                                 </td>
-                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">1</td>
-                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${inv.baseCost.toFixed(2)}</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">${sessions}</td>
+                                <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${unitBaseCost.toFixed(2)}</td>
                                 <td style="padding: 15px; border-bottom: 1px solid #e2e8f0; text-align: right;">€${inv.baseCost.toFixed(2)}</td>
                             </tr>
                             <tr>
